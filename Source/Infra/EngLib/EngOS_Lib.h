@@ -30,10 +30,16 @@
 #include "EngOS_Types.h"
 
 /* OS Interface */
-EXTERN void EngOS_Task_Create(void);
+EXTERN void EngOS_LibraryEntry(void);
+EXTERN void EngOS_RegistryJob(TJobProperty* pJobProperty); // Registery Task/Thread/Etc...
+EXTERN void EngOS_PendingJob(TJobProperty* pJobProperty); // Use this in front of main routine
+EXTERN void EngOS_WaitingJob(TJobProperty* pJobProperty, U32 ulPreviousWakeTime); // Use this after main routine
+EXTERN U32 EngOS_GetSysTick(void);
+
+EXTERN void EngOS_StartJobs(void);
+EXTERN void EngOS_EndJobs(void);
+
 EXTERN void EngOS_Task_Main(void *p_arg);
-EXTERN void EngOS_Task_Start(void);
-EXTERN void EngOS_Task_End(void);
 
 EXTERN SemaphoreId EngOS_CreateSemaphore(U8* pubSemaphoreName);
 EXTERN void EngOS_ReleaseSemaphore(SemaphoreId id);

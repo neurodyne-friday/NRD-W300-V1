@@ -28,18 +28,72 @@
 /**************************
 * Task Variables
 ***************************/
-#ifdef ENGOS_FREERTOS
+#if defined(ENGOS_FREERTOS)
 TaskHandle_t Task1Handle = NULL;
 TaskHandle_t Task2Handle = NULL;
 #include "queue.h"
 QueueHandle_t xQueue;
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif
 
 /**************************/
 
 
 void EngOS_DWT_Init(void); // will move to HAL layer
+
+
+void EngOS_LibraryEntry(void)
+{
+
+}
+
+void EngOS_RegistryJob(TJobProperty* pJobProperty)
+{
+	if(pJobProperty == NULL)
+		return;
+
+#if defined(ENGOS_CMSIS_V2)
+	/* Init scheduler */
+	osKernelInitialize();
+	osThreadNew(pJobProperty->pfnJobFunc, NULL, NULL);
+#elif defined(ENGOS_FREERTOS)
+	xTaskCreate(pJobProperty->pfnJobFunc, pJobProperty->pubName, 512, NULL, 1, NULL);
+#elif defined(ENGOS_UCOS)
+#endif
+}
+
+void EngOS_PendingJob(TJobProperty* pJobProperty)
+{
+	if(pJobProperty == NULL)
+		return;
+
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
+	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+#elif defined(ENGOS_UCOS)
+#endif
+}
+
+U32 EngOS_GetSysTick(void)
+{
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
+	return (U32)xTaskGetTickCount();
+#elif defined(ENGOS_UCOS)
+#endif
+}
+
+void EngOS_WaitingJob(TJobProperty* pJobProperty, U32 ulPreviousWakeTime)
+{
+	if(pJobProperty == NULL)
+		return;
+
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
+	vTaskDelayUntil(&ulPreviousWakeTime, (TickType_t)pJobProperty->ulIntervalTime);
+#elif defined(ENGOS_UCOS)
+#endif
+}
 
 
 void EngOS_Task_Create(void)
@@ -117,7 +171,7 @@ void EngOS_Task_Main(void *p_arg)
 	}
 }
 
-void EngOS_Task_Start(void)
+void EngOS_StartJobs(void)
 {
 #if defined(ENGOS_CMSIS_V2)
 	osKernelStart();
@@ -127,7 +181,7 @@ void EngOS_Task_Start(void)
 #endif
 }
 
-void EngOS_Task_End(void)
+void EngOS_EndJobs(void)
 {
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)

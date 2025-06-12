@@ -283,7 +283,7 @@ void EngAPP_Task_CurrentControl(void *argument)
         // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
         float Ta, Tb, Tc;
         //SVPWM_CalcDuty(v_alpha, v_beta, Vbus, &Ta, &Tb, &Tc);
-        SVPWM_CalcDuty(v_alpha, v_beta, 24.0, &Ta, &Tb, &Tc);
+        EngAPP_FOC_SVPWM_CalcDuty(v_alpha, v_beta, 24.0, &Ta, &Tb, &Tc);
 
         // SVPWM_CalcDuty: 참조 전압을 기준으로 섹터 결정 후 T1, T2, T0 계산, 0.0~1.0의 Ta, Tb, Tc 듀티 반환
         TIM1->CCR1 = Ta * TIM1->ARR;
@@ -371,7 +371,8 @@ void EngAPP_Task_PositionControl(void *argument)
     static float int_pos = 0.0f;
     float target_position = 0.0f;     // 목표 위치 [rad]
     
-    TickType_t lastWakeTime = xTaskGetTickCount();
+    //TickType_t lastWakeTime = xTaskGetTickCount();
+    U32 lastWakeTime = EngOS_GetSysTick();
     
     for(;;) 
     {
@@ -407,7 +408,8 @@ void EngAPP_Task_PositionControl(void *argument)
         // (속도 제어 태스크의 omega_ref에 반영하거나 전역 변수로 공유)
         omega_ref = omega_cmd;
         
-        vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
+        //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
+        EngOS_WaitingJob(NULL, lastWakeTime);
     }
 }
 

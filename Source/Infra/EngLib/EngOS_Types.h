@@ -43,5 +43,21 @@
     #define EngOS_Queue OS_Q
 #endif
 
+typedef enum _TJobRunType
+{
+    JOB_RUNTYPE_Interrupt,
+    JOB_RUNTYPE_Cycle,
+    JOB_RUNTYPE_Undefiined
+} TJobRunType;
+
+typedef struct _TJobProperty
+{
+    U8* pubName;
+    void* pfnJobFunc;
+    TJobRunType eRunType;
+    U32 ulIntervalTime; // msec
+} TJobProperty;
+
+
 
 #endif //__ENGOS_TYPES_H__
