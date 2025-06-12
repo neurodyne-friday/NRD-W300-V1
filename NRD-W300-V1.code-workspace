@@ -4,5 +4,14 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"eng_commontype.h": "c",
+			"eng_macro.h": "c",
+			"engos_lib.h": "c",
+			"engos_types.h": "c",
+			"cmsis_os.h": "c",
+			"cmsis_os2.h": "c"
+		}
+	}
 }
