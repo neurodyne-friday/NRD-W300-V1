@@ -46,20 +46,20 @@ void EngOS_Task_Create(void)
 {
     EngIFSvc_IF_Entry();
 
-#ifdef ENGOS_CMSIS
+#if defined(ENGOS_CMSIS_V2)
 	/* Init scheduler */
 	osKernelInitialize();
 
 	osThreadNew(EngOS_Task_Main, NULL, NULL);
-#elif ENGOS_FREERTOS
+#elif defined(ENGOS_FREERTOS)
 	xTaskCreate(EngOS_Task_Main, "EngIFSvc_IF_Main", 512, NULL, 1, NULL);
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif
 }
 
 void EngOS_Task_Main(void *p_arg)
 {
-#ifdef ENGOS_CMSIS
+#if defined(ENGOS_CMSIS)
 	uint32_t nextWakeTicks;
 	uint32_t startCycle, endCycle;
     uint32_t cycleDifference;
@@ -73,7 +73,7 @@ void EngOS_Task_Main(void *p_arg)
 
 	// Save Tick at the time of task creation
 	nextWakeTicks = osKernelGetTickCount();
-#elif ENGOS_FREERTOS
+#elif defined(ENGOS_FREERTOS)
 	TickType_t xLastWakeTime;
 	uint32_t startCycle, endCycle;
     uint32_t cycleDifference;
@@ -85,7 +85,7 @@ void EngOS_Task_Main(void *p_arg)
 
 	// Save Tick at the time of task creation
     xLastWakeTime = xTaskGetTickCount();
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif
 
 	while(1)
@@ -107,45 +107,45 @@ void EngOS_Task_Main(void *p_arg)
 		//DBG_UART(ENG_DBG_STRING"Elapsed Time: %.2f usec \n", ENG_TICK, "EngOS", elapsedTimeUs);
 
         // Wait for the next cycle to start exactly 1ms later
-#ifdef ENGOS_CMSIS
+#if defined(ENGOS_CMSIS_V2)
 		nextWakeTicks += intervalTicks;
 		osDelayUntil(nextWakeTicks);
-#elif ENGOS_FREERTOS
+#elif defined(ENGOS_FREERTOS)
 		vTaskDelayUntil(&xLastWakeTime, xFrequency);
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif		
 	}
 }
 
 void EngOS_Task_Start(void)
 {
-#ifdef ENGOS_CMSIS
+#if defined(ENGOS_CMSIS_V2)
 	osKernelStart();
-#elif ENGOS_FREERTOS
+#elif defined(ENGOS_FREERTOS)
 	vTaskStartScheduler();
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif
 }
 
 void EngOS_Task_End(void)
 {
-#ifdef ENGOS_CMSIS
-#elif ENGOS_FREERTOS
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
 	vTaskEndScheduler();
-#elif ENGOS_UCOS
+#elif defined(ENGOS_UCOS)
 #endif
 }
 
 SemaphoreId EngOS_CreateSemaphore(U8* pubSemaphoreName)
 {
-#ifdef ENGOS_CMSIS
+#ifdef ENGOS_CMSIS_V2
 	return (SemaphoreId)osSemaphoreNew(1, 0, NULL); // Binary semaphore
 #endif
 }
 
 void EngOS_ReleaseSemaphore(SemaphoreId id)
 {
-#ifdef ENGOS_CMSIS
+#ifdef ENGOS_CMSIS_V2
 	osSemaphoreRelease(id);
 #endif
 }

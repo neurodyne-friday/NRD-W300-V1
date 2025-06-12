@@ -22,15 +22,22 @@
 
 #include "EngCM_SystemConfig.h"
 #include "Eng_Macro.h"
-#include "cmsis_os.h"
 
-#ifdef ENGOS_CMSIS
+#if defined(ENGOS_CMSIS_V2)
+    #include "FreeRTOS.h"
+    #include "task.h"
+
     typedef osMutexId_t         MutexId;
     typedef osSemaphoreId_t     SemaphoreId;
     typedef osMessageQueueId_t  MsgQueueId;
-#endif
+#elif defined(ENGOS_FREERTOS)
+    #include "FreeRTOS.h"
+    #include "task.h"
 
-#ifdef ENGOS_UCOS
+    typedef osMutexId_t         MutexId;
+    typedef osSemaphoreId_t     SemaphoreId;
+    typedef osMessageQueueId_t  MsgQueueId;
+#elif defined(ENGOS_UCOS)
     #define EngOS_Mutex OS_MUTEX 
     #define EngOS_Semaphore OS_SEMAPHORE
     #define EngOS_Queue OS_Q

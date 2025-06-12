@@ -11,7 +11,9 @@
 			"engos_lib.h": "c",
 			"engos_types.h": "c",
 			"cmsis_os.h": "c",
-			"cmsis_os2.h": "c"
+			"cmsis_os2.h": "c",
+			"englib_types.h": "c",
+			"engcm_systemconfig.h": "c"
 		}
 	}
 }

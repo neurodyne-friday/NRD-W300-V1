@@ -25,24 +25,20 @@
  * Engine Main Version
  */
 
-#define C_ENG_MODEL_NAME		"C3510ND"
-#define C_ENG_MODEL_NAME_OA		"C3510ND"
-#define C_ENG_MODEL_NAME_IT		"C3510ND"
+#define C_ENG_MODEL_NAME		"NRD-W300-V1"
 
 #define C_ENG_MODEL_CODE		0
 #define C_ENG_MAJOR_VERSION		0	/* Major Version (use one character, 0~9) */
 #define C_ENG_MIDDLE_VERSION	00	/* Middle Version(one character, 0~9) */
 #define C_ENG_MINOR_VERSION		00	/* Minor Version ((two characters, 0~99) */
 
-#define C_ENG_FULL_VERSION		"V1.35.84_170309"
+#define C_ENG_FULL_VERSION		"V0.00.01_25xxxx"
 
-#define C_ENG_CTSALL_VERSION	"V0.00.01_131221"
+#define C_ENG_CTSALL_VERSION	"V0.00.01_25xxxx"
 
 
-#define ENGVM_MAX_TASKS 					300			/**< Max number for Virtual cyclic Manager */
-
-#define ENGOS_CMSIS
-//#define ENGOS_FREERTOS
+//#define ENGOS_CMSIS_V2
+#define ENGOS_FREERTOS
 //#define ENGOS_UCOS
 
 #endif /* __ENGCM_SYSTEMCONFIG_H__ */

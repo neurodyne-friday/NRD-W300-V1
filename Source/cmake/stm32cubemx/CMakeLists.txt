@@ -15,21 +15,24 @@ target_compile_definitions(stm32cubemx INTERFACE
 target_include_directories(stm32cubemx INTERFACE
     ../../App
     ../../Drv
+
+    ../../Include
+    ../../Infra
+    ../../Infra/EngCM
+    ../../Infra/EngLib
+
+    ../../OS/FreeRTOS/Source/include
+    ../../OS/FreeRTOS/Source/CMSIS_RTOS_V2
+    ../../OS/FreeRTOS/Source/portable/GCC/ARM_CM4F
+
     ../../HAL/BSP
     ../../HAL/EngChip
     ../../HAL/EngChip/Core/Inc
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Inc
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
-    ../../OS/FreeRTOS/Source/include
-    ../../OS/FreeRTOS/Source/CMSIS_RTOS_V2
-    ../../OS/FreeRTOS/Source/portable/GCC/ARM_CM4F
     ../../HAL/EngChip/Drivers/CMSIS/Device/ST/STM32F4xx/Include
     ../../HAL/EngChip/Drivers/CMSIS/Include
     ../../HAL/EngHAL
-    ../../Include
-    ../../Infra
-    ../../Infra/EngCM
-    ../../Infra/EngLib
 )
 
 target_sources(stm32cubemx INTERFACE
