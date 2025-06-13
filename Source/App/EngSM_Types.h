@@ -22,16 +22,14 @@
 
 #include "EngTimerSvc_Types.h"
 
-#define ENGSM_MAX_PAGES			C_SM_PAGE_MAX_NUM			/**< Max number for page capable of receiving */
-
 
 /*
  * @brief Enumeration Engine Handler ID Definition
  */
 typedef enum
 {
-	ENG_HND_MH,					/**<  TBD  */
-	ENG_HND_EH,					/**<  TBD  */
+	ENG_HND_FOC,				/**<  TBD  */
+	//ENG_HND_EH,					/**<  TBD  */
 	ENG_HND_TOTAL				/**<  TBD  */
 } TEngHandlerID;
 
@@ -90,15 +88,11 @@ typedef struct _TEngSystemManager
 	U32 ulReceivedEvent;
 
 	BOOL fPowerOn;
-	BOOL fPowerOnFirstPage;
 	BOOL fUltraLLCheckFlag;
 	BOOL fHandlerNotContinuousCondition;
 	BOOL fFastEngineBootUpStart;
 	BOOL fLowPowerState;
 	BOOL fLowPowerModeNotSupport;
-//#ifdef SM_FR_SUPPORT_BORDERLESS_MODE
-	BOOL fIsBorderlessMode;
-//#endif
 	
 	BOOL fStackingMode;
 	BOOL fQuietMode;
@@ -108,18 +102,6 @@ typedef struct _TEngSystemManager
 	TMsgQCB stJobQCB;
 	TStateMachine stStateMachine;
 	TStateMachine stPrintStateMachine;
-
-	//TENGSM_VIRTUALPRINT_F pfnIFSvcVirtualPrint;
-	TENGSM_ETOK_F pfnIFSvcEtoK;
-	TENGSM_SETERROR_F pfnIFSvcSetError;
-	TENGSM_CLEARERROR_F pfnIFSvcClearError;
-	TENGSM_CLEARALLERROR_F pfnIFSvcClearAllError;
-	TENGSM_REQINFO_PRESENDCMD_F pfnIFSvcIntReqInfoPreSendCmd;
-	TENGSM_NEWIF_INTERRUPT_F pfnIFSvcNewIFInterrupt;
-	TENGSM_CONNECT_INTERRUP_F pfnIFSvcConnectInterrupt;
-	TENGSM_NOTIFY_JAM2PASS_F pfnIFSvcNotifyJam2Pass;
-	TENGSM_SET_PRINTJOB_INFO_F pfnIFSvcSetPrintJobInfo;
-	TENGSM_GET_PRINTJOB_INFO_F pfnIFSvcGetPrintJobInfo;
 
 	TENGSM_TIMERSVC_SUSPEND_F pfnTimerSvcSuspend;
 	TENGSM_TIMERSVC_RESUME_F pfnTimerSvcResume;
@@ -131,31 +113,8 @@ typedef struct _TEngSystemManager
 
 	U32 ulContinuousPageCnt;
 	U32 ulAccumulativePageCnt;
-#ifdef FR_SM_ACR_CTD_PRINT_STATE
-	BOOL fFirstACR;
-#endif
-#ifdef FR_HH_WAIT_FUSER_MOTOR_DELAY
-	BOOL fFirstWaitMode;
-	BOOL fFirstFuserMotorDelay;
-#endif
 
-	U32 ulSimplex2inDuplexFlag;
-	BOOL fPaperImageAddEnableFlag;
-	BOOL fToDoRecoveryJob;
-	
-	TEngEnvironmentIndex enEnvironmentIdx;
-
-	U32 ulEntryIDForNextPrintTime;
-	U32 ulNextPrintTime;
-	BOOL fClearNextPrintTime;
-	U32 ulAdjustNextPrtTimeMask;
-	
 	BOOL fWaitEndJobStopTrayFlag;	
-
-
-// FUSER MICOM FROM EVC
-	BOOL bMMATestMode;
-	U32	ulULLCondition;
 
 	BOOL fEnterSleepP2Mode;
 	BOOL fPower24VOnOffFlag;

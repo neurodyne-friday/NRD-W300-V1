@@ -14,7 +14,11 @@
 			"cmsis_os2.h": "c",
 			"englib_types.h": "c",
 			"engcm_systemconfig.h": "c",
-			"cstdlib": "c"
+			"cstdlib": "c",
+			"stdlib.h": "c",
+			"engcm_errorhndconfig.h": "c",
+			"engsm_types.h": "c",
+			"eng_statustype.h": "c"
 		}
 	}
 }

@@ -20,15 +20,8 @@
 #define	__ENGSM_MAIN_C__
 
 #include "Eng_CommonType.h"
-#include "EngSM_HndIF.h"
-//#include "EngSM_State.h"
-//#include "EngSM_Message.h"
 #include "EngSM_Main.h"
-
-#ifdef ALT_IFSVC_OLDIF
-#include "PEFW_IF.h"
-#endif
-
+#include "EngFOC_Main.h"
 
 /* Initilize the Engine System Manager infomation */
 static TEngSystemManager s_stSystemManager;
@@ -71,10 +64,10 @@ BOOL EngSM_Initialize(void)
 	//EngSM_InitState(pstSystemManager);
 
 	/* Create the Engine Component Handler */
-	EngSM_HndIF_CreateHandler();
+	//EngSM_HndIF_CreateHandler();
 
 	/* Initialize the Engine Component(paper, image, heating, error, option) Handler */
-	EngSM_HndIF_Initialize();
+	//EngSM_HndIF_Initialize();
 
 	/* Send the first event about power on */
 
@@ -89,7 +82,7 @@ BOOL EngSM_Initialize(void)
 	}
 	else if(EngSM_IF_GetDeviceStatus(ENGSM_STS_PARENT_ENGINE_STATE) == ENGSM_STS_CHILD_ENGINE_ERROR)
 	{
-		EngSM_HndIF_StartHandler(ENG_HND_EH, ERROR_NAME_ASSERT, NULL);
+		//EngSM_HndIF_StartHandler(ENG_HND_EH, ERROR_NAME_ASSERT, NULL);
 	}	
 	else
 	{
@@ -103,12 +96,13 @@ BOOL EngSM_Initialize(void)
 
 	EngSM_InitialIntervalTime();
 
+	// Create Jobs for FOC Handler
+	EngFOC_Initialize();
+
+	// Start OS-Jobs
+	EngOS_StartJobs();
+
 	pstSystemManager->fPowerOn = TRUE;
-
-#ifdef	FR_HH_ULTRA_LL_WARMUP_TIME
-	pstSystemManager->fUltraLLCheckFlag = TRUE;
-#endif
-
 	pstSystemManager->fEnterSleepP2Mode = FALSE;
 
     return TRUE;
@@ -130,146 +124,6 @@ void EngSM_Constructor(TEngSystemManager *pstSystemManager)
 	pstSystemManager->enEngState						= ENG_ST_UNSPECIFIED;
 	pstSystemManager->ulEvent							= ENG_EV_UNSPECIFIED;
 	pstSystemManager->ulReceivedEvent					= ENG_EV_UNSPECIFIED;
-}
-
-/**
-* @brief			Print Command Enable
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-// void EngSM_StartPrint(TEngPage* pstObjPage, TEngPageID enPageID)
-// {
-// 	TEngSystemManager *pstSystemManager = &s_stSystemManager;
-// 	TEngPage *pstEngPageEntry = NULL;
-// 	TEngPage *pstEngCurrPageEntry = NULL;
-// #ifdef FR_SM_FAST_FPOT		
-// 	TFastFpotCtrl *pstFastFpotCtrl = (TFastFpotCtrl *)EngSM_IF_GetFeature(ENGSM_FEATURE_FASTFPOT);
-// #endif
-// 	BOOL fPrevIsVirtual = FALSE;
-
-// #ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-// 	EngTM_ETM_SaveTimeEvent((U32)EngSM_StartPrint, 0);
-// #endif
-
-// 	/* Add the previous page when power is on */
-// 	if(pstSystemManager->fPowerOnFirstPage)
-// 	{
-// 		EngSM_AddPage(pstObjPage, ENG_PAGE_PREV_ID);
-// 		pstSystemManager->fPowerOnFirstPage = FALSE;
-// 		pstSystemManager->fPaperImageAddEnableFlag = TRUE;
-// 	}
-
-// 	pstEngCurrPageEntry = EngSM_GetPage(ENG_PAGE_CURR_ID);
-
-// 	if((pstEngCurrPageEntry != NULL) && (pstEngCurrPageEntry->fVirtualPage == FALSE)
-// 		|| (EngSM_SendEvent(ENG_EV_CHK_START_PRINT_CONDITION, NULL, 0, 0) == FALSE)
-// 	)
-// 	{
-// 		return;
-// 	}
-
-// 	if((pstEngCurrPageEntry != NULL) && (pstEngCurrPageEntry->fVirtualPage == TRUE))
-// 	{
-// 		fPrevIsVirtual = TRUE;
-// 		/* Clear Virtual job(Pre Run Level 2) */
-// 		{
-// 			U32 ul_parm = 0;
-// 			pstSystemManager->pfnIFSvcSetPrintJobInfo(JOBINFO_PRE_PRINT_ENABLE, &ul_parm, 4);
-// 		}
-// 		EngSM_DeletePage();
-		
-// 		DBG_ENGSM_PAGE(ENG_DBG_STRING"VirtualPageDel", ENG_TICK, "SM");	
-// 	}
-
-// 	pstEngPageEntry = EngSM_AddPage(pstObjPage, ENG_PAGE_CURR_ID);
-
-// //	ASSERT(pstEngPageEntry);
-	
-// 	if(!EngCM_IF_IsSupportPrint(pstEngPageEntry->enPaperSize, pstEngPageEntry->enPaperType))
-// 	{
-// //		ASSERT(0);
-// 		pstEngPageEntry->enPaperSize = PAPER_SIZE_DEFAULT;
-// 		pstEngPageEntry->enPaperType = PAPER_TYPE_PLAIN;
-// 	}
-
-// 	/* To send the beam type to kernel */
-// 	{
-// 		TEngPage *pstEngPageEntry = EngSM_GetPage(ENG_PAGE_CURR_ID);
-// 		TEngSpeed *pstNextSpeed = EngSM_GetSpeedForNextPrint(pstSystemManager, pstEngPageEntry);
-		
-// //		ASSERT(pstNextSpeed);
-	 		
-// 		/* Update the LSU beam type */
-// 		EngSM_HndIF_SendEvent(ENG_HND_IH, ENG_EV_GET_BEAM_TYPE, NULL, pstNextSpeed->enCase, 0);
-		
-// 		/* Must send ETOP_SET_BEAM_MODE after speed ratio is set */
-// 		EngVM_Add(ENGVM_ARG_NUM2 | ENGVM_ARG_2MS, T2MS * 2, 0, pstSystemManager->pfnIFSvcEtoK, eETOP_SET_BEAM_MODE, 0);
-// 		DBG_ENGSM_STATE(ENG_DBG_STRING"eETOP_SET_BEAM_MODE [%d]", ENG_TICK, "SM", pstNextSpeed->enCase);
-
-// #ifdef FR_SM_SLOW_SPEED_SAME_FREQ
-// 		pstSystemManager->pfnIFSvcEtoK(eETOP_SET_ENGINE_SPEED, 0);
-// #else
-// 		pstSystemManager->pfnIFSvcEtoK(eETOP_SET_ENGINE_SPEED, pstNextSpeed->enCase);
-// #endif		
-// 	}
-
-// 	EngSM_SendEvent(ENG_EV_CHANGE_PAPER_OBJECT_TYPE, NULL, pstEngPageEntry->enPrintObjectType, 0);
-
-// 	if((EngSM_IsFirstPage() == TRUE)
-// 		&& (fPrevIsVirtual == FALSE)
-// 	)
-// 	{
-// 		EngSM_SendEvent(ENG_EV_CHANGE_PAPER_DUPLEX, NULL, pstEngPageEntry->enPaperDuplex, 0);
-// #ifdef FR_SM_FAST_FPOT		
-// 		if(pstFastFpotCtrl->stFastFpotMode != FAST_FPOT_MODE_APPLY)
-// #endif
-// 		{
-// 			if(enPageID == ENG_PAGE_PREV_ID)
-// 			{
-// 				if(!EngLib_IsMsgQEmpty(&pstSystemManager->stJobQCB))
-// 				{
-// 					DBG_NEWIF_SIMPLEFIED(ENG_DBG_STRING"=== Warning exist no proceed job ===", ENG_TICK, "NewIF_Sim");
-// 					EngSM_InitJobMessage(&pstSystemManager->stJobQCB);
-// 				}
-				
-// 				EngVM_Add(ENGVM_ARG_NUM4, T10MS, 0, EngSM_SendEvent, ENG_EV_START_JOB, NULL, 0, 0);
-// 			}
-// 		}
-// 	}
-// 	else
-// 	{
-// 		EngSM_SendEvent(ENG_EV_START_PAGE, NULL, 0, 0);
-// 	}
-
-// #ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-// 	EngTM_ETM_SaveTimeEvent((U32)EngSM_StartPrint, 1);
-// #endif
-
-// }
-
-/**
-* @brief			Print Command Disable
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-void EngSM_StopPrint(void* pvObjPage)
-{
-	TEngSystemManager *pstSystemManager = &s_stSystemManager;
-	EngSM_DeletePage();
-
-#ifdef FR_PH_TRAY_FAST_PICKUP
-	pstSystemManager->pfnIFSvcVirtualPrint(PRTJOB_CLR_NEXTPRINT, 0);
-#else	
-	//pstSystemManager->pfnIFSvcVirtualPrint(PRTJOB_DIS_PRINT, 0);
-#endif
 }
 
 TEngSystemManager *EngSM_GetManager(void)
@@ -450,33 +304,6 @@ void *EngSM_GetFeature(U32 ulFeatureID)
 				pvEntry = s_pvMotionFeature[ulFeatureIndex];
 			}
 			break;
-			
-		// case ENGIH_FEATURE:
-		// 	{
-		// 		static void *s_pvImageFeature[ENGIH_FEATURE_MAX_COUNT] = {0};
-				
-		// 		U32 ulFeatureIndex = FEATURE_GET_INDEX(ulFeatureID);
-
-		// 		if(s_pvImageFeature[ulFeatureIndex] == NULL)
-		// 		{
-		// 			s_pvImageFeature[ulFeatureIndex] = EngSM_HndIF_GetFeature(ENG_HND_IH, ulFeatureID);
-		// 		}
-
-		// 		pvEntry = s_pvImageFeature[ulFeatureIndex];
-		// 	}
-		// 	break;
-
-		// case ENGHH_FEATURE:
-		// 	pvEntry = EngSM_HndIF_GetFeature(ENG_HND_HH, ulFeatureID);
-		// 	break;
-			
-		// case ENGEH_FEATURE:
-		// 	pvEntry = EngSM_HndIF_GetFeature(ENG_HND_EH, ulFeatureID);
-		// 	break;
-
-		// case ENGOH_FEATURE:
-		// 	pvEntry = EngSM_HndIF_GetFeature(ENG_HND_OH, ulFeatureID);
-		// 	break;
 
 		default:
 			break;
@@ -605,12 +432,6 @@ void EngSM_CountIntervalTime(void)
 		{
 		}
 		
-#ifdef FR_HH_TARGETTEMP_NANODUST
-		if(fPrintChecked)
-		{
-			s_ulIntervalTimer[INTERVAL_TIME_NANODUST] = U32_SUM_CHK_WITH_OVF(s_ulIntervalTimer[INTERVAL_TIME_NANODUST], 10);
-		}
-#endif
 		/* To save the latest run time for get power off elapsed time */
 		if(ulEngState != ENGSM_STS_CHILD_ENGINE_SLEEP) 
 		{
@@ -696,10 +517,6 @@ BOOL EngSM_Main(void)
 	TMsgQ stRcvMsgQ = {0};
 	TEngState enNextState = ENG_ST_UNSPECIFIED;
 
-#ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-	EngTM_ETM_SaveTimeEvent((U32)EngSM_Main, 0);
-#endif
-
 	while(EngLib_TaskToISRReceiveEvent(&stRcvMsgQ))
 	{
 		DBG_ENGSM(ENG_DBG_STRING"SendMsg:%x,%d,%d", ENG_TICK, "SM", stRcvMsgQ.ulMsgID, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
@@ -720,14 +537,6 @@ BOOL EngSM_Main(void)
 	EngSM_SetStatus(ENGSM_STS_PARENT_ENGINE_STATE, enNextState);
 	
 	EngSM_CountIntervalTime();
-
-#ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-	EngTM_ETM_SaveTimeEvent((U32)EngSM_Main, 1);
-#endif
-
-#if defined(HR_ENGLIB_DEBUG_MESSAGE_HDD_SAVE) && !defined(C_HDD_LOG_SAVE_NEW)
-	EngLib_IF_ManagerForHDDLog();
-#endif
 	
 	return TRUE;
 }
@@ -775,10 +584,6 @@ U32 EngSM_GetStatus(U32 ulStatusID)
 
     /* Change Status ID for internal using */
     ulStatusID = STATUS_GET_INDEX(ulStatusID);
-
-    /* Get Status Value */
-    //pfnStatusInternalFunc = (TENGSM_STATUS_CALLBACK_F)s_apfnStatusFuncTable[ulStatusID];
-    //ulReturnValue = (*pfnStatusInternalFunc)(STATUS_GET, ulStatusID, 0);
 
     return ulReturnValue;
 }
@@ -854,7 +659,7 @@ BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue)
 		// 	&& ((ulNewValue == ENG_ST_WARMUP) || (ulNewValue == ENG_ST_ERROR))
 		// )
 		{
-			EngSM_HndIF_FollowDeviceStatus(ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
+			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
 			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_PH, ulStatusID, ulOldValue, ulNewValue);
 			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_IH, ulStatusID, ulOldValue, ulNewValue);	
 		}

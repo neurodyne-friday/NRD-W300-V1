@@ -17,21 +17,17 @@
  * @version		V0.1
  */
 
-#define	__ENGSM_MAIN_C__
+#define	__ENGFOC_MAIN_C__
 
 #include "Eng_CommonType.h"
-#include "EngAPP_FOC.h"
+#include "EngFOC_Main.h"
 
-/* Initilize the Engine System Manager infomation */
-static TEngSystemManager s_stSystemManager;
+/* Initilize the Engine FOC Manager information */
+static TEngFOCManager s_stFOCManager;
 
-static U32 s_ulEngSMMainTaskID;
-static U32 s_ulIntervalTimer[INTERVAL_TIME_MAX] = {0,0,0,0};
-static BOOL s_fIntervalTimerGetValid[INTERVAL_TIME_MAX] = {FALSE,FALSE,FALSE,FALSE};
-
-#define ENGSM_TASK_STACK_SIZE	1024
-#define ENGSM_TASK_PRIORITY		150
-
+static TJobProperty s_stJobCurrentControl;
+static TJobProperty s_stJobSpeedControl;
+static TJobProperty s_stJobPositionControl;
 
 /**
 * @brief
@@ -43,80 +39,35 @@ static BOOL s_fIntervalTimerGetValid[INTERVAL_TIME_MAX] = {FALSE,FALSE,FALSE,FAL
 * @remarks
 */
 
-BOOL EngAPP_Initialize(void)
+BOOL EngFOC_Initialize(void)
 {
-	TEngSystemManager *pstSystemManager = &s_stSystemManager;
+	TEngFOCManager *pstFOCManager = &s_stFOCManager;
 	
-	DBG_ENGSM(ENG_DBG_STRING"EngSM_Initialize", ENG_TICK, "SM");
+	DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 	
+    s_stJobCurrentControl = EngOS_CreateJobProperty(
+        "CurrentControlTask", 
+        EngFOC_Task_CurrentControl, 
+        JOB_RUNTYPE_Interrupt, 
+        0);
 
-    /* Initialize Engine System Manager Information Storage Variable */
-//	EngLib_MemorySet(pstSystemManager, 0, (sizeof(TEngSystemManager)));
+    s_stJobSpeedControl = EngOS_CreateJobProperty(
+        "SpeedControlTask", 
+        EngFOC_Task_SpeedControl, 
+        JOB_RUNTYPE_Cycle, 
+        1);
 
-	EngSM_Constructor(pstSystemManager);
+    s_stJobPositionControl = EngOS_CreateJobProperty(
+        "PositionControlTask", 
+        EngFOC_Task_PositionControl, 
+        JOB_RUNTYPE_Cycle, 
+        10);
 
-    /* Initialize MessageQ Information of Engine System Manager */
-	//EngSM_InitMessage(&pstSystemManager->stMsgQCB);
-	//EngSM_InitJobMessage(&pstSystemManager->stJobQCB);
-
-	/* Initialize the state, status, timing and page class for Engine System Manager */
-	//EngSM_InitState(pstSystemManager);
-
-	/* Create the Engine Component Handler */
-	EngSM_HndIF_CreateHandler();
-
-	/* Initialize the Engine Component(paper, image, heating, error, option) Handler */
-	EngSM_HndIF_Initialize();
-
-	/* Send the first event about power on */
-
-	if((EngSM_IF_GetDeviceStatus(ENGSM_STS_PARENT_ENGINE_STATE) == ENGSM_STS_CHILD_ENGINE_TEST)
-#if defined(HR_SM_SET_BOARD_CONFIG) && defined(HR_SM_SET_BOARD_CONFIG_PBA_MODE)
-//		|| ((EngCM_IF_IsUsingBoardConfiguration(BOARD_CONFIG_IDPTV3_MODE) == TRUE) && ((U16)EngCM_IF_GetBoardConfiguration(BOARD_CONFIG_IDPTV3_MODE) == C_SM_IDPTV3_MODE_INPUT))
-		|| ((EngCM_IF_IsUsingBoardConfiguration(BOARD_CONFIG_PBA_MODE) == TRUE)	&& (EngCM_IF_GetBoardConfiguration(BOARD_CONFIG_PBA_MODE) == C_SM_PBA_MODE_IO_INPUT))
-#endif
-	)
-	{
-		EngSM_SendEvent(ENG_EV_TEST_MODE_ON, NULL, 0, 0);
-	}
-	else if(EngSM_IF_GetDeviceStatus(ENGSM_STS_PARENT_ENGINE_STATE) == ENGSM_STS_CHILD_ENGINE_ERROR)
-	{
-		EngSM_HndIF_StartHandler(ENG_HND_EH, ERROR_NAME_ASSERT, NULL);
-	}	
-	else
-	{
-		EngSM_SendEvent(ENG_EV_POWER_ON, NULL, 0, 0);
-	}
-
-//	if(EngOS_OSALCreateTask("SM", EngSM_Main, 0, ENGSM_TASK_STACK_SIZE, ENGSM_TASK_PRIORITY, &s_ulEngSMMainTaskID))
-//	{
-//		ASSERT(0);
-//	}
-
-	EngSM_InitialIntervalTime();
-
-	pstSystemManager->fPowerOn = TRUE;
-	pstSystemManager->fEnterSleepP2Mode = FALSE;
+    EngOS_RegistryJob(&s_stJobCurrentControl);
+    EngOS_RegistryJob(&s_stJobSpeedControl);
+    EngOS_RegistryJob(&s_stJobPositionControl);
 
     return TRUE;
-}
-
-/**
-* @brief		
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks		
-*/
-void EngAPP_Constructor(TEngSystemManager *pstSystemManager)
-{
-	pstSystemManager->enPrevEngState					= ENG_ST_UNSPECIFIED;
-	pstSystemManager->enPrevStateBeforeSleep			= ENG_ST_UNSPECIFIED;
-	pstSystemManager->enEngState						= ENG_ST_UNSPECIFIED;
-	pstSystemManager->ulEvent							= ENG_EV_UNSPECIFIED;
-	pstSystemManager->ulReceivedEvent					= ENG_EV_UNSPECIFIED;
 }
 
 
@@ -138,7 +89,7 @@ void ADC_IRQHandler(void)
 
 
 // SVPWM 계산 함수
-void EngAPP_FOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc)
+void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc)
 {
     float Vref = sqrtf(v_alpha * v_alpha + v_beta * v_beta);
     float angle = atan2f(v_beta, v_alpha);  // -pi to pi
@@ -210,7 +161,7 @@ void EngAPP_FOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *T
 
 
 // 전류 제어 태스크 (높은 우선순위)
-void EngAPP_Task_CurrentControl(void *argument) 
+void EngFOC_Task_CurrentControl(void *argument) 
 {
     // 보정용 상수 및 변수
     const float CURRENT_SCALE = ... ;   // ADC 값 -> 전류(A) 변환 스케일
@@ -298,7 +249,7 @@ void EngAPP_Task_CurrentControl(void *argument)
 }
 
 // 속도 제어 태스크 (중간 우선순위, 예: 1kHz 주기)
-void EngAPP_Task_SpeedControl(void *argument) 
+void EngFOC_Task_SpeedControl(void *argument) 
 {
     const float Ts = 0.001f;          // 1kHz 주기 (초)
     const float Kp_speed = ... , Ki_speed = ...;
@@ -367,7 +318,7 @@ void EngAPP_Task_SpeedControl(void *argument)
 }
 
 // 위치 제어 태스크 (낮은 우선순위, 예: 100Hz 주기)
-void EngAPP_Task_PositionControl(void *argument) 
+void EngFOC_Task_PositionControl(void *argument)
 {
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = ... , Ki_pos = ...;
@@ -416,419 +367,3 @@ void EngAPP_Task_PositionControl(void *argument)
     }
 }
 
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-void EngSM_InitialIntervalTime(void)
-{
-	U32 ulIndex = 0;
-
-	for(ulIndex = 0; ulIndex < INTERVAL_TIME_MAX; ulIndex++)
-	{
-		s_ulIntervalTimer[ulIndex] = 0;
-		s_fIntervalTimerGetValid[ulIndex] = FALSE;
-	}
-}
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-void EngSM_CountIntervalTime(void)
-{
-	TEngSystemManager *pstSystemManager = &s_stSystemManager;	
-	U32	ulEngState = EngSM_IF_GetDeviceStatus(ENGSM_STS_PARENT_ENGINE_STATE);
-	static U32 ulPrevEngState = 0;
-	static U32 ulNonSleepModeCnt = 0;
-	static BOOL fPowerOnInt = TRUE;
-	static BOOL fRTCChecked = FALSE;
-	static BOOL fPrintChecked = FALSE;
-
-	if(fRTCChecked)
-	{
-		if(fPowerOnInt == TRUE)
-		{
-			U32 ulPowerOffTime = 0;//EngTM_IF_GetElapsedTime(RTCITEM_POWEROFF);
-
-			ulPowerOffTime = MINUTE_TO_MS(ulPowerOffTime);
-			s_ulIntervalTimer[INTERVAL_TIME_POWER_OFF] = ulPowerOffTime;								
-			s_ulIntervalTimer[INTERVAL_TIME_JOB] = ulPowerOffTime;
-
-			s_fIntervalTimerGetValid[INTERVAL_TIME_POWER_OFF] = TRUE;
-			s_fIntervalTimerGetValid[INTERVAL_TIME_JOB] = TRUE;
-			
-			fPowerOnInt = FALSE;
-			ulPrevEngState = ulEngState;
-			
-			DBG_ENGSM(ENG_DBG_STRING"Power Off ElapsedTime:%umin", ENG_TICK, "SM", MS_TO_MINUTE(ulPowerOffTime));
-			return;		
-		}
-			
-		if((ulPrevEngState != ENGSM_STS_CHILD_ENGINE_SLEEP) && (ulEngState == ENGSM_STS_CHILD_ENGINE_SLEEP))			//Sleep Entry
-		{
-			//EngTM_IF_SetCurrentTime(RTCITEM_SLEEP);
-			//EngTM_IF_SetCurrentTime(RTCITEM_POWEROFF);
-
-			s_ulIntervalTimer[INTERVAL_TIME_SLEEP] = 0;
-			s_fIntervalTimerGetValid[INTERVAL_TIME_SLEEP] = FALSE;
-
-			//DBG_LMS_DATE(ENG_DBG_STRING"SetSleepElapsedTime", ENG_TICK, "RTC");
-		}
-		else if((ulPrevEngState == ENGSM_STS_CHILD_ENGINE_SLEEP) && (ulEngState != ENGSM_STS_CHILD_ENGINE_SLEEP))		//Sleep Exit
-		{
-			U32 ulSleepElapsedTime = 0;//EngTM_IF_GetElapsedTime(RTCITEM_SLEEP);
-
-			//DBG_LMS_DATE(ENG_DBG_STRING"SleepElapsedTime:%umin", ENG_TICK, "RTC", ulSleepElapsedTime);
-			
-			ulSleepElapsedTime = MINUTE_TO_MS(ulSleepElapsedTime);
-			s_ulIntervalTimer[INTERVAL_TIME_SLEEP] = ulSleepElapsedTime;
-			s_ulIntervalTimer[INTERVAL_TIME_JOB] = (ulSleepElapsedTime > (MAX_U32 - s_ulIntervalTimer[INTERVAL_TIME_JOB])) ? MAX_U32 : s_ulIntervalTimer[INTERVAL_TIME_JOB] + ulSleepElapsedTime;
-			
-			s_fIntervalTimerGetValid[INTERVAL_TIME_SLEEP] = TRUE;
-		}
-		else if((ulPrevEngState == ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulEngState != ENGSM_STS_CHILD_ENGINE_PRINTING))	//Print Exit
-		{
-			s_ulIntervalTimer[INTERVAL_TIME_JOB] = 0;
-		}
-		else if((ulPrevEngState == ENGSM_STS_CHILD_ENGINE_WAITING) && (ulEngState != ENGSM_STS_CHILD_ENGINE_WAITING))	//Wait Exit
-		{
-		}
-		else if((ulEngState != ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulEngState != ENGSM_STS_CHILD_ENGINE_SLEEP))
-		{
-			s_ulIntervalTimer[INTERVAL_TIME_JOB] = U32_SUM_CHK_WITH_OVF(s_ulIntervalTimer[INTERVAL_TIME_JOB], 10);
-		}
-		else if(((ulEngState == ENGSM_STS_CHILD_ENGINE_WAITING) && (ulPrevEngState != ENGSM_STS_CHILD_ENGINE_WAITING))
-			|| ((ulEngState == ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulPrevEngState != ENGSM_STS_CHILD_ENGINE_PRINTING))
-		)
-		{
-		}
-
-		if((ulPrevEngState != ENGSM_STS_CHILD_ENGINE_STANDBY) && (ulEngState == ENGSM_STS_CHILD_ENGINE_STANDBY))
-		{
-			s_ulIntervalTimer[INTERVAL_TIME_READY] = 0;
-		}
-		else if(ulEngState == ENGSM_STS_CHILD_ENGINE_STANDBY)
-		{
-			s_ulIntervalTimer[INTERVAL_TIME_READY] = U32_SUM_CHK_WITH_OVF(s_ulIntervalTimer[INTERVAL_TIME_READY], 10);
-		}
-
-		if((ulPrevEngState == ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulEngState != ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulEngState != ENGSM_STS_CHILD_ENGINE_WAITING))
-		{
-		}
-		else if(ulEngState == ENGSM_STS_CHILD_ENGINE_PRINTING)
-		{
-			fPrintChecked = TRUE;
-		}
-		else if((ulPrevEngState == ENGSM_STS_CHILD_ENGINE_PRINTING) && (ulEngState == ENGSM_STS_CHILD_ENGINE_WAITING))
-		{
-		}
-		
-		/* To save the latest run time for get power off elapsed time */
-		if(ulEngState != ENGSM_STS_CHILD_ENGINE_SLEEP) 
-		{
-			if(++ulNonSleepModeCnt >= 5 * 60 * 100)			/* every 5minute */
-			{
-				//EngTM_IF_SetCurrentTime(RTCITEM_POWEROFF);
-
-				ulNonSleepModeCnt = 0;
-				//DBG_LMS_DATE(ENG_DBG_STRING"SetSleepElapsedTime2", ENG_TICK, "RTC");
-			}
-		}
-		else
-		{
-			ulNonSleepModeCnt = 0;
-		}
-		
-		ulPrevEngState = ulEngState;
-	}
-	else if(g_ulEngTickCnt >= 400)
-	{
-	 	fRTCChecked = TRUE;
-	}
-}
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-BOOL EngSM_IsIntervalTimeValid(TIntervalTimeType enType)
-{
-	BOOL fIntervalTimeValid = FALSE;
-
-	if(enType < INTERVAL_TIME_MAX)
-	{
-		fIntervalTimeValid = s_fIntervalTimerGetValid[enType];
-	}
-		
-	return fIntervalTimeValid;
-}
-
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-U32 EngSM_GetIntervalTime(TIntervalTimeType enType)
-{
-	U32 ulIntervalTime = 0;
-
-	if(enType < INTERVAL_TIME_MAX)
-	{
-		ulIntervalTime = s_ulIntervalTimer[enType];
-	}
-		
-//	DBG_ENGSM(ENG_DBG_STRING"ReturnIntervalTime[%d]:%dsec", ENG_TICK, "SM", enType, s_ulIntervalTimer/1000);
-
-	return ulIntervalTime;
-}
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-BOOL EngSM_Main(void)
-{
-	TEngSystemManager *pstSystemManager = &s_stSystemManager;
-	TMsgQCB *pstSystemMgrMsgQCB = &pstSystemManager->stMsgQCB;	/* Message Handler for Engine System Manager */
-	TMsgQ stRcvMsgQ = {0};
-	TEngState enNextState = ENG_ST_UNSPECIFIED;
-
-#ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-	EngTM_ETM_SaveTimeEvent((U32)EngSM_Main, 0);
-#endif
-
-	while(EngLib_TaskToISRReceiveEvent(&stRcvMsgQ))
-	{
-		DBG_ENGSM(ENG_DBG_STRING"SendMsg:%x,%d,%d", ENG_TICK, "SM", stRcvMsgQ.ulMsgID, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-		EngSM_SendEvent(stRcvMsgQ.ulMsgID, NULL, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-	}
-
-	/* Message Handler for Engine System Manager */
-	while(EngLib_ReceiveMsgQ(pstSystemMgrMsgQCB, &stRcvMsgQ))
-	{
-		;//EngSM_DispatchMessage(&stRcvMsgQ);
-	}
-
-	/* Execute the state activity of Engine System Manager */
-	enNextState = EngLib_StateActivity(&pstSystemManager->stStateMachine, pstSystemManager);
-	enNextState = EngLib_StateGuardConditionActivity(&pstSystemManager->stStateMachine, pstSystemManager);
-
-	/* Update the Status DB of Engine System Manager */
-	EngSM_SetStatus(ENGSM_STS_PARENT_ENGINE_STATE, enNextState);
-	
-	EngSM_CountIntervalTime();
-
-#ifdef FR_TESTMGR_ELAPSED_TIME_MEASURE
-	EngTM_ETM_SaveTimeEvent((U32)EngSM_Main, 1);
-#endif
-
-#if defined(HR_ENGLIB_DEBUG_MESSAGE_HDD_SAVE) && !defined(C_HDD_LOG_SAVE_NEW)
-	EngLib_IF_ManagerForHDDLog();
-#endif
-	
-	return TRUE;
-}
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-BOOL EngSM_InitStatus(void)
-{
-	DBG_ENGSM(ENG_DBG_STRING"SM_InitStatus", ENG_TICK, "SM");
-	
-	return TRUE;
-}
-
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-U32 EngSM_GetStatus(U32 ulStatusID)
-{
-    U32 ulReturnValue = 0;
-    //TENGSM_STATUS_CALLBACK_F pfnStatusInternalFunc = NULL;
-
-    /* Get Status ID & Check Invalid Range */
-    if((ulStatusID == ENGSM_STS_PARENT_UNSPECIFIED)
-		|| (STATUS_GET_INDEX(ulStatusID) > ARRAY_SIZE(s_apfnStatusFuncTable))
-	)
-    {
-		DBG_ENGSM(ENG_DBG_STRING"Warning!! (Invalid ID Value=%x)", ENG_TICK, "SM",ulStatusID);
-        
-        return STATUS_INITIAL_VAL;
-    }
-
-    /* Change Status ID for internal using */
-    ulStatusID = STATUS_GET_INDEX(ulStatusID);
-
-    /* Get Status Value */
-    //pfnStatusInternalFunc = (TENGSM_STATUS_CALLBACK_F)s_apfnStatusFuncTable[ulStatusID];
-    //ulReturnValue = (*pfnStatusInternalFunc)(STATUS_GET, ulStatusID, 0);
-
-    return ulReturnValue;
-}
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue)
-{
-    U32 ulChangedStatusID = 0;
-    U32 ulStatusAttibute = 0;
-    U32 ulOldValue = 0;
-    TENGSM_STATUS_CALLBACK_F pfnStatusInternalFunc = NULL;
-
-	if(ulStatusID == ENGSM_STS_PARENT_UNSPECIFIED)
-	{
-		DBG_ENGSM(ENG_DBG_STRING"Warning!! (Invalid ID Value=%x)", ENG_TICK, "SM",ulStatusID);
-		return FALSE;
-	}
-
-    /* Get Status ID & Check Invalid Range */
-    if(STATUS_GET_INDEX(ulStatusID) > ARRAY_SIZE(s_apfnStatusFuncTable))
-    {
-		DBG_ENGSM(ENG_DBG_STRING"Warning!! (Invalid ID Value=%x)", ENG_TICK, "SM",ulStatusID);
-
-        return STATUS_INITIAL_VAL;
-    }
-
-    /* Change Status ID for internal using */
-    ulChangedStatusID = STATUS_GET_INDEX(ulStatusID);
-
-    /*
-     * Check whether status value is changed or not
-     * If not changed, just return with debug message
-     * At this time, return value is TRUE
-     */
-    pfnStatusInternalFunc = (TENGSM_STATUS_CALLBACK_F)s_apfnStatusFuncTable[ulChangedStatusID];
-    ulOldValue = (*pfnStatusInternalFunc)(STATUS_GET, ulChangedStatusID, 0);
-
-    /* Get Status Attribute for internal using */
-    ulStatusAttibute = STATUS_GET_ATTRIBUTE(ulStatusID);
-
-    if(ulStatusAttibute == STATUS_ATTR_VALUE)
-    {
-	    if(ulOldValue == ulNewValue)
-	    {
-//	        DBG_ENGSM("\r\n[EngSM] Warning!! Setting Value is identical!! (value=%x)", ulOldValue);
-	        return TRUE;
-	    }
-    }
-	else if(ulStatusAttibute == STATUS_ATTR_INFO)
-	{
-	    if(ulOldValue & ulNewValue)
-	    {
-//	        DBG_ENGSM("\r\n[EngSM] Warning!! Setting Value is identical!! (value=%x)", ulOldValue);
-	        return TRUE;
-	    }
-	}
-
-    /* Call specific function */
-    if((*pfnStatusInternalFunc)(STATUS_SET, ulChangedStatusID, ulNewValue))
-	{
-	    /* If callback is registered on specific status id, then it would be called */
-	    //EngSM_FollowDeviceStatus(ulStatusID, ulOldValue, ulNewValue);
-
-		// if((ulStatusID == ENGSM_STS_PARENT_ENGINE_STATE) 
-		// 	&& ((ulNewValue == ENG_ST_WARMUP) || (ulNewValue == ENG_ST_ERROR))
-		// )
-		{
-			EngSM_HndIF_FollowDeviceStatus(ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
-			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_PH, ulStatusID, ulOldValue, ulNewValue);
-			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_IH, ulStatusID, ulOldValue, ulNewValue);	
-		}
-		// else
-		// {
-		// 	EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_1MS|ENGVM_ARG_INFINITE, 1*T1MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
-		//     EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_2MS|ENGVM_ARG_INFINITE, 3*T2MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_PH, ulStatusID, ulOldValue, ulNewValue);
-		//     EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_2MS|ENGVM_ARG_INFINITE, 5*T2MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_IH, ulStatusID, ulOldValue, ulNewValue);
-		// }
-	}
-
-    return TRUE;
-}
-
-
-/**
-* @brief
-*
-* @param[in]		None
-* @range
-* @retval			None
-* @global
-* @remarks
-*/
-U32 EngSM_EngineState(U32 ulSetGet, U32 ulDeviceStatusID, U32 ulValue)
-{
-    U32 ulReturnValue = FALSE;
-
-    switch(ulSetGet)
-    {
-        case STATUS_SET:
-            if(STATUS_GET_INDEX(ulValue) <= STATUS_GET_INDEX(ENGSM_STS_CHILD_ENGINE_POWERON))
-            {
-				//s_ulEngDeviceStatus = ulValue;
-				ulReturnValue = TRUE;
-            }
-            else
-            {
-//				DBG_ENGSM("\r\n[EngSM_Status] Warning!! Invalid value (RW:%d, ID:%x, Value:%x)", ulSetGet, ulDeviceStatusID, ulValue);
-            }
-            break;
-
-        case STATUS_GET:
-			//ulReturnValue = s_ulEngDeviceStatus;
-			ulReturnValue = TRUE;
-            break;
-
-        default:
-            break;
-	}
-
-    return ulReturnValue;
-}

@@ -431,21 +431,16 @@ typedef enum
 #include "EngCM_DebugConfig.h"
 
 #include "EngLib_Types.h"
-#include "EngVM_Types.h"
 
 #include "Eng_FeatureType.h"
 #include "Eng_MessageType.h"
 #include "Eng_StatusType.h"
-#include "EngIFSvc_Types.h"
-#include "EngTimerSvc_Types.h"
 #include "EngSM_Types.h"
-#include "EngTM_Types.h"
 
 #include "EngCM_FeatureConfig.h"
 #include "EngCM_SystemConfig.h"
 #include "EngCM_SystemMgrConfig.h"
 #include "EngCM_DriverConfig.h"
-#include "EngCM_MotionHndConfig.h"
 #include "EngCM_ErrorHndConfig.h"
 #include "EngCM_HalConfig.h"
 
@@ -453,9 +448,9 @@ typedef enum
 #include "EngLib_Main.h"
 #include "EngLog_IF.h"
 #include "EngOS_Lib.h"
-#include "EngVM_Lib.h"
 
-#include "EngEH_Types.h"
+#include "EngFOC_Types.h"
+//#include "EngEH_Types.h"
 
 #include "EngDrv_IF.h"
 
