@@ -22,6 +22,15 @@
 
 #include "Eng_CommonType.h"
 
+#define M_PI 3.14159265358979323846
+#define ENC_CPR 16384 // 2^14
+
+#define INT_MAX_D 10
+#define INT_MAX_Q 1
+#define W_INT_MAX 30
+#define POS_INT_MAX 10
+
+#define V_BUS 24.0 //24v or 48v?
 
 /*
  * @brief Structure Definitions
@@ -48,6 +57,8 @@ typedef struct _TEngFOCManager
 	F32 fVBeta;			// 역변환 후 β축 전압
 	U16 uwADCPhaseA;	// ADC DMA로부터 얻은 샘플 값
 	U16 uwADCPhaseB;	// ADC DMA로부터 얻은 샘플 값
+
+	F32 fRefOmega;		// 속도 레퍼런스
 
 } TEngFOCManager;
 

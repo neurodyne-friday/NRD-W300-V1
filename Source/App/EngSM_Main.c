@@ -56,10 +56,6 @@ BOOL EngSM_Initialize(void)
 
 	EngSM_Constructor(pstSystemManager);
 
-    /* Initialize MessageQ Information of Engine System Manager */
-	//EngSM_InitMessage(&pstSystemManager->stMsgQCB);
-	//EngSM_InitJobMessage(&pstSystemManager->stJobQCB);
-
 	/* Initialize the state, status, timing and page class for Engine System Manager */
 	//EngSM_InitState(pstSystemManager);
 
@@ -88,11 +84,6 @@ BOOL EngSM_Initialize(void)
 	{
 		EngSM_SendEvent(ENG_EV_POWER_ON, NULL, 0, 0);
 	}
-
-//	if(EngOS_OSALCreateTask("SM", EngSM_Main, 0, ENGSM_TASK_STACK_SIZE, ENGSM_TASK_PRIORITY, &s_ulEngSMMainTaskID))
-//	{
-//		ASSERT(0);
-//	}
 
 	EngSM_InitialIntervalTime();
 
@@ -268,43 +259,10 @@ void *EngSM_GetFeature(U32 ulFeatureID)
 					pvEntry = (void *)&s_stSystemManager;
 					// TEngSystemManager *pstSystemManager = (TEngSystemManager *)EngSM_IF_GetFeature(ENGSM_GET_MANAGER);
 					break;					
-				case ENGSM_FEATURE_FASTFPOT:
-					//pvEntry = (void *)&pstSystemManager->stFastFpotCtrl;
-					// TFastFpotCtrl *pstFastFpotCtrl = (TFastFpotCtrl *)EngSM_IF_GetFeature(ENGSM_FEATURE_FASTFPOT);
-					break;
-				case ENGSM_FEATURE_SLEEP2PRINT:
-					//pvEntry = (void *)&pstSystemManager->stSleepToPrintCtrl;
-					// TSleepToPrintCtrl *pstSleepToPrintCtrl = (TSleepToPrintCtrl *)EngSM_IF_GetFeature(ENGSM_FEATURE_SLEEP2PRINT);
-					break;
-				case ENGSM_FEATURE_POWER:
-					//pvEntry = (void *)&pstSystemManager->stSoftPowerCtrl;
-					// TSoftPowerCtrl *pstSoftPowerCtrl = (TSoftPowerCtrl *)EngSM_IF_GetFeature(ENGSM_FEATURE_POWER);
-					break;
-				case ENGSM_FEATURE_MICOM:
-					//pvEntry = (void *)&pstSystemManager->stMicomCtrl;
-					// TMicomCtrl *pstMicomCtrl = (TMicomCtrl *)EngSM_IF_GetFeature(ENGSM_FEATURE_MICOM);
-					break;
-					
 				default:
 					break;
 			}
 			break;
-
-		case ENGMH_FEATURE:
-			{
-				static void *s_pvMotionFeature[ENGMH_FEATURE_MAX_COUNT] = {0};
-
-				U32 ulFeatureIndex = FEATURE_GET_INDEX(ulFeatureID);
-
-				if(s_pvMotionFeature[ulFeatureIndex] == NULL)
-				{
-					s_pvMotionFeature[ulFeatureIndex] = EngSM_HndIF_GetFeature(ENG_HND_MH, ulFeatureID);
-				}
-
-				pvEntry = s_pvMotionFeature[ulFeatureIndex];
-			}
-			break;
-
 		default:
 			break;
 	}

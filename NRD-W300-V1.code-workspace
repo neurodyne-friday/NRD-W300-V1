@@ -18,7 +18,8 @@
 			"stdlib.h": "c",
 			"engcm_errorhndconfig.h": "c",
 			"engsm_types.h": "c",
-			"eng_statustype.h": "c"
+			"eng_statustype.h": "c",
+			"cmath": "cpp"
 		}
 	}
 }

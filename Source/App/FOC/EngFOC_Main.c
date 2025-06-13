@@ -21,6 +21,7 @@
 
 #include "Eng_CommonType.h"
 #include "EngFOC_Main.h"
+#include <math.h>
 
 /* Initilize the Engine FOC Manager information */
 static TEngFOCManager s_stFOCManager;
@@ -74,11 +75,14 @@ BOOL EngFOC_Initialize(void)
 // ADC 변환 완료 인터럽트 (혹은 DMA Half-Transfer Complete ISR)
 void ADC_IRQHandler(void) 
 {
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
     //BaseType_t xHigherPTWoken = pdFALSE;
 
     // ADC 값 읽기 (예: ADC1=PhaseA, ADC2=PhaseB)
-    adc_val_phaseA = ADC1->DR;
-    adc_val_phaseB = ADC2->DR;
+    //adc_val_phaseA = ADC1->DR;
+    //adc_val_phaseB = ADC2->DR;
+    pstFOCManager->uwADCPhaseA = ADC1->DR;
+    pstFOCManager->uwADCPhaseB = ADC2->DR;
     
 	// 전류제어 태스크에 신호 (세마포어나 직접 알림)
     //vTaskNotifyGiveFromISR(CurrentControlTaskHandle, &xHigherPTWoken);
@@ -163,6 +167,8 @@ void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, f
 // 전류 제어 태스크 (높은 우선순위)
 void EngFOC_Task_CurrentControl(void *argument) 
 {
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+
     // 보정용 상수 및 변수
     const float CURRENT_SCALE = ... ;   // ADC 값 -> 전류(A) 변환 스케일
     const float INV_SQRT3 = 0.5774f;    // 1/√3
@@ -182,8 +188,10 @@ void EngFOC_Task_CurrentControl(void *argument)
         EngOS_PendingJob(NULL);
         
         // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
-        i_a = (float)adc_val_phaseA * CURRENT_SCALE;
-        i_b = (float)adc_val_phaseB * CURRENT_SCALE;
+        //i_a = (float)adc_val_phaseA * CURRENT_SCALE;
+        //i_b = (float)adc_val_phaseB * CURRENT_SCALE;
+        i_a = (float)pstFOCManager->uwADCPhaseA * CURRENT_SCALE;
+        i_b = (float)pstFOCManager->uwADCPhaseB * CURRENT_SCALE;
         // i_c는 KCL로 계산
         i_c = -(i_a + i_b);
         
@@ -192,13 +200,16 @@ void EngFOC_Task_CurrentControl(void *argument)
         i_beta  = INV_SQRT3 * (i_a + 2 * i_b);
         
         // Park 변환: αβ -> dq (현재 전기각 theta_e는 엔코더로부터 업데이트 된 상태)
-        float cosT = arm_cos_f32(theta_e);
-        float sinT = arm_sin_f32(theta_e);
+        //float cosT = arm_cos_f32(theta_e);
+        //float sinT = arm_sin_f32(theta_e);
+        float cosT = arm_cos_f32(pstFOCManager->fThetaE);
+        float sinT = arm_sin_f32(pstFOCManager->fThetaE);
         i_d =  i_alpha * cosT + i_beta * sinT;
         i_q = -i_alpha * sinT + i_beta * cosT;
         
         // d축 전류 제어 (PI)
-        err_d = i_d_ref - i_d;
+        //err_d = i_d_ref - i_d;
+        err_d = pstFOCManager->fRefId - i_d;
         int_d += err_d;                        // 적분항 누적
 
         // Anti-windup: 적분 한계 처리
@@ -210,10 +221,12 @@ void EngFOC_Task_CurrentControl(void *argument)
         {
             int_d = -INT_MAX_D;
         }
-        v_d_out = Kp_d * err_d + Ki_d * int_d;
+        //v_d_out = Kp_d * err_d + Ki_d * int_d;
+        pstFOCManager->fOutVd = Kp_d * err_d + Ki_d * int_d;
         
         // q축 전류 제어 (PI)
-        err_q = i_q_ref - i_q;
+        //err_q = i_q_ref - i_q;
+        err_q = pstFOCManager->fRefIq - i_q;
         int_q += err_q;
 
         if(int_q > INT_MAX_Q) 
@@ -224,20 +237,23 @@ void EngFOC_Task_CurrentControl(void *argument)
         {
             int_q = -INT_MAX_Q;
         }
-        v_q_out = Kp_q * err_q + Ki_q * int_q;
+        //v_q_out = Kp_q * err_q + Ki_q * int_q;
+        pstFOCManager->fOutVq = Kp_q * err_q + Ki_q * int_q;
         
         // (선택) 역기전력 보상 및 decoupling 보상
         // v_d_out += -(omega_e * Lq) * i_q; 
         // v_q_out +=  (omega_e * Ld) * i_d + omega_e * lambda_m;
         
         // 역 Park 변환: dq -> αβ 전압
-        v_alpha = v_d_out * cosT - v_q_out * sinT;
-        v_beta  = v_d_out * sinT + v_q_out * cosT;
+        //v_alpha = v_d_out * cosT - v_q_out * sinT;
+        //v_beta  = v_d_out * sinT + v_q_out * cosT;
+        pstFOCManager->fVAlpha = pstFOCManager->fOutVd * cosT - pstFOCManager->fOutVq * sinT;
+        pstFOCManager->fVBeta  = pstFOCManager->fOutVd * sinT + pstFOCManager->fOutVq * cosT;
         
         // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
         float Ta, Tb, Tc;
         //SVPWM_CalcDuty(v_alpha, v_beta, Vbus, &Ta, &Tb, &Tc);
-        EngAPP_FOC_SVPWM_CalcDuty(v_alpha, v_beta, 24.0, &Ta, &Tb, &Tc);
+        EngFOC_SVPWM_CalcDuty(pstFOCManager->fVAlpha, pstFOCManager->fVBeta, V_BUS, &Ta, &Tb, &Tc);
 
         // SVPWM_CalcDuty: 참조 전압을 기준으로 섹터 결정 후 T1, T2, T0 계산, 0.0~1.0의 Ta, Tb, Tc 듀티 반환
         TIM1->CCR1 = Ta * TIM1->ARR;
@@ -251,6 +267,8 @@ void EngFOC_Task_CurrentControl(void *argument)
 // 속도 제어 태스크 (중간 우선순위, 예: 1kHz 주기)
 void EngFOC_Task_SpeedControl(void *argument) 
 {
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    
     const float Ts = 0.001f;          // 1kHz 주기 (초)
     const float Kp_speed = ... , Ki_speed = ...;
     static float int_w = 0.0f;
@@ -258,7 +276,8 @@ void EngFOC_Task_SpeedControl(void *argument)
     float omega_meas;                 // 측정 속도
     float pos, prev_pos = 0.0f;
     
-    TickType_t lastWakeTime = xTaskGetTickCount();
+    //TickType_t lastWakeTime = xTaskGetTickCount();
+    U32 lastWakeTime = EngOS_GetSysTick();
 
     for(;;) 
     {
@@ -310,16 +329,20 @@ void EngFOC_Task_SpeedControl(void *argument)
             torque_cmd = -iq_max;
         }
 
-        i_q_ref = torque_cmd;
+        //i_q_ref = torque_cmd;
+        pstFOCManager->fRefIq = torque_cmd;
         // (i_d_ref는 여전히 0으로 유지)
         
-        vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
+        //vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
+        EngOS_WaitingJob(&s_stJobSpeedControl, lastWakeTime);
     }
 }
 
 // 위치 제어 태스크 (낮은 우선순위, 예: 100Hz 주기)
 void EngFOC_Task_PositionControl(void *argument)
 {
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = ... , Ki_pos = ...;
     static float int_pos = 0.0f;
@@ -360,7 +383,8 @@ void EngFOC_Task_PositionControl(void *argument)
         
         // 상위 속도 참조 갱신
         // (속도 제어 태스크의 omega_ref에 반영하거나 전역 변수로 공유)
-        omega_ref = omega_cmd;
+        //omega_ref = omega_cmd;
+        pstFOCManager->fRefOmega = omega_cmd;
         
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
         EngOS_WaitingJob(NULL, lastWakeTime);
