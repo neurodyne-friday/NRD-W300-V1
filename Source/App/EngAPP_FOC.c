@@ -123,15 +123,17 @@ void EngAPP_Constructor(TEngSystemManager *pstSystemManager)
 // ADC 변환 완료 인터럽트 (혹은 DMA Half-Transfer Complete ISR)
 void ADC_IRQHandler(void) 
 {
-    BaseType_t xHigherPTWoken = pdFALSE;
+    //BaseType_t xHigherPTWoken = pdFALSE;
 
     // ADC 값 읽기 (예: ADC1=PhaseA, ADC2=PhaseB)
     adc_val_phaseA = ADC1->DR;
     adc_val_phaseB = ADC2->DR;
     
 	// 전류제어 태스크에 신호 (세마포어나 직접 알림)
-    vTaskNotifyGiveFromISR(CurrentControlTaskHandle, &xHigherPTWoken);
-    portYIELD_FROM_ISR(xHigherPTWoken);
+    //vTaskNotifyGiveFromISR(CurrentControlTaskHandle, &xHigherPTWoken);
+
+    EngOS_NotifyFromISR(NULL);
+    //portYIELD_FROM_ISR(xHigherPTWoken);
 }
 
 
@@ -225,7 +227,8 @@ void EngAPP_Task_CurrentControl(void *argument)
     for(;;) 
     {
         // ADC 인터럽트로부터 알림 대기 (블로킹 대기)
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        EngOS_PendingJob(NULL);
         
         // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
         i_a = (float)adc_val_phaseA * CURRENT_SCALE;

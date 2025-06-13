@@ -56,6 +56,13 @@ typedef struct _TJobProperty
     void* pfnJobFunc;
     TJobRunType eRunType;
     U32 ulIntervalTime; // msec
+
+#if defined(ENGOS_CMSIS_V2)
+    osThreadId_t stJobHandle;
+#elif defined(ENGOS_FREERTOS)
+    TaskHandle_t stJobHandle;
+#elif defined(ENGOS_UCOS)
+#endif    
 } TJobProperty;
 
 

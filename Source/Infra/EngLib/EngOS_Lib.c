@@ -68,6 +68,7 @@ void EngOS_PendingJob(TJobProperty* pJobProperty)
 		return;
 
 #if defined(ENGOS_CMSIS_V2)
+	osThreadFlagsWait(0x01, osFlagsWaitAny, osWaitForever);
 #elif defined(ENGOS_FREERTOS)
 	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 #elif defined(ENGOS_UCOS)
@@ -95,6 +96,16 @@ void EngOS_WaitingJob(TJobProperty* pJobProperty, U32 ulPreviousWakeTime)
 #endif
 }
 
+void EngOS_NotifyFromISR(TJobProperty* pJobProperty)
+{
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
+    BaseType_t xHigherPTWoken = pdFALSE;
+	vTaskNotifyGiveFromISR(pJobProperty->stJobHandle, &xHigherPTWoken);
+	portYIELD_FROM_ISR(xHigherPTWoken);
+#elif defined(ENGOS_UCOS)
+#endif
+}
 
 void EngOS_Task_Create(void)
 {

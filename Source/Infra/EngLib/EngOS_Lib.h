@@ -34,6 +34,7 @@ EXTERN void EngOS_LibraryEntry(void);
 EXTERN void EngOS_RegistryJob(TJobProperty* pJobProperty); // Registery Task/Thread/Etc...
 EXTERN void EngOS_PendingJob(TJobProperty* pJobProperty); // Use this in front of main routine
 EXTERN void EngOS_WaitingJob(TJobProperty* pJobProperty, U32 ulPreviousWakeTime); // Use this after main routine
+EXTERN void EngOS_NotifyFromISR(TJobProperty* pJobProperty);
 EXTERN U32 EngOS_GetSysTick(void);
 
 EXTERN void EngOS_StartJobs(void);
