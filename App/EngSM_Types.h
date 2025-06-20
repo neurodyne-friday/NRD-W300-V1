@@ -116,7 +116,7 @@ typedef struct _TEngSystemManager
 
 	BOOL fWaitEndJobStopTrayFlag;	
 
-	BOOL fEnterSleepP2Mode;
+	BOOL fEnterSleepMode;
 	BOOL fPower24VOnOffFlag;
 
 	U32 (*pfnCheckContinuousCondition)(struct _TEngSystemManager *pstThis);

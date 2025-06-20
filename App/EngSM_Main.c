@@ -94,7 +94,7 @@ BOOL EngSM_Initialize(void)
 	EngOS_StartJobs();
 
 	pstSystemManager->fPowerOn = TRUE;
-	pstSystemManager->fEnterSleepP2Mode = FALSE;
+	pstSystemManager->fEnterSleepMode = FALSE;
 
     return TRUE;
 }
