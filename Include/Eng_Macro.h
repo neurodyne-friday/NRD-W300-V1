@@ -161,14 +161,14 @@ typedef volatile unsigned long          REG32;
                                       
 /*******************************  Device and OS dependency  *******************************/
 
-//#define STM32F4XX_SUPPORT
-#define STM32F7XX_SUPPORT
+#define STM32F4XX_SUPPORT
+//#define STM32F7XX_SUPPORT
 
-#ifdef STM32F4XX_SUPPORT
+#if defined(STM32F4XX_SUPPORT)
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal_flash.h"
-//#include "stm32f4xx_hal_can.h"
-#include "stm32f4xx_hal_can_legacy.h"
+#include "stm32f4xx_hal_can.h"
+//#include "stm32f4xx_hal_can_legacy.h"
 #elif defined(STM32F7XX_SUPPORT)
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal_flash.h"

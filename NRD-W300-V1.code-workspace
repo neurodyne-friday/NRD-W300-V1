@@ -19,7 +19,9 @@
 			"engcm_errorhndconfig.h": "c",
 			"engsm_types.h": "c",
 			"eng_statustype.h": "c",
-			"cmath": "cpp"
+			"cmath": "cpp",
+			"freertos.h": "c",
+			"task.h": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}
