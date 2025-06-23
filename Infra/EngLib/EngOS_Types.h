@@ -33,10 +33,11 @@
 #elif defined(ENGOS_FREERTOS)
     #include "FreeRTOS.h"
     #include "task.h"
+    #include "semphr.h"
 
-    typedef osMutexId_t         MutexId;
-    typedef osSemaphoreId_t     SemaphoreId;
-    typedef osMessageQueueId_t  MsgQueueId;
+    typedef SemaphoreHandle_t   MutexId;
+    typedef SemaphoreHandle_t   SemaphoreId;
+    typedef SemaphoreHandle_t   MsgQueueId;
 #elif defined(ENGOS_UCOS)
     #define EngOS_Mutex OS_MUTEX 
     #define EngOS_Semaphore OS_SEMAPHORE

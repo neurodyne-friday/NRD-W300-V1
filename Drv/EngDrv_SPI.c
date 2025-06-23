@@ -173,10 +173,10 @@ void EngDrv_SPI_WriteByte(TSPI* pstSPI, u8 ubByte)
 	}
 }
 
-u8 EngDrv_SPI_ReadByte(TSPI* pstSPI)
+U8 EngDrv_SPI_ReadByte(TSPI* pstSPI)
 {
-	u8 ubIndex;
-	u8 ubData = 0;
+	U8 ubIndex;
+	U8 ubData = 0;
 
 	if(!pstSPI)
 		return 0;
@@ -210,7 +210,7 @@ u8 EngDrv_SPI_ReadByte(TSPI* pstSPI)
 	return ubData;
 }
 
-u8 EngDrv_SPI_PortCtrl(TSPI* pstSPI, TSPIPortType ePortType, u8 ubSetValue)
+U8 EngDrv_SPI_PortCtrl(TSPI* pstSPI, TSPIPortType ePortType, u8 ubSetValue)
 {
 	U8 ubRet = 0;
 

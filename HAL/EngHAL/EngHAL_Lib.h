@@ -28,7 +28,6 @@
 #endif
 
 #include "Eng_CommonType.h"
-#include "stm32f7xx_hal.h"
 #include "EngHAL_Types.h"
 
 
