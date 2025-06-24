@@ -28,11 +28,32 @@
 #endif
 
 #include "EngHAL_Types.h"
-#include "EngHAL_GPIO_STM32F7xx.h"
-#include "EngHAL_ADC_STM32F7xx.h"
-#include "EngHAL_CAN_STM32F7xx.h"
-#include "EngHAL_ETH_STM32F7xx.h"
-#include "EngHAL_UART_STM32F7xx.h"
+
+#if defined(STM32F4XX_SUPPORT)
+	#include "EngHAL_GPIO_STM32F4xx.h"
+	#include "EngHAL_ADC_STM32F4xx.h"
+	#include "EngHAL_CAN_STM32F4xx.h"
+	#include "EngHAL_UART_STM32F4xx.h"
+#elif defined(STM32F7XX_SUPPORT)
+	#include "EngHAL_GPIO_STM32F7xx.h"
+	#include "EngHAL_ADC_STM32F7xx.h"
+	#include "EngHAL_CAN_STM32F7xx.h"
+	#include "EngHAL_ETH_STM32F7xx.h"
+	#include "EngHAL_UART_STM32F7xx.h"
+#endif
+
+ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
+ADC_HandleTypeDef hadc3;
+
+CAN_HandleTypeDef hcan1;
+
+SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi3;
+
+TIM_HandleTypeDef htim1;
+
+UART_HandleTypeDef huart2;
 
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalGPIOPorting astHalGPOTbl[] =

@@ -34,20 +34,26 @@ target_include_directories(stm32cubemx INTERFACE
     ../../HAL/EngChip/Drivers/CMSIS/Device/ST/STM32F4xx/Include
     ../../HAL/EngChip/Drivers/CMSIS/Include
     ../../HAL/EngHAL
+    ../../HAL/EngHAL/STM32F4xx
 )
 
 target_sources(stm32cubemx INTERFACE
     ../../App/EngSM_Main.c
     ../../App/FOC/EngFOC_Main.c
+
     ../../Drv/EngDrv_IF.c
+    ../../Drv/EngDrv_ADC.c
     ../../Drv/EngDrv_CAN.c
     ../../Drv/EngDrv_Encoder.c
     ../../Drv/EngDrv_UART.c
     ../../Drv/EngHAL_Interrupt.c
+    
     ../../HAL/EngChip/Core/Src/main.c
     ../../HAL/EngChip/Core/Src/freertos.c
     ../../HAL/EngChip/Core/Src/stm32f4xx_it.c
     ../../HAL/EngChip/Core/Src/stm32f4xx_hal_msp.c
+    ../../HAL/EngChip/Core/Src/system_stm32f4xx.c
+
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c
@@ -69,7 +75,7 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
-    ../../HAL/EngChip/Core/Src/system_stm32f4xx.c
+
     ../../OS/FreeRTOS/Source/croutine.c
     ../../OS/FreeRTOS/Source/event_groups.c
     ../../OS/FreeRTOS/Source/list.c
@@ -80,6 +86,7 @@ target_sources(stm32cubemx INTERFACE
     ../../OS/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
     ../../OS/FreeRTOS/Source/portable/MemMang/heap_4.c
     ../../OS/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
+    
     ../../HAL/EngChip/Core/Src/sysmem.c
     ../../HAL/EngChip/Core/Src/syscalls.c
     ../../HAL/EngChip/startup_stm32f446xx.s

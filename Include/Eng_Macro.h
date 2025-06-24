@@ -166,8 +166,9 @@ typedef volatile unsigned long          REG32;
 
 #if defined(STM32F4XX_SUPPORT)
 #include "stm32f4xx.h"
-#include "stm32f4xx_hal_flash.h"
+#include "stm32f4xx_hal_adc.h"
 #include "stm32f4xx_hal_can.h"
+#include "stm32f4xx_hal_flash.h"
 //#include "stm32f4xx_hal_can_legacy.h"
 #elif defined(STM32F7XX_SUPPORT)
 #include "stm32f7xx.h"
