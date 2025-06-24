@@ -30,6 +30,13 @@ static TJobProperty s_stJobCurrentControl;
 static TJobProperty s_stJobSpeedControl;
 static TJobProperty s_stJobPositionControl;
 
+/* ------------------
+  Temporary 
+------------------ */
+#include "stm32f4xx.h"
+#define TIM_ENCODER TIM2
+
+
 /**
 * @brief
 *

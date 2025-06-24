@@ -92,12 +92,12 @@ void EngHAL_Interrupt_TimerInt(U8 ubTimIntNum)
         // BLDC Motor Speed Control
         if(g_vu32GlobalTime % 250 == 0)
 		{
-            TMotor* pstMotor_FLNDM = EngDrv_IF_GetMotor(MOTOR_NAME_ML_FLNDM);
-            TMotor* pstMotor_RPNDM = EngDrv_IF_GetMotor(MOTOR_NAME_RJP_RPNDM);
+            //TMotor* pstMotor_FLNDM = EngDrv_IF_GetMotor(MOTOR_NAME_ML_FLNDM);
+            //TMotor* pstMotor_RPNDM = EngDrv_IF_GetMotor(MOTOR_NAME_RJP_RPNDM);
 
 			//BLDCCheckCurrentLineSpeed(250);
-            EngDrv_Motor_BLDC_CheckCurrentLineSpeed(pstMotor_RPNDM, 250);
-            EngDrv_Motor_BLDC_CheckCurrentLineSpeed(pstMotor_FLNDM, 250);
+            //EngDrv_Motor_BLDC_CheckCurrentLineSpeed(pstMotor_RPNDM, 250);
+            //EngDrv_Motor_BLDC_CheckCurrentLineSpeed(pstMotor_FLNDM, 250);
 		}
     }
     else if(ubTimIntNum == 7)
@@ -111,18 +111,18 @@ void EngHAL_Interrupt_External(U8 ubExtIntNum)
     if(ubExtIntNum == 9)
     {
         // ML BLDC Wheel Count & Hall Count ???
-        TMotor* pstMotor_FLNDM = EngDrv_IF_GetMotor(MOTOR_NAME_ML_FLNDM);
+        //TMotor* pstMotor_FLNDM = EngDrv_IF_GetMotor(MOTOR_NAME_ML_FLNDM);
 
-        pstMotor_FLNDM->ulCurWheelCount++;
-        pstMotor_FLNDM->aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_A]++;
+        //pstMotor_FLNDM->ulCurWheelCount++;
+        //pstMotor_FLNDM->aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_A]++;
     }
     else if(ubExtIntNum == 15)
     {
         // RJP BLDC Wheel Count & Hall Count ???
-        TMotor* pstMotor_RPNDM = EngDrv_IF_GetMotor(MOTOR_NAME_RJP_RPNDM);
+        //TMotor* pstMotor_RPNDM = EngDrv_IF_GetMotor(MOTOR_NAME_RJP_RPNDM);
 
-        pstMotor_RPNDM->ulCurWheelCount++;
-        pstMotor_RPNDM->aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_A]++;
+        //pstMotor_RPNDM->ulCurWheelCount++;
+        //pstMotor_RPNDM->aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_A]++;
     }
 }
 

@@ -225,9 +225,9 @@ __IAR_FT void __iar_uint32_write(void const *ptr, uint32_t val)
 #ifndef __UNALIGNED_UINT32   /* deprecated */
 #pragma language=save
 #pragma language=extended
-__packed struct  __iar_u32 { uint32_t v; };
+__packed struct  __iar_U32 { uint32_t v; };
 #pragma language=restore
-#define __UNALIGNED_UINT32(PTR) (((struct __iar_u32 *)(PTR))->v)
+#define __UNALIGNED_UINT32(PTR) (((struct __iar_U32 *)(PTR))->v)
 #endif
 
 #ifndef   __USED

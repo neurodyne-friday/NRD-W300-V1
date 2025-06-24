@@ -123,7 +123,7 @@ void EngDrv_IF_Initialize()
     }
 
     // TFlash* pstFlash = NULL;
-    // for(u32 ulDeviceKey = DEVICE_FLASH_KEY_BASE; ulDeviceKey < FLASH_NAME_MAX; ulDeviceKey++)
+    // for(U32 ulDeviceKey = DEVICE_FLASH_KEY_BASE; ulDeviceKey < FLASH_NAME_MAX; ulDeviceKey++)
     // {
     //     pstEeprom = EngDrv_IF_GetFlash(ulDeviceKey);
     //     if(pstFlash != NULL)
@@ -348,10 +348,10 @@ TEeprom *EngDrv_IF_GetEeprom(U32 ulDeviceKey)
     return NULL;
 }
 
-// TFlash *EngDrv_IF_GetFlash(u32 ulDeviceKey)
+// TFlash *EngDrv_IF_GetFlash(U32 ulDeviceKey)
 // {
 //     TFlash *pstFlash = NULL;
-//     u32 ulIndex = 0;
+//     U32 ulIndex = 0;
 
 //     if(ulDeviceKey >= DEVICE_FLASH_KEY_BASE && ulDeviceKey < FLASH_NAME_MAX)
 //     {

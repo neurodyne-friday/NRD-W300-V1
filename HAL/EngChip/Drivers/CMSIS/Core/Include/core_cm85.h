@@ -4609,7 +4609,7 @@ __STATIC_INLINE uint32_t ITM_SendChar (uint32_t ch)
   if (((ITM->TCR & ITM_TCR_ITMENA_Msk) != 0UL) &&      /* ITM enabled */
       ((ITM->TER & 1UL               ) != 0UL)   )     /* ITM Port #0 enabled */
   {
-    while (ITM->PORT[0U].u32 == 0UL)
+    while (ITM->PORT[0U].U32 == 0UL)
     {
       __NOP();
     }

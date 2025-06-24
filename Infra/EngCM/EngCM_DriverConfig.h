@@ -242,13 +242,12 @@ EXTERN TUART s_astDeviceUARTTbl[DEVICE_UART_MAX_NUMS];
 
 #ifdef __ENGDRV_IF_C__
 #include "EngDrv_CAN.h"
-#include "EngDrv_Ethernet.h"
+//#include "EngDrv_Ethernet.h"
 #include "EngDrv_Sensor.h"
-#include "EngDrv_Motor.h"
+//#include "EngDrv_Motor.h"
 #include "EngDrv_ADC.h"
 #include "EngDrv_Encoder.h"
-#include "EngDrv_Solenoid.h"
-#include "EngDrv_EEPROM.h"
+//#include "EngDrv_EEPROM.h"
 #include "EngDrv_Flash.h"
 #include "EngDrv_SPI.h"
 #include "EngDrv_UART.h"

@@ -210,7 +210,7 @@ U8 EngDrv_SPI_ReadByte(TSPI* pstSPI)
 	return ubData;
 }
 
-U8 EngDrv_SPI_PortCtrl(TSPI* pstSPI, TSPIPortType ePortType, u8 ubSetValue)
+u8 EngDrv_SPI_PortCtrl(TSPI* pstSPI, TSPIPortType ePortType, u8 ubSetValue)
 {
 	U8 ubRet = 0;
 

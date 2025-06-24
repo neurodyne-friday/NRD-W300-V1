@@ -158,7 +158,7 @@ static void _arm_radix4_butterfly_q15_mve(
     /*
      * start of Last stage process
      */
-    uint32x4_t vecScGathAddr = vld1q_u32 ((uint32_t*)strides);
+    uint32x4_t vecScGathAddr = vld1q_U32 ((uint32_t*)strides);
     vecScGathAddr = vecScGathAddr + (uint32_t) pSrc;
 
     /*

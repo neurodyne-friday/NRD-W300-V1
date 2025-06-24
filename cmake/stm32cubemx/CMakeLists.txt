@@ -39,13 +39,9 @@ target_include_directories(stm32cubemx INTERFACE
 target_sources(stm32cubemx INTERFACE
     ../../App/EngSM_Main.c
     ../../App/FOC/EngFOC_Main.c
-    ../../Drv/EngDrv_ADC.c
+    ../../Drv/EngDrv_IF.c
     ../../Drv/EngDrv_CAN.c
     ../../Drv/EngDrv_Encoder.c
-    ../../Drv/EngDrv_Flash.c
-    ../../Drv/EngDrv_IF.c
-    ../../Drv/EngDrv_Sensor.c
-    ../../Drv/EngDrv_SPI.c
     ../../Drv/EngDrv_UART.c
     ../../Drv/EngHAL_Interrupt.c
     ../../HAL/EngChip/Core/Src/main.c
