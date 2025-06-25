@@ -33,6 +33,7 @@
 	#include "EngHAL_GPIO_STM32F4xx.h"
 	#include "EngHAL_ADC_STM32F4xx.h"
 	#include "EngHAL_CAN_STM32F4xx.h"
+	#include "EngHAL_TIM_STM32F4xx.h"
 	#include "EngHAL_UART_STM32F4xx.h"
 #elif defined(STM32F7XX_SUPPORT)
 	#include "EngHAL_GPIO_STM32F7xx.h"

@@ -61,9 +61,6 @@ void EngLib_IF_Entry(TInitialStepType enInitStep)
 		/* Initialize the Engine Common Library */
 		EngLib_MainEntry();
 			
-		/* Initialize the Engine VM(Virtual Machine) Library */
-		EngVM_LibraryEntry();
-
 		/* Initialize the Engine Footer Library */
 #ifdef FR_ENGLIB_FOOTER
 		EngFooter_LibraryEntry();

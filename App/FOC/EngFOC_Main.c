@@ -75,6 +75,8 @@ BOOL EngFOC_Initialize(void)
     EngOS_RegistryJob(&s_stJobSpeedControl);
     EngOS_RegistryJob(&s_stJobPositionControl);
 
+    EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", EngFOC_NotifyBy_ADC_IRQHandler);
+
     return TRUE;
 }
 
