@@ -24,6 +24,7 @@
 #include "task.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Eng_CommonType.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -198,6 +199,7 @@ void ADC_IRQHandler(void)
   HAL_ADC_IRQHandler(&hadc3);
   /* USER CODE BEGIN ADC_IRQn 1 */
 
+  EngLib_IF_GetLibrary()->pfnFOCNotifyByADCIRQ();
   /* USER CODE END ADC_IRQn 1 */
 }
 

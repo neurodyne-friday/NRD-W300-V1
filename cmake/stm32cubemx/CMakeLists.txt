@@ -48,6 +48,8 @@ target_sources(stm32cubemx INTERFACE
     ../../Drv/EngDrv_UART.c
     ../../Drv/EngHAL_Interrupt.c
 
+    ../../Infra/EngLib/EngLib_IF.c
+    ../../Infra/EngLib/EngLib_Main.c
     ../../Infra/EngLib/EngOS_Lib.c
     
     ../../HAL/EngChip/Core/Src/main.c

@@ -210,6 +210,7 @@ typedef void (*TENGLIB_LMS_VM_OVER_EA_F)(U32, void*);
 typedef void (*TENGLIB_LMS_VM_CALL_EA_F)(U32, void*);
 typedef void (*TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F)(void);
 
+typedef void (*TENGLIB_FOC_NOTIFY_BY_ADC_IRQ_F)(void);
 
 
 typedef struct
@@ -226,6 +227,8 @@ typedef struct
 	TENGLIB_LMS_VM_OVER_EA_F pfnCheckVMCountOverEA;
 	TENGLIB_LMS_VM_CALL_EA_F pfnVMCallByTaskEA;	
 	TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F pfnLMSTaskLogBufferFullEA;
+
+	TENGLIB_FOC_NOTIFY_BY_ADC_IRQ_F pfnFOCNotifyByADCIRQ;
 } TEngLib;
 
 #ifdef __ENGLIB_IF_C__

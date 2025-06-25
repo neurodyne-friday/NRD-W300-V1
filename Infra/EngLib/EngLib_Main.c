@@ -2395,7 +2395,7 @@ void EngLib_CallBackWatchDog(void)
 	/* Call handler */
 	if(stEngLib.pfnSMHndIFSendEvent)
 	{
-		stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
+		//stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
 	}
 	
 	EngLib_DumpStack(NULL);
@@ -2508,7 +2508,7 @@ void __rt_trap(ErrBlock *err, U32 *pulRegs)
 	U32 ulCnt = 0;
 
 	/* Change To Error Mode */
-	stEngLib.pfnSMHndIFStartHandler(ENG_HND_EH, ERROR_NAME_EXCEPTION, NULL);
+	//stEngLib.pfnSMHndIFStartHandler(ENG_HND_EH, ERROR_NAME_EXCEPTION, NULL);
 
 	/* Error Code 
 	0x80000020 - Integer divide by zero.
@@ -2533,7 +2533,7 @@ void __rt_trap(ErrBlock *err, U32 *pulRegs)
 	/* Call handler */
 	if(stEngLib.pfnSMHndIFSendEvent)
 	{
-		stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
+		//stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
 	}
 
 	DBG_EMERGENCY("\r\n------------------ RT_Trap_End ------------------");										DBG_EMERGENCY_UART("\r\n------------------ RT_Trap_End ------------------");

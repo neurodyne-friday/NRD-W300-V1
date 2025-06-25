@@ -80,7 +80,7 @@ BOOL EngFOC_Initialize(void)
 
 
 // ADC 변환 완료 인터럽트 (혹은 DMA Half-Transfer Complete ISR)
-void EngFOC_Callback_ADC_IRQHandler(void) 
+void EngFOC_NotifyBy_ADC_IRQHandler(void) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
     //BaseType_t xHigherPTWoken = pdFALSE;

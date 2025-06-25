@@ -23,7 +23,7 @@
 
 #include "EngLib_Types.h"
 #include "EngLog_IF.h"
-#include "EngVM_Lib.h"
+//#include "EngVM_Lib.h"
 
 #include "EngLib_IF.h"
 
@@ -40,6 +40,7 @@ static TEngLibCallBackFunc astCallBackFuncList[] =
 	{	"pfnCheckVMCountOverEA",	(U32*)&stEngLib.pfnCheckVMCountOverEA		},
 	{	"pfnVMCallByTaskEA",		(U32*)&stEngLib.pfnVMCallByTaskEA			},		
 	{	"pfnLMSTaskLogBufferFullEA",(U32*)&stEngLib.pfnLMSTaskLogBufferFullEA	},
+	{	"pfnFOCNotifyByADCIRQ",		(U32*)&stEngLib.pfnFOCNotifyByADCIRQ		},
 };
 
 void EngLib_IF_Entry(TInitialStepType enInitStep)
@@ -109,7 +110,7 @@ BOOL EngLib_IF_Assert(U32 ulValue, U8 *pubFileName, U32 ulLine)
 
 		if(stEngLib.pfnSMHndIFStartHandler != NULL)
 		{
-			stEngLib.pfnSMHndIFStartHandler(ENG_HND_EH, ERROR_NAME_ENG_ASSERT, NULL);
+			//stEngLib.pfnSMHndIFStartHandler(ENG_HND_EH, ERROR_NAME_ENG_ASSERT, NULL);
 		}
 		
 		if((0 == C_ENG_MAJOR_VERSION) || (1 == C_ENG_MAJOR_VERSION))
