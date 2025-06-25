@@ -17,26 +17,26 @@
  * @version 	V0.1
  */
 
-#ifndef __ENGHAL_CAN_STM32F7XX_H__
-#define __ENGHAL_CAN_STM32F7XX_H__
+#ifndef __ENGHAL_CAN_H__
+#define __ENGHAL_CAN_H__
 
 #undef EXTERN
-#ifdef __ENGHAL_CAN_STM32F7XX_C__
+#ifdef __ENGHAL_CAN_C__
 #define EXTERN
 #else
 #define EXTERN extern
 #endif
 
 
-EXTERN BOOL EngHAL_CAN_Init_F7xx(THalCANPorting *pstHalPorting);
-EXTERN void EngHAL_CAN_EnableInterrupt_F7xx(THalCANPorting *pstHalPorting);
-EXTERN void EngHAL_CAN_DisableInterrupt_F7xx(THalCANPorting *pstHalPorting);
-EXTERN void EngHAL_CAN_Transmit_F7xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ubLength);
-EXTERN void EngHAL_CAN_Receive_F7xx(THalCANPorting *pstHalPorting);
-EXTERN void EngHAL_CAN_SendByte_F7xx(THalCANPorting *pstHalPorting, U8 ubData);
-EXTERN U8 EngHAL_CAN_GetByte_F7xx(THalCANPorting *pstHalPorting);
-EXTERN BOOL EngHAL_CAN_IsRxFIFOEmpty_F7xx(THalCANPorting *pstHalPorting);
-EXTERN BOOL EngHAL_CAN_IsTxFIFOEmpty_F7xx(THalCANPorting *pstHalPorting);
+EXTERN BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting);
+EXTERN void EngHAL_CAN_EnableInterrupt_F4xx(THalCANPorting *pstHalPorting);
+EXTERN void EngHAL_CAN_DisableInterrupt_F4xx(THalCANPorting *pstHalPorting);
+EXTERN void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ubLength);
+EXTERN void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting);
+EXTERN void EngHAL_CAN_SendByte_F4xx(THalCANPorting *pstHalPorting, U8 ubData);
+EXTERN U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting);
+EXTERN BOOL EngHAL_CAN_IsRxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
+EXTERN BOOL EngHAL_CAN_IsTxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
 
 
-#endif //__ENGHAL_CAN_STM32F7XX_H__
+#endif //__ENGHAL_CAN_H__

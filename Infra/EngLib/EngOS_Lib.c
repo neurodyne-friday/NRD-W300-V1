@@ -23,7 +23,7 @@
 #include "EngLib_Types.h"
 //#include "EngOS_Types.h"
 #include "EngOS_Lib.h"
-#include "EngIFSvc_IF.h"
+//#include "EngIFSvc_IF.h"
 
 /**************************
 * Task Variables
@@ -218,7 +218,6 @@ void EngOS_ReleaseSemaphore(SemaphoreId id)
 void EngOS_DWT_Init(void)
 {
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // TRCENA bit activate
-	DWT->LAR = 0xC5ACCE55; 
     DWT->CYCCNT = 0;                                // Cycle-counter initialize
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // Cycle-counter activate
 }

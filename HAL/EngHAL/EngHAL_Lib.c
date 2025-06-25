@@ -29,7 +29,7 @@
 
 
 RTC_HandleTypeDef hrtc;
-TIM_HandleTypeDef htim1;
+//TIM_HandleTypeDef htim1;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 uint8_t txData[] = "Hello from UART3!\r\n";

@@ -47,12 +47,18 @@ target_sources(stm32cubemx INTERFACE
     ../../Drv/EngDrv_Encoder.c
     ../../Drv/EngDrv_UART.c
     ../../Drv/EngHAL_Interrupt.c
+
+    ../../Infra/EngLib/EngOS_Lib.c
     
     ../../HAL/EngChip/Core/Src/main.c
     ../../HAL/EngChip/Core/Src/freertos.c
     ../../HAL/EngChip/Core/Src/stm32f4xx_it.c
     ../../HAL/EngChip/Core/Src/stm32f4xx_hal_msp.c
     ../../HAL/EngChip/Core/Src/system_stm32f4xx.c
+
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_ADC_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_CAN_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_TIM_STM32F4xx.c
 
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c
