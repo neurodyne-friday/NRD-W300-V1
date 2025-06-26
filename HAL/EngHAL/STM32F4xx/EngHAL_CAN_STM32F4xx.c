@@ -57,40 +57,40 @@ THalCANTxBuffer astHalCANTxBuffer[CAN_CHANNEL_COUNT];
   */
 BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
 {
-    CAN_HandleTypeDef* pHndCAN = NULL;
+    CAN_HandleTypeDef* pstCANHandle = NULL;
     CAN_FilterTypeDef sFilterConfig;
 
     if(pstHalPorting == NULL)
         return FALSE;
 
-    if(pstHalPorting->ulChannel == 0)
+    if(pstHalPorting->ulChannel == 1)
     {
-        pHndCAN = &hcan1;
-        pHndCAN->Instance = CAN1;
+        pstCANHandle = &hcan1;
+        pstCANHandle->Instance = CAN1;
     }
-    else if(pstHalPorting->ulChannel == 1)
+    else if(pstHalPorting->ulChannel == 2)
     {
-        pHndCAN = &hcan2;
-        pHndCAN->Instance = CAN2;
+        pstCANHandle = &hcan2;
+        pstCANHandle->Instance = CAN2;
     }
     else
     {
         return FALSE;
     }
 
-    pHndCAN->Init.Prescaler = 18;//16;
-    pHndCAN->Init.Mode = CAN_MODE_NORMAL;
-    pHndCAN->Init.SyncJumpWidth = CAN_SJW_1TQ;
-    pHndCAN->Init.TimeSeg1 = CAN_BS1_1TQ;
-    pHndCAN->Init.TimeSeg2 = CAN_BS2_1TQ;
-    pHndCAN->Init.TimeTriggeredMode = DISABLE;
-    pHndCAN->Init.AutoBusOff = DISABLE;
-    pHndCAN->Init.AutoWakeUp = DISABLE;
-    pHndCAN->Init.AutoRetransmission = DISABLE;
-    pHndCAN->Init.ReceiveFifoLocked = DISABLE;
-    pHndCAN->Init.TransmitFifoPriority = DISABLE;
+    pstCANHandle->Init.Prescaler = 18;//16;
+    pstCANHandle->Init.Mode = CAN_MODE_NORMAL;
+    pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
+    pstCANHandle->Init.TimeSeg1 = CAN_BS1_1TQ;
+    pstCANHandle->Init.TimeSeg2 = CAN_BS2_1TQ;
+    pstCANHandle->Init.TimeTriggeredMode = DISABLE;
+    pstCANHandle->Init.AutoBusOff = DISABLE;
+    pstCANHandle->Init.AutoWakeUp = DISABLE;
+    pstCANHandle->Init.AutoRetransmission = DISABLE;
+    pstCANHandle->Init.ReceiveFifoLocked = DISABLE;
+    pstCANHandle->Init.TransmitFifoPriority = DISABLE;
 
-    if (HAL_CAN_Init(pHndCAN) != HAL_OK)
+    if (HAL_CAN_Init(pstCANHandle) != HAL_OK)
     {
         Error_Handler();
     }
@@ -108,7 +108,7 @@ BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
     sFilterConfig.SlaveStartFilterBank = 14;
 
     // Set filter
-    if (HAL_CAN_ConfigFilter(pHndCAN, &sFilterConfig) != HAL_OK)
+    if (HAL_CAN_ConfigFilter(pstCANHandle, &sFilterConfig) != HAL_OK)
     {
         Error_Handler();
     }

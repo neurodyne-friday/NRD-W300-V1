@@ -43,37 +43,6 @@
 	#include "EngHAL_UART_STM32F7xx.h"
 #endif
 
-#ifdef __ENGHAL_ADC_C__
-ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
-ADC_HandleTypeDef hadc3;
-#else
-EXTERN ADC_HandleTypeDef hadc1;
-EXTERN ADC_HandleTypeDef hadc2;
-EXTERN ADC_HandleTypeDef hadc3;
-#endif
-
-//CAN_HandleTypeDef hcan1;
-
-#ifdef __ENGHAL_SPI_C__
-SPI_HandleTypeDef hspi1;
-SPI_HandleTypeDef hspi3;
-#else
-EXTERN SPI_HandleTypeDef hspi1;
-EXTERN SPI_HandleTypeDef hspi3;
-#endif
-
-#ifdef __ENGHAL_TIM_C__
-TIM_HandleTypeDef htim1;
-#else
-EXTERN TIM_HandleTypeDef htim1;
-#endif
-
-#ifdef __ENGHAL_TIM_C__
-UART_HandleTypeDef huart2;
-#else
-EXTERN UART_HandleTypeDef huart2;
-#endif
 
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalGPIOPorting astHalGPOTbl[] =

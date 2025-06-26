@@ -1,5 +1,5 @@
 /**
- * @file		EngHAL_UART_STM32F7xx.c
+ * @file		EngHAL_UART_STM32F4xx.c
  * @brief		This main code for HAL CAN Component Library.
  *
  * <b> Copyright 2024 by Neurodyne Inc. All rights reserved.</b>
@@ -18,10 +18,10 @@
  */
 
 
-#define __ENGHAL_UART_STM32F7XX_C__
+#define __ENGHAL_UART_C__
 
 #include "Eng_CommonType.h"
-#include "EngHAL_UART_STM32F7xx.h"
+#include "EngHAL_UART_STM32F4xx.h"
 
 
 /**
@@ -58,14 +58,19 @@ THalUARTTxBuffer astHalUARTTxBuffer[UART_CHANNEL_COUNT];
   * @param None
   * @retval None
   */
-BOOL EngHAL_UART_Init_F7xx(THalUARTPorting *pstHalPorting)
+BOOL EngHAL_UART_Init_F4xx(THalUARTPorting *pstHalPorting)
 {
     UART_HandleTypeDef* pUartHandle = NULL;
 
     if(pstHalPorting == NULL)
         return FALSE;
 
-    if(pstHalPorting->ulChannel == 3)
+    if(pstHalPorting->ulChannel == 2)
+    {
+        pUartHandle = &huart2;
+        pUartHandle->Instance = USART2;
+    }
+    else if(pstHalPorting->ulChannel == 3)
     {
         pUartHandle = &huart3;
         pUartHandle->Instance = USART3;
@@ -87,21 +92,35 @@ BOOL EngHAL_UART_Init_F7xx(THalUARTPorting *pstHalPorting)
     pUartHandle->Init.Mode = UART_MODE_TX_RX;
     pUartHandle->Init.HwFlowCtl = UART_HWCONTROL_NONE;
     pUartHandle->Init.OverSampling = UART_OVERSAMPLING_16;
-    pUartHandle->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-    pUartHandle->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
     if (HAL_UART_Init(pUartHandle) != HAL_OK)
     {
         Error_Handler();
     }
+
+    huart2.Instance = USART2;
+    huart2.Init.BaudRate = 115200;
+    huart2.Init.WordLength = UART_WORDLENGTH_8B;
+    huart2.Init.StopBits = UART_STOPBITS_1;
+    huart2.Init.Parity = UART_PARITY_NONE;
+    huart2.Init.Mode = UART_MODE_TX_RX;
+    huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+
+    if (HAL_UART_Init(&huart2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    return TRUE;
 }
 
-void EngHAL_UART_Transmit_F7xx(THalUARTPorting *pstHalPorting, U8 pubData[], U16 uwLength)
+void EngHAL_UART_Transmit_F4xx(THalUARTPorting *pstHalPorting, U8 pubData[], U16 uwLength)
 {
     UART_HandleTypeDef* pUartHandle = NULL;
 
     if(pstHalPorting == NULL)
-        return FALSE;
+        return ;
 
     if(pstHalPorting->ulChannel == 3)
     {
@@ -119,7 +138,7 @@ void EngHAL_UART_Transmit_F7xx(THalUARTPorting *pstHalPorting, U8 pubData[], U16
     HAL_UART_Transmit(pUartHandle, pubData, uwLength, HAL_MAX_DELAY);
 }
 
-void EngHAL_UART_Receive_F7xx(THalUARTPorting *pstHalPorting)
+void EngHAL_UART_Receive_F4xx(THalUARTPorting *pstHalPorting)
 {
 
 }

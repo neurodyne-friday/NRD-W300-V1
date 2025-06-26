@@ -227,10 +227,12 @@ void SystemClock_Config(void)
   */
 static void MX_ADC1_Init(void)
 {
+  // Below code will be configured in EngCM_HalConfig.h
+  THalADCPorting* pstHalADCPorting;
+  pstHalADCPorting->enChipType = HAL_CHIP_STM32F4xx;
+  pstHalADCPorting->ulChannel = 1;
 
-  // temporary
-  EngHAL_ADC_Init_F4xx(NULL);
-
+  EngHAL_ADC_Init_F4xx(pstHalADCPorting);
 }
 
 /**
@@ -240,22 +242,12 @@ static void MX_ADC1_Init(void)
   */
 static void MX_ADC2_Init(void)
 {
+  // Below code will be configured in EngCM_HalConfig.h
+  THalADCPorting* pstHalADCPorting;
+  pstHalADCPorting->enChipType = HAL_CHIP_STM32F4xx;
+  pstHalADCPorting->ulChannel = 2;
 
-  /* USER CODE BEGIN ADC2_Init 0 */
-
-  /* USER CODE END ADC2_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC2_Init 1 */
-
-  /* USER CODE END ADC2_Init 1 */
-
- 
-  /* USER CODE BEGIN ADC2_Init 2 */
-
-  /* USER CODE END ADC2_Init 2 */
-
+  EngHAL_ADC_Init_F4xx(pstHalADCPorting);
 }
 
 /**
@@ -265,22 +257,12 @@ static void MX_ADC2_Init(void)
   */
 static void MX_ADC3_Init(void)
 {
+  // Below code will be configured in EngCM_HalConfig.h
+  THalADCPorting* pstHalADCPorting;
+  pstHalADCPorting->enChipType = HAL_CHIP_STM32F4xx;
+  pstHalADCPorting->ulChannel = 3;
 
-  /* USER CODE BEGIN ADC3_Init 0 */
-
-  /* USER CODE END ADC3_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC3_Init 1 */
-
-  /* USER CODE END ADC3_Init 1 */
-
-  
-  /* USER CODE BEGIN ADC3_Init 2 */
-
-  /* USER CODE END ADC3_Init 2 */
-
+  EngHAL_ADC_Init_F4xx(pstHalADCPorting);
 }
 
 /**
@@ -416,30 +398,13 @@ static void MX_TIM1_Init(void)
   */
 static void MX_USART2_UART_Init(void)
 {
+  // Below code will be configured in EngCM_HalConfig.h
+  THalUARTPorting* pstHalUartPorting;
+  pstHalUartPorting->enChipType = HAL_CHIP_STM32F4xx;
+  pstHalUartPorting->ulBaudRate = 115200;
+  pstHalUartPorting->ulChannel = 2;
 
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
+  EngHAL_UART_Init_F4xx(pstHalUartPorting);
 }
 
 /**

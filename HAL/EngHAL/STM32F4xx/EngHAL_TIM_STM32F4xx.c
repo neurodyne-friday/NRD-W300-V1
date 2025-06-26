@@ -22,6 +22,7 @@
 #include "Eng_CommonType.h"
 #include "EngHAL_TIM_STM32F4xx.h"
 
+TIM_HandleTypeDef htim1;
 
 /**
   * @brief TIM Interface Functions

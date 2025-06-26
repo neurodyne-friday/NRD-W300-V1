@@ -87,8 +87,8 @@ typedef struct _THalETHTxBuffer
 	U8 pubData[ETH_TX_DATA_SIZE];
 } THalETHTxBuffer;
 
-THalETHRxBuffer astHalCANRxBuffer[ETH_CHANNEL_COUNT];
-THalETHTxBuffer astHalCANTxBuffer[ETH_CHANNEL_COUNT];
+THalETHRxBuffer astHalETHRxBuffer[ETH_CHANNEL_COUNT];
+THalETHTxBuffer astHalETHTxBuffer[ETH_CHANNEL_COUNT];
 
 
 BOOL EngHAL_ETH_Init_F7xx(THalETHPorting *pstHalPorting)
