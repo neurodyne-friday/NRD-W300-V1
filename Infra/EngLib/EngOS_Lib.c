@@ -36,6 +36,8 @@ QueueHandle_t xQueue;
 #elif defined(ENGOS_UCOS)
 #endif
 
+TOSTaskManager g_stOSTaskManager;
+
 /**************************/
 
 
@@ -44,7 +46,7 @@ void EngOS_DWT_Init(void); // will move to HAL layer
 
 void EngOS_LibraryEntry(void)
 {
-
+	g_stOSTaskManager.ubUsedCount = 0;
 }
 
 void EngOS_RegistryJob(TJobProperty* pJobProperty)
@@ -105,6 +107,37 @@ void EngOS_NotifyFromISR(TJobProperty* pJobProperty)
 	portYIELD_FROM_ISR(xHigherPTWoken);
 #elif defined(ENGOS_UCOS)
 #endif
+}
+
+TJobProperty* EngOS_CreateJobProperty(U8* pubName, void* pfnFunc, TJobRunType eRunType, U32 ulInterval)
+{
+	if(g_stOSTaskManager.ubUsedCount >= OS_TASK_MAX_SIZE)
+	{
+		return NULL;
+	}
+
+	TJobProperty* pstJobProperty = &g_stOSTaskManager.astTaskProperties[g_stOSTaskManager.ubUsedCount];
+	pstJobProperty->pubName = pubName;
+	pstJobProperty->pfnJobFunc = pfnFunc;
+	pstJobProperty->eRunType = eRunType;
+	pstJobProperty->ulIntervalTime = ulInterval;
+
+	g_stOSTaskManager.ubUsedCount++;
+
+	return pstJobProperty;
+}
+
+TJobProperty* EngOS_GetJobProperty(U8* pubName)
+{
+	for(U8 ubIndex = 0; ubIndex < g_stOSTaskManager.ubUsedCount; ubIndex++)
+	{
+		if(strcmp(pubName, g_stOSTaskManager.astTaskProperties[ubIndex].pubName) == 0)
+		{
+			return &g_stOSTaskManager.astTaskProperties[ubIndex];
+		}
+	}
+
+	return NULL;
 }
 
 void EngOS_Task_Create(void)

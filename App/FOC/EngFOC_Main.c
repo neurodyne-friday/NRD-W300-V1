@@ -26,10 +26,6 @@
 /* Initilize the Engine FOC Manager information */
 static TEngFOCManager s_stFOCManager;
 
-static TJobProperty s_stJobCurrentControl;
-static TJobProperty s_stJobSpeedControl;
-static TJobProperty s_stJobPositionControl;
-
 /* ------------------
   Temporary 
 ------------------ */
@@ -50,30 +46,30 @@ static TJobProperty s_stJobPositionControl;
 BOOL EngFOC_Initialize(void)
 {
 	TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    TJobProperty* pstJobProperty = NULL;
 	
 	DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 	
-    s_stJobCurrentControl = EngOS_CreateJobProperty(
+    pstJobProperty = EngOS_CreateJobProperty(
         "CurrentControlTask", 
         EngFOC_Task_CurrentControl, 
         JOB_RUNTYPE_Interrupt, 
         0);
+    EngOS_RegistryJob(pstJobProperty);
 
-    s_stJobSpeedControl = EngOS_CreateJobProperty(
+    pstJobProperty = EngOS_CreateJobProperty(
         "SpeedControlTask", 
         EngFOC_Task_SpeedControl, 
         JOB_RUNTYPE_Cycle, 
         1);
+    EngOS_RegistryJob(pstJobProperty);
 
-    s_stJobPositionControl = EngOS_CreateJobProperty(
+    pstJobProperty = EngOS_CreateJobProperty(
         "PositionControlTask", 
         EngFOC_Task_PositionControl, 
         JOB_RUNTYPE_Cycle, 
         10);
-
-    EngOS_RegistryJob(&s_stJobCurrentControl);
-    EngOS_RegistryJob(&s_stJobSpeedControl);
-    EngOS_RegistryJob(&s_stJobPositionControl);
+    EngOS_RegistryJob(pstJobProperty);
 
     EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", EngFOC_NotifyBy_ADC_IRQHandler);
 
@@ -177,7 +173,8 @@ void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, f
 void EngFOC_Task_CurrentControl(void *argument) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TJobProperty *pstJobProperty = &s_stJobCurrentControl;
+    //TJobProperty *pstJobProperty = &s_stJobCurrentControl;
+    TJobProperty *pstJobProperty = EngOS_GetJobProperty("CurrentControlTask");
 
     // 보정용 상수 및 변수
     const float CURRENT_SCALE = 0.005;  // ADC 값 -> 전류(A) 변환 스케일
@@ -278,7 +275,8 @@ void EngFOC_Task_CurrentControl(void *argument)
 void EngFOC_Task_SpeedControl(void *argument) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TJobProperty *pstJobProperty = &s_stJobSpeedControl;
+    //TJobProperty *pstJobProperty = &s_stJobSpeedControl;
+    TJobProperty *pstJobProperty = EngOS_GetJobProperty("SpeedControlTask");
     
     const float Ts = 0.001f;          // 1kHz 주기 (초)
     const float Kp_speed = 0.1, Ki_speed = 0.02;
@@ -353,7 +351,8 @@ void EngFOC_Task_SpeedControl(void *argument)
 void EngFOC_Task_PositionControl(void *argument)
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TJobProperty *pstJobProperty = &s_stJobPositionControl;
+    //TJobProperty *pstJobProperty = &s_stJobPositionControl;
+    TJobProperty *pstJobProperty = EngOS_GetJobProperty("PositionControlTask");
 
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = 0.5, Ki_pos = 0.05;

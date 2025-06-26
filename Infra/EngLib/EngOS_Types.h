@@ -66,6 +66,17 @@ typedef struct _TJobProperty
 #endif    
 } TJobProperty;
 
+/*
+ * @brief Structure Definitions
+ */
 
+#define OS_TASK_MAX_SIZE    10
+
+typedef struct _TOSTaskManager
+{
+    TJobProperty astTaskProperties[OS_TASK_MAX_SIZE];
+    U8 ubUsedCount;
+
+} TOSTaskManager;
 
 #endif //__ENGOS_TYPES_H__
