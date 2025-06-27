@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 
+
 project(stm32cubemx)
+
 add_library(stm32cubemx INTERFACE)
 
 # Enable CMake support for ASM and C languages
@@ -35,9 +37,12 @@ target_include_directories(stm32cubemx INTERFACE
     ../../HAL/EngChip/Drivers/CMSIS/Include
     ../../HAL/EngHAL
     ../../HAL/EngHAL/STM32F4xx
+
+    ../../HAL/EngChip/Drivers/CMSIS/DSP/Include
 )
 
 target_sources(stm32cubemx INTERFACE
+    ../../App/EngSM_IF.c
     ../../App/EngSM_Main.c
     ../../App/FOC/EngFOC_Main.c
 
@@ -50,7 +55,11 @@ target_sources(stm32cubemx INTERFACE
 
     ../../Infra/EngLib/EngLib_IF.c
     ../../Infra/EngLib/EngLib_Main.c
+    ../../Infra/EngLib/EngLog_IF.c
+    ../../Infra/EngLib/EngLog_Lib.c
     ../../Infra/EngLib/EngOS_Lib.c
+
+    ../../Infra/EngCM/EngCM_IF.c
     
     ../../HAL/EngChip/Core/Src/main.c
     ../../HAL/EngChip/Core/Src/freertos.c
@@ -84,6 +93,10 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
+
+    ../../HAL/EngChip/Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_cos_f32.c
+    ../../HAL/EngChip/Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_sin_f32.c
+    ../../HAL/EngChip/Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c
 
     ../../OS/FreeRTOS/Source/croutine.c
     ../../OS/FreeRTOS/Source/event_groups.c
