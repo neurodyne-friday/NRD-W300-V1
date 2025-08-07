@@ -35,6 +35,8 @@
 	#include "EngHAL_CAN_STM32F4xx.h"
 	#include "EngHAL_TIM_STM32F4xx.h"
 	#include "EngHAL_UART_STM32F4xx.h"
+	#include "EngHAL_PWR_STM32F4xx.h"
+	#include "EngHAL_RTC_STM32F4xx.h"
 #elif defined(STM32F7XX_SUPPORT)
 	#include "EngHAL_GPIO_STM32F7xx.h"
 	#include "EngHAL_ADC_STM32F7xx.h"
@@ -132,34 +134,34 @@ EXTERN THalETHPorting astHalETHTbl[HAL_ETH_NAME_MAX];
 static THalFunction astHalFunctionTbl[] =
 {	
 	{
-		HAL_CHIP_STM32F7xx,									/* 0 */
+		HAL_CHIP_STM32F4xx,									/* 0 */
 		
         /* THalCANFunction */
-		EngHAL_CAN_Init_F7xx,
-		EngHAL_CAN_EnableInterrupt_F7xx,
-		EngHAL_CAN_DisableInterrupt_F7xx,
-		EngHAL_CAN_IsRxFIFOEmpty_F7xx,
-		EngHAL_CAN_IsTxFIFOEmpty_F7xx,
-		EngHAL_CAN_Transmit_F7xx,
-		EngHAL_CAN_Receive_F7xx,
+		EngHAL_CAN_Init_F4xx,
+		EngHAL_CAN_EnableInterrupt_F4xx,
+		EngHAL_CAN_DisableInterrupt_F4xx,
+		EngHAL_CAN_IsRxFIFOEmpty_F4xx,
+		EngHAL_CAN_IsTxFIFOEmpty_F4xx,
+		EngHAL_CAN_Transmit_F4xx,
+		EngHAL_CAN_Receive_F4xx,
 		NULL,
 		NULL,
 		
 		/* THalETHFunction */
-		EngHAL_ETH_Init_F7xx,
-		EngHAL_ETH_Connect_Entry_F7xx,
-		EngHAL_ETH_Connect_Activity_F7xx,
-		EngHAL_ETH_Connect_Exit_F7xx,
-		EngHAL_ETH_Transmit_F7xx,
+		NULL,//EngHAL_ETH_Init_F4xx,
+		NULL,//EngHAL_ETH_Connect_Entry_F4xx,
+		NULL,//EngHAL_ETH_Connect_Activity_F4xx,
+		NULL,//EngHAL_ETH_Connect_Exit_F4xx,
+		NULL,//EngHAL_ETH_Transmit_F4xx,
 
 		/* THalUARTFunction */
-		EngHAL_UART_Init_F7xx,
+		EngHAL_UART_Init_F4xx,
 		NULL,
 		NULL,
 		NULL,
 		NULL,
-		EngHAL_UART_Transmit_F7xx,
-		EngHAL_UART_Receive_F7xx,
+		EngHAL_UART_Transmit_F4xx,
+		EngHAL_UART_Receive_F4xx,
 		NULL,
 		NULL,
 

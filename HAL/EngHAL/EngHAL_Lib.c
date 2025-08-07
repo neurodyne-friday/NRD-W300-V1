@@ -27,10 +27,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-
-RTC_HandleTypeDef hrtc;
-//TIM_HandleTypeDef htim1;
-PCD_HandleTypeDef hpcd_USB_OTG_FS;
+//PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 uint8_t txData[] = "Hello from UART3!\r\n";
 
@@ -112,7 +109,8 @@ BOOL EngHAL_LibraryEntry(void)
     }
 
     EngHAL_RTC_Init();
-    EngHAL_TIM1_Init();
+    EngHAL_TIM_Init();
+    EngHAL_PWR_Init();
     EngHAL_USB_OTG_FS_PCD_Init();
 }
 
@@ -448,61 +446,12 @@ void EngHAL_ETH_Connect_Exit(U32 ulHalName)
   */
 void EngHAL_RTC_Init(void)
 {
-    RTC_TimeTypeDef sTime = {0};
-    RTC_DateTypeDef sDate = {0};
-
-    /** Initialize RTC Only
-     */
-    hrtc.Instance = RTC;
-    hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-    hrtc.Init.AsynchPrediv = 127;
-    hrtc.Init.SynchPrediv = 255;
-    hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-    hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-    hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-    if (HAL_RTC_Init(&hrtc) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    /** Initialize RTC and set the Time and Date
-     */
-    sTime.Hours = 0x0;
-    sTime.Minutes = 0x0;
-    sTime.Seconds = 0x0;
-    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-    sDate.Month = RTC_MONTH_JANUARY;
-    sDate.Date = 0x1;
-    sDate.Year = 0x0;
-
-    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    EngHAL_RTC_Init_F4xx();
 }
 
 void EngHAL_RTC_GetDateTime(U8* pubDateTime)
 {
-    RTC_TimeTypeDef sTime;
-    RTC_DateTypeDef sDate;
-    
-    if (HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
-        Error_Handler();
-    }
-
-    if (HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
-        Error_Handler();
-    }
-
-    //printf("Time: %02x:%02x:%02x\n", sTime.Hours, sTime.Minutes, sTime.Seconds);
-    //printf("Date: %02x/%02x/20%02x\n", sDate.Date, sDate.Month, sDate.Year);
-    sprintf(pubDateTime, "%02x/%02x/20%02x %02x:%02x:%02x", sDate.Date, sDate.Month, sDate.Year, sTime.Hours, sTime.Minutes, sTime.Seconds);
+    EngHAL_RTC_GetDateTime_F4xx(pubDateTime);
 }
 
 
@@ -511,47 +460,20 @@ void EngHAL_RTC_GetDateTime(U8* pubDateTime)
   * @param None
   * @retval None
   */
-void EngHAL_TIM1_Init(void)
+void EngHAL_TIM_Init(void)
 {
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_SlaveConfigTypeDef sSlaveConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-    htim1.Instance = TIM1;
-    htim1.Init.Prescaler = 0;
-    htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim1.Init.Period = 65535;
-    htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    htim1.Init.RepetitionCounter = 0;
-    htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    
-    if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    
-    if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    
-    sSlaveConfig.SlaveMode = TIM_SLAVEMODE_TRIGGER;
-    sSlaveConfig.InputTrigger = TIM_TS_ITR0;
-    if (HAL_TIM_SlaveConfigSynchro(&htim1, &sSlaveConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    
-    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-    sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    EngHAL_TIM_Init_F4xx();
 }
 
+/**
+  * @brief PWR Interface Functions
+  * @param None
+  * @retval None
+  */
+void EngHAL_PWR_Init(void)
+{
+    EngHAL_PWR_Init_F4xx();
+}
 
 /**
   * @brief USB_OTG_FS Interface Functions
@@ -560,20 +482,20 @@ void EngHAL_TIM1_Init(void)
   */
 void EngHAL_USB_OTG_FS_PCD_Init(void)
 {
-    hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
-    hpcd_USB_OTG_FS.Init.dev_endpoints = 6;
-    hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
-    hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
-    hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-    hpcd_USB_OTG_FS.Init.Sof_enable = ENABLE;
-    hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
-    hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
-    hpcd_USB_OTG_FS.Init.vbus_sensing_enable = ENABLE;
-    hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = DISABLE;
-    if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    // hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
+    // hpcd_USB_OTG_FS.Init.dev_endpoints = 6;
+    // hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
+    // hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
+    // hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
+    // hpcd_USB_OTG_FS.Init.Sof_enable = ENABLE;
+    // hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
+    // hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
+    // hpcd_USB_OTG_FS.Init.vbus_sensing_enable = ENABLE;
+    // hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = DISABLE;
+    // if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
+    // {
+    //     Error_Handler();
+    // }
 }
 
 /**

@@ -29,7 +29,9 @@
 			"enghal_adc_stm32f4xx.h": "c",
 			"engcm_driverconfig.h": "c",
 			"engdrv_if.h": "c",
-			"enghal_tim_stm32f4xx.h": "c"
+			"enghal_tim_stm32f4xx.h": "c",
+			"enghal_pwr_stm32f4xx.h": "c",
+			"engcm_halconfig.h": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}

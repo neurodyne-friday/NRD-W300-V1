@@ -67,10 +67,13 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngChip/Core/Src/stm32f4xx_hal_msp.c
     ../../HAL/EngChip/Core/Src/system_stm32f4xx.c
 
+    ../../HAL/EngHAL/EngHal_Lib.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_ADC_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_CAN_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_TIM_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_UART_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_PWR_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_RTC_STM32F4xx.c
 
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c
@@ -93,6 +96,8 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
+    ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c
+    ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c
 
     ../../HAL/EngChip/Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_cos_f32.c
     ../../HAL/EngChip/Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_sin_f32.c

@@ -66,7 +66,10 @@ EXTERN void EngHAL_RTC_Init(void);
 EXTERN void EngHAL_RTC_GetDateTime(U8* pubDateTime);
 
 /* EngChip - TIM Interface */
-EXTERN void EngHAL_TIM1_Init(void);
+EXTERN void EngHAL_TIM_Init(void);
+
+/* EngChip - Power Interface */
+EXTERN void EngHAL_PWR_Init(void);
 
 /* EngChip - USB_OTG Interface */
 EXTERN void EngHAL_USB_OTG_FS_PCD_Init(void);

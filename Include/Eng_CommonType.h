@@ -407,7 +407,8 @@ typedef enum
 	ENG_ST_WAIT,
 	ENG_ST_EDC,         // EDC(Electronic Data Capture)
 	ENG_ST_TEST,
-	ENG_ST_POWERON,	
+	ENG_ST_POWERON,
+    ENG_ST_POWEROFF,    // Backup mode
 	ENG_ST_MAX
 } TEngState;
 
