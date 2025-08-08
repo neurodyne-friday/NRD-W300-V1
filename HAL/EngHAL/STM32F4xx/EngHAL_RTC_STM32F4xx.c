@@ -48,6 +48,7 @@ void EngHAL_RTC_Init_F4xx()
     hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
     hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
     hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+    
     if (HAL_RTC_Init(&hrtc) != HAL_OK)
     {
         Error_Handler();

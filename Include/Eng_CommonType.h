@@ -443,7 +443,6 @@ typedef enum
 #include "EngCM_SystemMgrConfig.h"
 #include "EngCM_DriverConfig.h"
 #include "EngCM_ErrorHndConfig.h"
-#include "EngCM_HalConfig.h"
 
 #include "EngLib_IF.h"
 #include "EngLib_Main.h"

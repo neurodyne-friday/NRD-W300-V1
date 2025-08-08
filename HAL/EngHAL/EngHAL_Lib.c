@@ -23,6 +23,7 @@
 #include "EngOS_Lib.h"
 #include "EngHAL_Lib.h"
 #include "EngCM_SystemConfig.h"
+#include "EngCM_HalConfig.h"
 
 
 /* Private variables ---------------------------------------------------------*/

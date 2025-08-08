@@ -21,7 +21,7 @@
 #define __ENGCM_HALCONFIG_H__
 
 #undef EXTERN
-#ifdef __ENGDW_LIB_C__
+#ifdef __ENGHAL_LIB_C__
 #define EXTERN
 #else
 #define EXTERN	extern
