@@ -48,6 +48,8 @@ EXTERN BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue);
 
 EXTERN U32 EngSM_EngineState(U32 ulSetGet, U32 ulDeviceStatusID, U32 ulValue);
 
+EXTERN void EngSM_PowerOff(void);
+
 /**
  * Status Type Definitions
  */

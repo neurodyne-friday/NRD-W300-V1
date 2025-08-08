@@ -670,3 +670,20 @@ U32 EngSM_EngineState(U32 ulSetGet, U32 ulDeviceStatusID, U32 ulValue)
 
     return ulReturnValue;
 }
+
+
+/**
+* @brief 	  Power Off the Engine System Manager.
+*
+* @param[in]		None
+* @range
+* @retval			None
+* @global
+* @remarks
+*/
+void EngSM_PowerOff(void)
+{
+	//DBG_ENGSM(ENG_DBG_STRING"Power Off", ENG_TICK, "SM");
+
+	/* Data backup sequence */
+}
