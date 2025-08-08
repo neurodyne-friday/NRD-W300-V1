@@ -44,27 +44,27 @@
     #define EngOS_Queue OS_Q
 #endif
 
-typedef enum _TJobRunType
+typedef enum _TTaskRunType
 {
-    JOB_RUNTYPE_Interrupt,
-    JOB_RUNTYPE_Cycle,
-    JOB_RUNTYPE_Undefiined
-} TJobRunType;
+    TASK_RUNTYPE_Interrupt,
+    TASK_RUNTYPE_Cycle,
+    TASK_RUNTYPE_Undefiined
+} TTaskRunType;
 
-typedef struct _TJobProperty
+typedef struct _TTaskProperty
 {
     U8* pubName;
-    void* pfnJobFunc;
-    TJobRunType eRunType;
+    void* pfnTaskFunc;
+    TTaskRunType eRunType;
     U32 ulIntervalTime; // msec
 
 #if defined(ENGOS_CMSIS_V2)
-    osThreadId_t stJobHandle;
+    osThreadId_t stTaskHandle;
 #elif defined(ENGOS_FREERTOS)
-    TaskHandle_t stJobHandle;
+    TaskHandle_t stTaskHandle;
 #elif defined(ENGOS_UCOS)
 #endif    
-} TJobProperty;
+} TTaskProperty;
 
 /*
  * @brief Structure Definitions
@@ -74,7 +74,7 @@ typedef struct _TJobProperty
 
 typedef struct _TOSTaskManager
 {
-    TJobProperty astTaskProperties[OS_TASK_MAX_SIZE];
+    TTaskProperty astTaskProperties[OS_TASK_MAX_SIZE];
     U8 ubUsedCount;
 
 } TOSTaskManager;

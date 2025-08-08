@@ -32,7 +32,7 @@
 
 uint8_t txData[] = "Hello from UART3!\r\n";
 
-
+/*
 #define HASH_CAN_BUCKET_SIZE	HAL_CAN_NAME_MAX
 #define HASH_CAN_SLOT_SIZE 		1
 #define HASH_CAN_FN(key) 		(key % HASH_CAN_BUCKET_SIZE)
@@ -47,7 +47,7 @@ static THalUARTPorting *pastHashUARTTable[HASH_UART_BUCKET_SIZE][HASH_UART_SLOT_
 #define HASH_ETH_SLOT_SIZE 	    1
 #define HASH_ETH_FN(key) 		(key % HASH_ETH_BUCKET_SIZE)
 static THalETHPorting *pastHashETHTable[HASH_ETH_BUCKET_SIZE][HASH_ETH_SLOT_SIZE];
-
+*/
 
 /**
   * @brief All Components Initialization Function
@@ -112,7 +112,7 @@ BOOL EngHAL_LibraryEntry(void)
     EngHAL_RTC_Init();
     EngHAL_TIM_Init();
     EngHAL_PWR_Init();
-    EngHAL_USB_OTG_FS_PCD_Init();
+    //EngHAL_USB_OTG_FS_PCD_Init(); // make it later
 }
 
 

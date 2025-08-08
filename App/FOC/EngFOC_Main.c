@@ -46,30 +46,30 @@ static TEngFOCManager s_stFOCManager;
 BOOL EngFOC_Initialize(void)
 {
 	TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TJobProperty* pstJobProperty = NULL;
+    TTaskProperty* pstTaskProperty = NULL;
 	
 	DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 	
-    pstJobProperty = EngOS_CreateJobProperty(
+    pstTaskProperty = EngOS_Task_CreateProperty(
         "CurrentControlTask", 
         EngFOC_Task_CurrentControl, 
-        JOB_RUNTYPE_Interrupt, 
+        TASK_RUNTYPE_Interrupt, 
         0);
-    EngOS_RegistryJob(pstJobProperty);
+    EngOS_Task_Register(pstTaskProperty);
 
-    pstJobProperty = EngOS_CreateJobProperty(
+    pstTaskProperty = EngOS_Task_CreateProperty(
         "SpeedControlTask", 
         EngFOC_Task_SpeedControl, 
-        JOB_RUNTYPE_Cycle, 
+        TASK_RUNTYPE_Cycle, 
         1);
-    EngOS_RegistryJob(pstJobProperty);
+    EngOS_Task_Register(pstTaskProperty);
 
-    pstJobProperty = EngOS_CreateJobProperty(
+    pstTaskProperty = EngOS_Task_CreateProperty(
         "PositionControlTask", 
         EngFOC_Task_PositionControl, 
-        JOB_RUNTYPE_Cycle, 
+        TASK_RUNTYPE_Cycle, 
         10);
-    EngOS_RegistryJob(pstJobProperty);
+    EngOS_Task_Register(pstTaskProperty);
 
     EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", EngFOC_NotifyBy_ADC_IRQHandler);
 
@@ -173,8 +173,7 @@ void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, f
 void EngFOC_Task_CurrentControl(void *argument) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    //TJobProperty *pstJobProperty = &s_stJobCurrentControl;
-    TJobProperty *pstJobProperty = EngOS_GetJobProperty("CurrentControlTask");
+    TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("CurrentControlTask");
 
     // 보정용 상수 및 변수
     const float CURRENT_SCALE = 0.005;  // ADC 값 -> 전류(A) 변환 스케일
@@ -192,7 +191,7 @@ void EngFOC_Task_CurrentControl(void *argument)
     {
         // ADC 인터럽트로부터 알림 대기 (블로킹 대기)
         //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        EngOS_PendingJob(pstJobProperty);
+        EngOS_Task_Pending(pstTaskProperty);
         
         // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
         //i_a = (float)adc_val_phaseA * CURRENT_SCALE;
@@ -275,8 +274,7 @@ void EngFOC_Task_CurrentControl(void *argument)
 void EngFOC_Task_SpeedControl(void *argument) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    //TJobProperty *pstJobProperty = &s_stJobSpeedControl;
-    TJobProperty *pstJobProperty = EngOS_GetJobProperty("SpeedControlTask");
+    TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("SpeedControlTask");
     
     const float Ts = 0.001f;          // 1kHz 주기 (초)
     const float Kp_speed = 0.1, Ki_speed = 0.02;
@@ -343,7 +341,7 @@ void EngFOC_Task_SpeedControl(void *argument)
         // (i_d_ref는 여전히 0으로 유지)
         
         //vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
-        EngOS_WaitingJob(pstJobProperty, lastWakeTime);
+        EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
     }
 }
 
@@ -351,8 +349,7 @@ void EngFOC_Task_SpeedControl(void *argument)
 void EngFOC_Task_PositionControl(void *argument)
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    //TJobProperty *pstJobProperty = &s_stJobPositionControl;
-    TJobProperty *pstJobProperty = EngOS_GetJobProperty("PositionControlTask");
+    TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("PositionControlTask");
 
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = 0.5, Ki_pos = 0.05;
@@ -398,7 +395,7 @@ void EngFOC_Task_PositionControl(void *argument)
         pstFOCManager->fRefOmega = omega_cmd;
         
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
-        EngOS_WaitingJob(pstJobProperty, lastWakeTime);
+        EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
     }
 }
 

@@ -25,8 +25,6 @@
 
 void EngDrv_IF_Create()
 {
-    EngHAL_LibraryEntry();
-
     EngDrv_CAN_Create();
     // EngDrv_Sensor_Create();
     EngDrv_Motor_Create();

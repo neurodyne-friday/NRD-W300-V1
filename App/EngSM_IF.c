@@ -43,8 +43,9 @@ BOOL EngSM_IF_Initialize(void)
 	/* Initialize the Engine Library */
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
-	/* Initialize the Engine Device Wrapper */
-	//EngDW_LibraryEntry();
+    /* Initialize the Hardware */
+    EngHAL_LibraryEntry();
+
 	/* Create Device Driver */
 	EngDrv_IF_Create();
 

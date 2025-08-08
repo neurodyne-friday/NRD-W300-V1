@@ -50,10 +50,6 @@ BOOL EngSM_Initialize(void)
 	
 	DBG_ENGSM(ENG_DBG_STRING"EngSM_Initialize", ENG_TICK, "SM");
 	
-
-	/* Initialize the Engine HAL */
-	EngHAL_LibraryEntry();
-
     /* Initialize Engine System Manager Information Storage Variable */
 //	EngLib_MemorySet(pstSystemManager, 0, (sizeof(TEngSystemManager)));
 
@@ -90,11 +86,11 @@ BOOL EngSM_Initialize(void)
 
 	EngSM_InitialIntervalTime();
 
-	// Create Jobs for FOC Handler
+	// Create Tasks for FOC Handler
 	EngFOC_Initialize();
 
-	// Start OS-Jobs
-	EngOS_StartJobs();
+	// Start OS-Tasks
+	EngOS_Task_StartAll();
 
 	pstSystemManager->fPowerOn = TRUE;
 	pstSystemManager->fEnterSleepMode = FALSE;

@@ -49,9 +49,9 @@ void EngOS_LibraryEntry(void)
 	g_stOSTaskManager.ubUsedCount = 0;
 }
 
-void EngOS_RegistryJob(TJobProperty* pJobProperty)
+void EngOS_Task_Register(TTaskProperty* pProperty)
 {
-	if(pJobProperty == NULL)
+	if(pProperty == NULL)
 		return;
 
 #if defined(ENGOS_CMSIS_V2)
@@ -59,14 +59,14 @@ void EngOS_RegistryJob(TJobProperty* pJobProperty)
 	osKernelInitialize();
 	osThreadNew(pJobProperty->pfnJobFunc, NULL, NULL);
 #elif defined(ENGOS_FREERTOS)
-	xTaskCreate(pJobProperty->pfnJobFunc, pJobProperty->pubName, 512, NULL, 1, NULL);
+	xTaskCreate(pProperty->pfnTaskFunc, pProperty->pubName, 512, NULL, 1, NULL);
 #elif defined(ENGOS_UCOS)
 #endif
 }
 
-void EngOS_PendingJob(TJobProperty* pJobProperty)
+void EngOS_Task_Pending(TTaskProperty* pProperty)
 {
-	if(pJobProperty == NULL)
+	if(pProperty == NULL)
 		return;
 
 #if defined(ENGOS_CMSIS_V2)
@@ -86,48 +86,48 @@ U32 EngOS_GetSysTick(void)
 #endif
 }
 
-void EngOS_WaitingJob(TJobProperty* pJobProperty, U32 ulPreviousWakeTime)
+void EngOS_Task_Waiting(TTaskProperty* pProperty, U32 ulPreviousWakeTime)
 {
-	if(pJobProperty == NULL)
+	if(pProperty == NULL)
 		return;
 
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)
-	vTaskDelayUntil(&ulPreviousWakeTime, (TickType_t)pJobProperty->ulIntervalTime);
+	vTaskDelayUntil(&ulPreviousWakeTime, (TickType_t)pProperty->ulIntervalTime);
 #elif defined(ENGOS_UCOS)
 #endif
 }
 
-void EngOS_NotifyFromISR(TJobProperty* pJobProperty)
+void EngOS_NotifyFromISR(TTaskProperty* pProperty)
 {
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)
     BaseType_t xHigherPTWoken = pdFALSE;
-	vTaskNotifyGiveFromISR(pJobProperty->stJobHandle, &xHigherPTWoken);
+	vTaskNotifyGiveFromISR(pProperty->stTaskHandle, &xHigherPTWoken);
 	portYIELD_FROM_ISR(xHigherPTWoken);
 #elif defined(ENGOS_UCOS)
 #endif
 }
 
-TJobProperty* EngOS_CreateJobProperty(U8* pubName, void* pfnFunc, TJobRunType eRunType, U32 ulInterval)
+TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc, TTaskRunType eRunType, U32 ulInterval)
 {
 	if(g_stOSTaskManager.ubUsedCount >= OS_TASK_MAX_SIZE)
 	{
 		return NULL;
 	}
 
-	TJobProperty* pstJobProperty = &g_stOSTaskManager.astTaskProperties[g_stOSTaskManager.ubUsedCount];
-	pstJobProperty->pubName = pubName;
-	pstJobProperty->pfnJobFunc = pfnFunc;
-	pstJobProperty->eRunType = eRunType;
-	pstJobProperty->ulIntervalTime = ulInterval;
+	TTaskProperty* pstProperty = &g_stOSTaskManager.astTaskProperties[g_stOSTaskManager.ubUsedCount];
+	pstProperty->pubName = pubName;
+	pstProperty->pfnTaskFunc = pfnFunc;
+	pstProperty->eRunType = eRunType;
+	pstProperty->ulIntervalTime = ulInterval;
 
 	g_stOSTaskManager.ubUsedCount++;
 
-	return pstJobProperty;
+	return pstProperty;
 }
 
-TJobProperty* EngOS_GetJobProperty(U8* pubName)
+TTaskProperty* EngOS_Task_GetProperty(U8* pubName)
 {
 	for(U8 ubIndex = 0; ubIndex < g_stOSTaskManager.ubUsedCount; ubIndex++)
 	{
@@ -140,7 +140,7 @@ TJobProperty* EngOS_GetJobProperty(U8* pubName)
 	return NULL;
 }
 
-void EngOS_Task_Create(void)
+void EngOS_Task_Create(void) // will be deleted
 {
     EngIFSvc_IF_Entry();
 
@@ -155,7 +155,7 @@ void EngOS_Task_Create(void)
 #endif
 }
 
-void EngOS_Task_Main(void *p_arg)
+void EngOS_Task_Main(void *p_arg) // will be deleted
 {
 #if defined(ENGOS_CMSIS)
 	uint32_t nextWakeTicks;
@@ -215,7 +215,7 @@ void EngOS_Task_Main(void *p_arg)
 	}
 }
 
-void EngOS_StartJobs(void)
+void EngOS_Task_StartAll(void)
 {
 #if defined(ENGOS_CMSIS_V2)
 	osKernelStart();
@@ -225,7 +225,7 @@ void EngOS_StartJobs(void)
 #endif
 }
 
-void EngOS_EndJobs(void)
+void EngOS_Task_EndAll(void)
 {
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)

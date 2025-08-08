@@ -148,6 +148,14 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
     	VOID_ASSERT(!ulStatus);
 
 		s_fEnableTaskLog = TRUE;
+		EngOS_CreateJobProperty(
+			&stEngLogInfo.pstTaskLoggingJob,
+			"EngLog_TaskLogging",
+			ulTaskLoggingID,
+			TASK_LOGGING_STACK_SIZE,
+			TASK_LOGGING_PRIORITY,
+			0, 0, 0, 0, 0, 0, 0, 0
+		);
 #endif
 	}
 }
