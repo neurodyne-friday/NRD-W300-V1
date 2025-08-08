@@ -476,6 +476,11 @@ void EngHAL_PWR_Init(void)
     EngHAL_PWR_Init_F4xx();
 }
 
+void EngHAL_PWR_RegisterCallback(void (*pfnCallback)(void))
+{
+	EngHAL_PWR_RegisterCallback_F4xx(pfnCallback);
+}
+
 /**
   * @brief USB_OTG_FS Interface Functions
   * @param None

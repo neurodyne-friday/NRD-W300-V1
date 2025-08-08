@@ -128,5 +128,8 @@ void EngHAL_Interrupt_External(U8 ubExtIntNum)
 
 void EngHAL_Interrupt_UART(U8 ubUartIntNum)
 {
-
+    if(ubUartIntNum == 1)
+    {
+        
+    }
 }

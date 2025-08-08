@@ -70,6 +70,7 @@ EXTERN void EngHAL_TIM_Init(void);
 
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);
+EXTERN void EngHAL_PWR_RegisterCallback(void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
 
 /* EngChip - USB_OTG Interface */
 EXTERN void EngHAL_USB_OTG_FS_PCD_Init(void);

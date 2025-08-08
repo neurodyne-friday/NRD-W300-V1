@@ -32,8 +32,7 @@
 
 
 EXTERN void EngHAL_PWR_Init_F4xx();
-
-
-EXTERN void EngHAL_PWR_PVDOn_F4xx();
+EXTERN void EngHAL_PWR_PVD_Config_F4xx();
+EXTERN void EngHAL_PWR_RegisterCallback_F4xx(void (*pfnCallback)(void));
 
 #endif //__ENGHAL_GPIO_H__

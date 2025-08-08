@@ -27,7 +27,7 @@ void EngDrv_IF_Create()
 {
     EngDrv_CAN_Create();
     // EngDrv_Sensor_Create();
-    EngDrv_Motor_Create();
+    // EngDrv_Motor_Create();
     // EngDrv_ADC_Create();
     EngDrv_Encoder_Create();
     // EngDrv_EEPROM_Create();
@@ -40,9 +40,9 @@ void EngDrv_IF_Configuration()
 {
     EngDrv_Sensor_Configuration();
     EngDrv_ADC_Configuration();
-    EngDrv_Solenoid_Configuration();
-    EngDrv_EEPROM_Configuration();
-    EngDrv_Flash_Configuration();
+    // EngDrv_Solenoid_Configuration();
+    // EngDrv_EEPROM_Configuration();
+    // EngDrv_Flash_Configuration();
     EngDrv_SPI_Configuration();
 }
 
@@ -62,13 +62,14 @@ void EngDrv_IF_Initialize()
     TETH* pstETH = NULL;
     for(U32 ulDeviceKey = DEVICE_ETH_KEY_BASE; ulDeviceKey < ETH_NAME_MAX; ulDeviceKey++)
     {
-        pstETH = EngDrv_IF_GetCAN(ulDeviceKey);
+        pstETH = EngDrv_IF_GetETH(ulDeviceKey);
         if(pstETH != NULL)
         {
             pstETH->pfnInitialize(pstETH);
         }
     }
     
+    /*
     TSensor* pstSensor = NULL;
     for(U32 ulDeviceKey = DEVICE_SENSOR_KEY_BASE; ulDeviceKey < SENSOR_NAME_MAX; ulDeviceKey++)
     {
@@ -79,7 +80,9 @@ void EngDrv_IF_Initialize()
         }
     }
     EngDrv_Sensor_InitializeAll();
+    */
     
+    /*
     TMotor* pstMotor = NULL;
     for(U32 ulDeviceKey = DEVICE_MOTOR_KEY_BASE; ulDeviceKey < MOTOR_NAME_MAX; ulDeviceKey++)
     {
@@ -89,6 +92,7 @@ void EngDrv_IF_Initialize()
             pstMotor->pfnInitialize(pstMotor);
         }
     }
+    */
     
     TADC* pstADC = NULL;
     for(U32 ulDeviceKey = DEVICE_ADC_KEY_BASE; ulDeviceKey < ADC_NAME_MAX; ulDeviceKey++)
@@ -110,6 +114,7 @@ void EngDrv_IF_Initialize()
         }
     }
 
+    /*
     TEeprom* pstEeprom = NULL;
     for(U32 ulDeviceKey = DEVICE_EEPROM_KEY_BASE; ulDeviceKey < EEPROM_NAME_MAX; ulDeviceKey++)
     {
@@ -119,6 +124,7 @@ void EngDrv_IF_Initialize()
             pstEeprom->pfnInitialize(pstEeprom);
         }
     }
+    */
 
     // TFlash* pstFlash = NULL;
     // for(U32 ulDeviceKey = DEVICE_FLASH_KEY_BASE; ulDeviceKey < FLASH_NAME_MAX; ulDeviceKey++)
@@ -129,8 +135,9 @@ void EngDrv_IF_Initialize()
     //         pstFlash->pfnInitialize(pstFlash);
     //     }
     // }
-    EngDrv_Flash_Initialize();
+    // EngDrv_Flash_Initialize();
 
+    /*
     TSolenoid* pstSolenoid = NULL;
     for(U32 ulDeviceKey = DEVICE_SOLENOID_KEY_BASE; ulDeviceKey < SOLENOID_NAME_MAX; ulDeviceKey++)
     {
@@ -140,7 +147,9 @@ void EngDrv_IF_Initialize()
             pstSolenoid->pfnInitialize(pstSolenoid);
         }
     }
+    */
 
+   /*
     TSPI* pstSPI = NULL;
     for(U32 ulDeviceKey = DEVICE_SPI_KEY_BASE; ulDeviceKey < SPI_NAME_MAX; ulDeviceKey++)
     {
@@ -150,6 +159,7 @@ void EngDrv_IF_Initialize()
             pstSPI->pfnInitialize(pstSPI);
         }
     }
+    */
 
     TUART* pstUART = NULL;
     for(U32 ulDeviceKey = DEVICE_UART_KEY_BASE; ulDeviceKey < UART_NAME_MAX; ulDeviceKey++)

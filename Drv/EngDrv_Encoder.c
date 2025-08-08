@@ -74,7 +74,7 @@ void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
         pubCommand[6] = (U8)(slCount >> 8) & 0xFF;
         pubCommand[7] = (U8)(slCount >> 0) & 0xFF;
 
-        pstCAN->pfnSendData(pstCAN, &pubCommand, 8);
+        pstCAN->pfnSendData(pstCAN, pubCommand, 8);
     }
 }
 
@@ -87,7 +87,7 @@ S32 EngDrv_Encoder_Get(TEncoder* pstEncoder)
 
         pubCommand[0] = 0x60;
 
-        pstCAN->pfnSendData(pstCAN, &pubCommand, 8);
+        pstCAN->pfnSendData(pstCAN, pubCommand, 8);
     }
 
     return pstEncoder->slCounter;
@@ -102,7 +102,7 @@ void EngDrv_Encoder_Reset(TEncoder* pstEncoder)
 
         pubCommand[0] = 0x64; // Write the current multi-turn position of the encoder(ROM) as the motor zero offset
 
-        pstCAN->pfnSendData(pstCAN, &pubCommand, 8);
+        pstCAN->pfnSendData(pstCAN, pubCommand, 8);
     }
 }
 
@@ -111,7 +111,7 @@ void EngDrv_Encoder_SERVO_RMDX_NotifiedByCAN(U32 ulDeviceKey, U8* pubData, U16 u
     TEncoder* pstEncoder = NULL;
     pstEncoder = EngDrv_IF_GetEncoder(ulDeviceKey);
 
-    if(pstEncoder)
+    if(pstEncoder && uwLength > 0)
     {
         S32 slCount = 0;
         U32 ulEncoderOffset = 0;

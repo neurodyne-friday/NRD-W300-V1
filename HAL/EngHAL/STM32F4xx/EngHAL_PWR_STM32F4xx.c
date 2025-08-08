@@ -24,7 +24,10 @@
 #include "stm32f4xx_hal_pwr.h"
 #include "stm32f4xx_hal_pwr_ex.h"
 
-//TIM_HandleTypeDef htim1;
+
+typedef void (*PWR_PVD_Callback)(void);
+
+PWR_PVD_Callback g_pfnPVDCallback = NULL; // PVD 콜백 함수 포인터
 
 /**
   * @brief PWR Interface Functions
@@ -34,28 +37,46 @@
 
 void EngHAL_PWR_Init_F4xx()
 {
-    EngHAL_PWR_PVDOn_F4xx();
+    EngHAL_PWR_PVD_Config_F4xx();
 }
 
 
-void EngHAL_PWR_PVDOn_F4xx()
+void EngHAL_PWR_PVD_Config_F4xx()
 {
-    /* PVD threshold level-6 ≒ 2.8 V, Enable Interrupt */
-    PWR->CR |= (PWR_CR_PLS_2 | PWR_CR_PLS_1);   // Level-6
-    PWR->CR |= PWR_CR_PVDE;                     // PVD Enable
-    EXTI->IMR |= EXTI_IMR_IM16;                 // EXTI16 IRQ Unmask
-    EXTI->FTSR |= EXTI_FTSR_TR16;               // Falling-edge detect
-    NVIC_EnableIRQ(PVD_IRQn);
+    PWR_PVDTypeDef sConfigPVD;
 
+    // PVD Detection Threshold Setting (ex: PVDLEVEL_5 = 2.9V)
+    sConfigPVD.PVDLevel = PWR_PVDLEVEL_5;
+    sConfigPVD.Mode = PWR_PVD_MODE_IT_FALLING; // 전압 하강 시 인터럽트 발생
+
+    // PVD 초기화
+    HAL_PWR_ConfigPVD(&sConfigPVD);
+
+    // PVD 활성화
+    HAL_PWR_EnablePVD();
+
+    EXTI->IMR |= EXTI_IMR_IM16;     // EXTI16 IRQ Unmask
+    EXTI->FTSR |= EXTI_FTSR_TR16;   // Falling-edge detect
+
+    // PVD 인터럽트 활성화
+    HAL_NVIC_SetPriority(PVD_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(PVD_IRQn);
+}
+
+void EngHAL_PWR_RegisterCallback_F4xx(void (*pfnCallback)(void))
+{
+    g_pfnPVDCallback = pfnCallback;
 }
 
 void PVD_IRQHandler(void)
 {
+    HAL_PWR_PVD_IRQHandler();
+
     if (EXTI->PR & EXTI_PR_PR16)
     {
-        EXTI->PR = EXTI_PR_PR16;        // pending clear
-        /* 여기서 플래시/EEPROM·BKP레지스터에 중요 데이터 기록 */
-        //save_encoder_count();
+        EXTI->PR = EXTI_PR_PR16;    // pending clear
+        
+        g_pfnPVDCallback();
     }
 }
 
@@ -65,6 +86,7 @@ void EngHAL_PWR_Resume(void)
     uint32_t rst = RCC->CSR;          // 리셋 상태 레지스터
     BOOL was_bor = rst & RCC_CSR_BORRSTF;
     BOOL was_pwr = rst & RCC_CSR_PORRSTF;
+    
     /* 리셋 플래그 지우기 */
     RCC->CSR |= RCC_CSR_RMVF;
 

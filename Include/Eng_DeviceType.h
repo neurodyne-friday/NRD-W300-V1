@@ -159,7 +159,7 @@ typedef struct _TCAN
 
     U8 ubCanTaskCommand;
 
-    // Internal functions
+    // Inner functions
     void (*pfnInitialize)(struct _TCAN* pstCAN);
     BOOL (*pfnAppendObserver)(struct _TCAN* pstCAN, TCANObserver *pstObserver);
     void (*pfnNotifyToObservers)(struct _TCAN* pstCAN, U8* pubData, U16 uwLength);

@@ -46,8 +46,9 @@ BOOL EngSM_IF_Initialize(void)
     /* Initialize the Hardware */
     EngHAL_LibraryEntry();
 
-	/* Create Device Driver */
+	/* Create & Initialize Device Driver */
 	EngDrv_IF_Create();
+	EngDrv_IF_Initialize();
 
     /* Initialize the Engine Dinamic Configuration Manager */
 #ifdef FR_SM_ENGINE_FAST_BOOTUP
