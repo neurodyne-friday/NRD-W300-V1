@@ -25,9 +25,8 @@
 #include "stm32f4xx_hal_pwr_ex.h"
 
 
-typedef void (*PWR_PVD_Callback)(void);
 
-PWR_PVD_Callback g_pfnPVDCallback = NULL; // PVD 콜백 함수 포인터
+HAL_EVENT_CALLBACK g_pfnHalPwrEventCallback[HAL_EVENT_PWR_MAX] = {0}; // PVD 콜백 함수 포인터
 
 /**
   * @brief PWR Interface Functions
@@ -65,7 +64,7 @@ void EngHAL_PWR_PVD_Config_F4xx()
 
 void EngHAL_PWR_RegisterCallback_F4xx(void (*pfnCallback)(void))
 {
-    g_pfnPVDCallback = pfnCallback;
+    g_pfnHalPwrEventCallback[HAL_EVENT_PWR_OFF] = pfnCallback;
 }
 
 void PVD_IRQHandler(void)
@@ -76,7 +75,7 @@ void PVD_IRQHandler(void)
     {
         EXTI->PR = EXTI_PR_PR16;    // pending clear
         
-        g_pfnPVDCallback();
+        g_pfnHalPwrEventCallback[HAL_EVENT_PWR_OFF]();
     }
 }
 

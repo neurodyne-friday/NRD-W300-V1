@@ -38,6 +38,24 @@ typedef enum
 
 
 /**
+ * @brief Declare of The HAL Event CALLBACK & ID
+ */
+
+typedef void (*HAL_EVENT_CALLBACK)(void);
+
+
+/* Power Event */
+#define HAL_EVENT_PWR_ON	0	// Power On Event
+#define HAL_EVENT_PWR_OFF	1	// Power Off Event
+#define HAL_EVENT_PWR_MAX	2	// Maximum Event ID
+
+/* CAN Event */
+#define HAL_EVENT_CAN_RX	0	// CAN Receive Event
+#define HAL_EVENT_CAN_MAX	1	// Maximum Event ID
+
+
+
+/**
  * The GPIO HAL 
  */
 typedef enum
