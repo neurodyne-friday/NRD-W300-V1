@@ -32,7 +32,13 @@
 			"enghal_tim_stm32f4xx.h": "c",
 			"enghal_pwr_stm32f4xx.h": "c",
 			"engcm_halconfig.h": "c",
-			"enghal_rtc_stm32f4xx.h": "c"
+			"enghal_rtc_stm32f4xx.h": "c",
+			"enghal_types.h": "c",
+			"enghal_uart_stm32f4xx.h": "c",
+			"enghal_can_stm32f4xx.h": "c",
+			"enghal_core_stm32f4xx.h": "c",
+			"stm32f4xx_hal.h": "c",
+			"enghal_lib.h": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}

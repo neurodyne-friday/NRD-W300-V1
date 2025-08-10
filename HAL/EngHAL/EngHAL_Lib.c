@@ -57,62 +57,76 @@ static THalETHPorting *pastHashETHTable[HASH_ETH_BUCKET_SIZE][HASH_ETH_SLOT_SIZE
 
 BOOL EngHAL_LibraryEntry(void)
 {
+	EngHAL_Core_Init();
+
     THalFunction *pstHalFunction = NULL;
 
     /* Initilize all hal items */
-    pstHalFunction = &astHalFunctionTbl[0];
-    if(pstHalFunction != NULL)
-    {
-        /* CAN Initialize */
-        if((void *)pstHalFunction->stCAN.pfnInit != NULL)
-        {
-            THalCANPorting *pstCANHal = &astHalCANTbl[0];
-            while(pstCANHal->ulName != HAL_CAN_NAME_UNSPECIFIED)
-            {
-                pstHalFunction->stCAN.pfnInit(pstCANHal);
-                pstCANHal++;
-            }
-        }
+    // pstHalFunction = &astHalFunctionTbl[0];
+    // if(pstHalFunction != NULL)
+    // {
+    //     /* CAN Initialize */
+    //     if((void *)pstHalFunction->stCAN.pfnInit != NULL)
+    //     {
+    //         THalCANPorting *pstCANHal = &astHalCANTbl[0];
+    //         while(pstCANHal->ulName != HAL_CAN_NAME_UNSPECIFIED)
+    //         {
+    //             pstHalFunction->stCAN.pfnInit(pstCANHal);
+    //             pstCANHal++;
+    //         }
+    //     }
 
-        /* Ethernet Initialize */
-        if((void *)pstHalFunction->stETH.pfnInit != NULL)
-        {
-            THalETHPorting *pstETHHal = &astHalETHTbl[0];
-            while(pstETHHal->ulName != HAL_ETH_NAME_UNSPECIFIED)
-            {
-                pstHalFunction->stETH.pfnInit(pstETHHal);
-                pstETHHal++;
-            }
-        }
+    //     /* Ethernet Initialize */
+    //     if((void *)pstHalFunction->stETH.pfnInit != NULL)
+    //     {
+    //         THalETHPorting *pstETHHal = &astHalETHTbl[0];
+    //         while(pstETHHal->ulName != HAL_ETH_NAME_UNSPECIFIED)
+    //         {
+    //             pstHalFunction->stETH.pfnInit(pstETHHal);
+    //             pstETHHal++;
+    //         }
+    //     }
 
-        /* UART Initialize */
-        if((void *)pstHalFunction->stUART.pfnInit != NULL)
-        {
-            THalUARTPorting *pstUARTHal = &astHalUARTTbl[0];
-            while(pstUARTHal->ulName != HAL_UART_NAME_UNSPECIFIED)
-            {
-                pstHalFunction->stUART.pfnInit(pstUARTHal);
-                pstUARTHal++;
-            }
-        }
+    //     /* UART Initialize */
+    //     if((void *)pstHalFunction->stUART.pfnInit != NULL)
+    //     {
+    //         THalUARTPorting *pstUARTHal = &astHalUARTTbl[0];
+    //         while(pstUARTHal->ulName != HAL_UART_NAME_UNSPECIFIED)
+    //         {
+    //             pstHalFunction->stUART.pfnInit(pstUARTHal);
+    //             pstUARTHal++;
+    //         }
+    //     }
 
-        /* ADC Initialize */
-        if((void *)pstHalFunction->stADC.pfnInit != NULL)
-        {
-            THalADCPorting *pstADCHal = &astHalADCTbl[0];
-            while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
-            {
-                pstHalFunction->stADC.pfnInit(pstADCHal);
-                pstADCHal++;
-            }
+    //     /* ADC Initialize */
+    //     if((void *)pstHalFunction->stADC.pfnInit != NULL)
+    //     {
+    //         THalADCPorting *pstADCHal = &astHalADCTbl[0];
+    //         while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
+    //         {
+    //             pstHalFunction->stADC.pfnInit(pstADCHal);
+    //             pstADCHal++;
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
     EngHAL_RTC_Init();
     EngHAL_TIM_Init();
     EngHAL_PWR_Init();
     //EngHAL_USB_OTG_FS_PCD_Init(); // make it later
+}
+
+void EngHAL_Core_Init(void)
+{
+	/* Initialize the HAL Library */
+	EngHAL_Core_Init_F4xx();
+
+	/* Configure the system clock */
+	EngHAL_Core_SystemClock_Config_F4xx();
+
+	/* Configure all configured peripherals before initialization */
+	EngHAL_GPIO_Config_F4xx();
 }
 
 

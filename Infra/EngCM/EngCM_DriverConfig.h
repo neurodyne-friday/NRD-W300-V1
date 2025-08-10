@@ -174,9 +174,7 @@ EXTERN TSolenoid s_astDeviceSolenoidTbl[DEVICE_SOLENOID_MAX_NUMS];
 EXTERN TEncoder s_astDeviceEncoderTbl[] =
 {
 	/*	DeviceKey						Name					Type						HalID	Encoder CAN ID	CAN_DeviceKey			*/
-	{	ENCODER_NAME_RIGHT_SHOULDER1,	"R-Shoulder Encoder1",	ENCODER_TYPE_SERVO_RMDX,	0,		0,				CAN_NAME_MOTOR_CTRL		},	
-	{	ENCODER_NAME_RIGHT_SHOULDER2,	"R-Shoulder Encoder2",	ENCODER_TYPE_SERVO_RMDX,	0,		0,				CAN_NAME_MOTOR_CTRL		},	
-	{	ENCODER_NAME_RIGHT_SHOULDER3,	"R-Shoulder Encoder3",	ENCODER_TYPE_SERVO_RMDX,	0,		0,				CAN_NAME_MOTOR_CTRL		},	
+	{	ENCODER_NAME_MAIN,				"Main Encoder",			ENCODER_TYPE_SERVO_RMDX,	0,		0,				CAN_NAME_MOTOR_CTRL		},	
 
 	{	ENCODER_NAME_UNSPECIFIED	}
 };

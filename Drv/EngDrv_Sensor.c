@@ -74,7 +74,6 @@ void EngDrv_Sensor_Create(void)
 void EngDrv_Sensor_Configuration(void)
 {
 	EngDrv_Sensor_ReadGPIOConfiguration();
-    EngDrv_Sensor_LevelingGPIOConfiguration();
 
 	//EngDrv_Sensor_InitializeAll();
 }
@@ -241,93 +240,6 @@ void EngDrv_Sensor_ReadGPIOConfiguration(void)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(GPIOI, &GPIO_InitStructure);
 }
-
-void EngDrv_Sensor_LevelingGPIOConfiguration(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-
-	// Enable GPIO clock
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOI, ENABLE);
-
-	//
-	// GPIOA Pin 5	: FDNDS_LEVEL0
-	// GPIOA Pin 6	: FDNDS_LEVEL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	//
-	// GPIOD Pin 10  : ML_FLNIS_LEVEL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-	//
-	// GPIOF Pin 6 : FANDS_LEVEL0
-	// GPIOF Pin 7 : FANDS_LEVEL1
-	// GPIOF Pin 9 : FBNDS_LEVEL0
-	// GPIOF Pin 10 : FBNDS_LEVEL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_9 | GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOF, &GPIO_InitStructure);
-
-	//
-	// GPIOG Pin 2 : FENDS_LEVEL0
-	// GPIOG Pin 3 : FENDS_LEVEL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOG, &GPIO_InitStructure);
-
-	//
-	// GPIOH Pin 4 : FCNDS_LEVEL0
-	// GPIOH Pin 5 : FCNDS_LEVEL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOH, &GPIO_InitStructure);
-	
-	//
-	// GPIOI Pin 0 : LRJB_RANPS_LEVEL0
-	// GPIOI Pin 1 : LRJB_RANPS_LEVEL1
-	// GPIOI Pin 3 : LRJB_RBNPS_LEVEL0
-	// GPIOI Pin 4 : LRJB_RBNPS_LEVEL1
-	// GPIOI Pin 5 : ML_FLNOS_LEVEL0
-	// GPIOI Pin 6 : ML_FLNOS_LEVEL1
-	// GPIOI Pin 7 : ML_FLNIS_LEVEL0
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_3
-								| GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOI, &GPIO_InitStructure);
-}
-
 
 void EngDrv_Sensor_Initialize(TSensor* pstSensor)
 {

@@ -30,6 +30,7 @@
 #include "EngHAL_Types.h"
 
 #if defined(STM32F4XX_SUPPORT)
+	#include "EngHAL_Core_STM32F4xx.h"
 	#include "EngHAL_GPIO_STM32F4xx.h"
 	#include "EngHAL_ADC_STM32F4xx.h"
 	#include "EngHAL_CAN_STM32F4xx.h"

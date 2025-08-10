@@ -32,7 +32,6 @@
 EXTERN void EngDrv_Sensor_Create(void);
 EXTERN void EngDrv_Sensor_Configuration(void);
 EXTERN void EngDrv_Sensor_ReadGPIOConfiguration(void);
-EXTERN void EngDrv_Sensor_LevelingGPIOConfiguration(void);
 EXTERN void EngDrv_Sensor_Initialize(TSensor* pstSensor);
 EXTERN void EngDrv_Sensor_InitializeAll(void);
 EXTERN void EngDrv_Sensor_AddListener(TSENSOR_CALLBACK pfnFunc);

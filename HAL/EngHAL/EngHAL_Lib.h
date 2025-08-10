@@ -32,6 +32,7 @@
 
 
 EXTERN BOOL EngHAL_LibraryEntry(void);
+EXTERN void EngHAL_Core_Init(void);
 
 /* EngChip - CAN Interface */
 EXTERN void EngHAL_CAN_Init(U32 ulHalName);

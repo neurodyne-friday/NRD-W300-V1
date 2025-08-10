@@ -36,9 +36,6 @@ EXTERN void EngDrv_ADC_Initialize(TADC* pstADC);
 EXTERN U32 EngDrv_ADC_GetValue(TADC* pstADC);
 
 EXTERN U32 EngHAL_ADC_GetValue(U32 ulDeviceDey);
-EXTERN void EngHAL_ADC_SelChannel(U32 ulDeviceDey);
-EXTERN void EngHAL_ADC_SelChannel_LRJB(U32 ulDeviceKey);
-EXTERN void EngHAL_ADC_SelMuxAddr(U32 ulDeviceDey);
 
 
 #endif//__ENGDRV_CAN_H__

@@ -140,6 +140,25 @@ TTaskProperty* EngOS_Task_GetProperty(U8* pubName)
 	return NULL;
 }
 
+void EngOS_Task_StartAll(void)
+{
+#if defined(ENGOS_CMSIS_V2)
+	osKernelStart();
+#elif defined(ENGOS_FREERTOS)
+	vTaskStartScheduler();
+#elif defined(ENGOS_UCOS)
+#endif
+}
+
+void EngOS_Task_EndAll(void)
+{
+#if defined(ENGOS_CMSIS_V2)
+#elif defined(ENGOS_FREERTOS)
+	vTaskEndScheduler();
+#elif defined(ENGOS_UCOS)
+#endif
+}
+
 void EngOS_Task_Create(void) // will be deleted
 {
     EngIFSvc_IF_Entry();
@@ -215,24 +234,6 @@ void EngOS_Task_Main(void *p_arg) // will be deleted
 	}
 }
 
-void EngOS_Task_StartAll(void)
-{
-#if defined(ENGOS_CMSIS_V2)
-	osKernelStart();
-#elif defined(ENGOS_FREERTOS)
-	vTaskStartScheduler();
-#elif defined(ENGOS_UCOS)
-#endif
-}
-
-void EngOS_Task_EndAll(void)
-{
-#if defined(ENGOS_CMSIS_V2)
-#elif defined(ENGOS_FREERTOS)
-	vTaskEndScheduler();
-#elif defined(ENGOS_UCOS)
-#endif
-}
 
 SemaphoreId EngOS_CreateSemaphore(U8* pubSemaphoreName)
 {

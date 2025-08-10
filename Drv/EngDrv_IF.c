@@ -28,7 +28,7 @@ void EngDrv_IF_Create()
     EngDrv_CAN_Create();
     // EngDrv_Sensor_Create();
     // EngDrv_Motor_Create();
-    // EngDrv_ADC_Create();
+    EngDrv_ADC_Create();
     EngDrv_Encoder_Create();
     // EngDrv_EEPROM_Create();
     // EngDrv_Flash_Create();
@@ -43,7 +43,7 @@ void EngDrv_IF_Configuration()
     // EngDrv_Solenoid_Configuration();
     // EngDrv_EEPROM_Configuration();
     // EngDrv_Flash_Configuration();
-    EngDrv_SPI_Configuration();
+    // EngDrv_SPI_Configuration();
 }
 
 
@@ -59,16 +59,6 @@ void EngDrv_IF_Initialize()
         }
     }
     
-    TETH* pstETH = NULL;
-    for(U32 ulDeviceKey = DEVICE_ETH_KEY_BASE; ulDeviceKey < ETH_NAME_MAX; ulDeviceKey++)
-    {
-        pstETH = EngDrv_IF_GetETH(ulDeviceKey);
-        if(pstETH != NULL)
-        {
-            pstETH->pfnInitialize(pstETH);
-        }
-    }
-    
     /*
     TSensor* pstSensor = NULL;
     for(U32 ulDeviceKey = DEVICE_SENSOR_KEY_BASE; ulDeviceKey < SENSOR_NAME_MAX; ulDeviceKey++)
@@ -80,18 +70,6 @@ void EngDrv_IF_Initialize()
         }
     }
     EngDrv_Sensor_InitializeAll();
-    */
-    
-    /*
-    TMotor* pstMotor = NULL;
-    for(U32 ulDeviceKey = DEVICE_MOTOR_KEY_BASE; ulDeviceKey < MOTOR_NAME_MAX; ulDeviceKey++)
-    {
-        pstMotor = EngDrv_IF_GetMotor(ulDeviceKey);
-        if(pstMotor != NULL)
-        {
-            pstMotor->pfnInitialize(pstMotor);
-        }
-    }
     */
     
     TADC* pstADC = NULL;
