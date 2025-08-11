@@ -54,8 +54,8 @@ TCanCommand s_astCanCommand;
 
 EXTERN TCAN s_astDeviceCanTbl[] =		
 {
-	/*	DeviceKey					Name		Status					*/
-	{	CAN_NAME_MOTOR_CTRL,		"CAN1",		CAN_STATE_Waiting,		},	
+	/*	DeviceKey				Name		Status					*/
+	{	CAN_NAME_MAIN,			"CAN1",		CAN_STATE_Waiting,		},	
 
 	{	CAN_NAME_UNSPECIFIED	}
 };
@@ -78,9 +78,9 @@ TSENSOR_CALLBACK pfnSensorCallback;
 
 EXTERN TSensor s_astDeviceSensorTbl[] =
 {
-	/*	DeviceKey				Name		GPIO_TypeDef	HalID			SensorType				GPIOActiveType			SensorReadType				SensorReadCtrl				SelectDataBus			*/
+	/*	DeviceKey				Name		GPIO_TypeDef	HalID			SensorType				GPIOActiveType			SensorReadType				SensorReadCtrl					*/
 	/* ML Sensors */
-	{	SENSOR_NAME_ML_FANDS,	"FANDS",	GPIOG,			SENSOR_TYPE_SHORT,		HAL_GPIO_ACTIVE_LOW,	SENSOR_READ_TYPE_STABLE,	SENSOR_READ_CTRL_DIRECT,	SENSOR_READ_BUS_UNSPECIFIED	},	
+	{	SENSOR_NAME_NONAME,		"Test",		GPIOG,			SENSOR_TYPE_SHORT,		HAL_GPIO_ACTIVE_LOW,	SENSOR_READ_TYPE_STABLE,	SENSOR_READ_CTRL_DIRECT,	},	
 
 	{	SENSOR_NAME_UNSPECIFIED	}
 };
@@ -107,63 +107,21 @@ EXTERN TETH s_astDeviceETHTbl[DEVICE_ETH_MAX_NUMS];
 #endif
 
 
-/* Motor Driver Instance
-*/
-
-#ifdef __ENGDRV_IF_C__
-
-EXTERN TMotor s_astDeviceMotorTbl[] =
-{
-	/*	DeviceKey					Name				MotorType						HalID	STEPHalInfo	BLDCHalInfo						*/
-	{	MOTOR_NAME_HEAD_ROLL,		"Head Roll",		MOTOR_TYPE_SERVO_DYNAMIXEL,		0,		NULL,		NULL		},	
-	{	MOTOR_NAME_HEAD_YAW,		"Head Yaw",			MOTOR_TYPE_SERVO_DYNAMIXEL,		0,		NULL,		NULL		},	
-	{	MOTOR_NAME_RIGHT_SHOULDER1,	"R-Shoulder1",		MOTOR_TYPE_SERVO_RMDX,			0,		NULL,		NULL		},	
-	{	MOTOR_NAME_RIGHT_SHOULDER2,	"R-Shoulder2",		MOTOR_TYPE_SERVO_RMDX,			0,		NULL,		NULL		},	
-	{	MOTOR_NAME_RIGHT_SHOULDER3,	"R-Shoulder3",		MOTOR_TYPE_SERVO_RMDX,			0,		NULL,		NULL		},	
-	//{	MOTOR_NAME_RIGHT_ELBOW,		"R-Elbow",			MOTOR_TYPE_SERVO_RMDX,			0,		NULL,		NULL		},	
-	//{	MOTOR_NAME_RIGHT_WRIST1,	"R-Wrist1",			MOTOR_TYPE_BLDC,				0,		NULL,		NULL		},	
-	//{	MOTOR_NAME_RIGHT_WRIST2,	"R-Wrist2",			MOTOR_TYPE_BLDC,				0,		NULL,		NULL		},	
-
-	{	MOTOR_NAME_UNSPECIFIED	}
-};
-#else // __ENGDRV_IF_C__
-EXTERN TMotor s_astDeviceMotorTbl[DEVICE_MOTOR_MAX_NUMS];
-#endif
-
-
 /* ADC Driver Instance
 */
 
 #ifdef __ENGDRV_IF_C__
 EXTERN TADC s_astDeviceADCTbl[] =
 {
-	/*	DeviceKey				Name		TADCChannel		TADCMuxAddress	OS_MUTEX				*/
+	/*	DeviceKey				Name				TADCChannel		TADCMuxAddress			*/
 	/* ML */
-	{	ADC_NAME_FANGD,			"FANGD",	ADC_CHANNEL_1,	ADC_MUX_ADDR_1,			},	
-	{	ADC_NAME_FBNGD,			"FBNGD",	ADC_CHANNEL_1,	ADC_MUX_ADDR_2,			},	
-	{	ADC_NAME_FCNGD,			"FCNGD",	ADC_CHANNEL_1,	ADC_MUX_ADDR_3,			},	
+	{	ADC_NAME_CURRENT1,		"CurrentSensor1",	ADC_CHANNEL_1,	ADC_MUX_ADDR_1,			},	
+	{	ADC_NAME_CURRENT1,		"CurrentSensor2",	ADC_CHANNEL_1,	ADC_MUX_ADDR_2,			},	
 	
 	{	ADC_NAME_UNSPECIFIED	}
 };
 #else // __ENGDRV_IF_C__
 EXTERN TADC s_astDeviceADCTbl[DEVICE_ADC_MAX_NUMS];
-#endif
-
-
-/* Solenoid Driver Instance
-*/
-
-#ifdef __ENGDRV_IF_C__
-
-EXTERN TSolenoid s_astDeviceSolenoidTbl[] =
-{
-	/*	DeviceKey				Name								*/
-	{	SOLENOID_NAME_MAIN,		"Sol",								},	
-
-	{	SOLENOID_NAME_UNSPECIFIED	}
-};
-#else // __ENGDRV_IF_C__
-EXTERN TSolenoid s_astDeviceSolenoidTbl[DEVICE_SOLENOID_MAX_NUMS];
 #endif
 
 
@@ -174,30 +132,12 @@ EXTERN TSolenoid s_astDeviceSolenoidTbl[DEVICE_SOLENOID_MAX_NUMS];
 EXTERN TEncoder s_astDeviceEncoderTbl[] =
 {
 	/*	DeviceKey						Name					Type						HalID	Encoder CAN ID	CAN_DeviceKey			*/
-	{	ENCODER_NAME_MAIN,				"Main Encoder",			ENCODER_TYPE_SERVO_RMDX,	0,		0,				CAN_NAME_MOTOR_CTRL		},	
+	{	ENCODER_NAME_MAIN,				"Main Encoder",			ENCODER_TYPE_MAGNETIC,	0,		0,				CAN_NAME_MAIN		},	
 
 	{	ENCODER_NAME_UNSPECIFIED	}
 };
 #else // __ENGDRV_IF_C__
 EXTERN TEncoder s_astDeviceEncoderTbl[DEVICE_ENCODER_MAX_NUMS];
-#endif
-
-
-/* EEPROM Driver Instance
-*/
-
-#ifdef __ENGDRV_IF_C__
-EXTERN TEeprom s_astDeviceEepromTbl[] =
-{
-	/*	DeviceKey			Name			CtrlHalInfo	HalPinSK		OS_MUTEX	*/
-	{	EEPROM_NAME_RJB,	"EEPROM_RJB",	NULL,		NULL		},	
-
-	{	EEPROM_NAME_UNSPECIFIED	}
-};
-#else // __ENGDRV_IF_C__
-extern MutexId* g_osmMutexEepromRJB;
-
-EXTERN TEeprom s_astDeviceEepromTbl[DEVICE_EEPROM_MAX_NUMS];
 #endif
 
 
@@ -208,8 +148,7 @@ EXTERN TEeprom s_astDeviceEepromTbl[DEVICE_EEPROM_MAX_NUMS];
 EXTERN TSPI s_astDeviceSPITbl[] =
 {
 	/*	DeviceKey			Name			HalBaseCS	HalPinCS	HalBaseCLK	HalPinCLK	HalBaseDO	HalPinDO 	HalBaseDI	HalPinDI 	OS_MUTEX		*/
-	{	SPI_NAME_BLDC_ML,	"SPI BLDC_ML",	GPIOH,		0,	GPIOH,		0,	NULL,		0,			GPIOH,		0,	NULL	},	
-	{	SPI_NAME_BLDC_RJP,	"SPI BLDC_RJP",	GPIOF,		0,	GPIOF,		0,	GPIOB,		0,GPIOF,		0,	NULL	},	
+	{	SPI_NAME_ENCODER,	"SPI-Encoder",	GPIOH,		0,	GPIOH,		0,	NULL,		0,			GPIOH,		0,	NULL	},	
 
 	{	SPI_NAME_UNSPECIFIED	}
 };
@@ -242,10 +181,8 @@ EXTERN TUART s_astDeviceUARTTbl[DEVICE_UART_MAX_NUMS];
 #include "EngDrv_CAN.h"
 //#include "EngDrv_Ethernet.h"
 #include "EngDrv_Sensor.h"
-//#include "EngDrv_Motor.h"
 #include "EngDrv_ADC.h"
 #include "EngDrv_Encoder.h"
-//#include "EngDrv_EEPROM.h"
 #include "EngDrv_Flash.h"
 #include "EngDrv_SPI.h"
 #include "EngDrv_UART.h"

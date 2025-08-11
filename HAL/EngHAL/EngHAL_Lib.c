@@ -193,6 +193,11 @@ void EngHAL_CAN_DisableInterrupt(U32 ulHalName)
 	}
 }
 
+void EngHAL_CAN_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))
+{
+	EngHAL_CAN_RegisterCallback_F4xx(ulEventId, pfnCallback);
+}
+
 BOOL EngHAL_CAN_IsRxFIFOEmpty(U32 ulHalName)
 {
 	THalCANPorting *pstHalCANPorting = NULL;
@@ -490,9 +495,9 @@ void EngHAL_PWR_Init(void)
     EngHAL_PWR_Init_F4xx();
 }
 
-void EngHAL_PWR_RegisterCallback(void (*pfnCallback)(void))
+void EngHAL_PWR_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))
 {
-	EngHAL_PWR_RegisterCallback_F4xx(pfnCallback);
+	EngHAL_PWR_RegisterCallback_F4xx(ulEventId, pfnCallback);
 }
 
 /**

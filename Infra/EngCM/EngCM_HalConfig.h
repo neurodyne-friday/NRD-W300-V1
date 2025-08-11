@@ -51,7 +51,8 @@
 EXTERN THalGPIOPorting astHalGPOTbl[] =
 {
     /*	Input Name						AsicType			        Channel					Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    //{   HAL_GPIO_NAME_ML_BLDC_EN,       HAL_CHIP_LM60_TRAY,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+	
 	{	HAL_GPO_NAME_UNSPECIFIED	}
 };
 #else
@@ -62,7 +63,8 @@ EXTERN THalGPIOPorting astHalGPOTbl[HAL_GPO_NAME_MAX];
 EXTERN THalGPIOPorting astHalGPITbl[] =
 {
     /*	Input Name						AsicType			        Channel					Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    //{   HAL_GPIO_NAME_FANDS,            HAL_CHIP_LM60_TRAY,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_CURRENT_A,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_CURRENT_B,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
 
 	{	HAL_GPI_NAME_UNSPECIFIED	}
 };

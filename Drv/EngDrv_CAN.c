@@ -32,7 +32,7 @@ static void EngDrv_CAN_TransmitISR(void);
 
 void EngDrv_CAN_Create(void)
 {
-	TCAN *pstInstance = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN *pstInstance = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 
 	pstInstance->astCanCommand = s_astCanCommand;
 
@@ -55,7 +55,7 @@ void EngDrv_CAN_Initialize(TCAN* pstCAN)
 
 static void EngDrv_CAN_ReceiveISR(void)
 {
-	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	static U16 rxIndex = 0;
 	
 }
@@ -63,7 +63,7 @@ static void EngDrv_CAN_ReceiveISR(void)
 
 static void EngDrv_CAN_TransmitISR(void)
 {
-	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 }
 
 
@@ -113,7 +113,7 @@ void EngDrv_CAN_HALRxCallback(U32 ulHalName, U8 pubData[], U16 uwLength)
 
 void EngDrv_CAN_ReceiveTask(void *p_arg)
 {
-	TCAN *pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN *pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	
 	U8 data, bcc, bcc_rcv;
 	U8 controlType;
@@ -131,7 +131,7 @@ void EngDrv_CAN_ReceiveTask(void *p_arg)
 
 void EngDrv_CAN_TransmitTask(void *p_arg)
 {
-	TCAN *pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN *pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	U16 uwBufferedCount = 0;
 	
 	(void)p_arg;
@@ -185,19 +185,19 @@ void EngDrv_CAN_ReceiveCommand(TCAN* pstCAN)
 
 void EngDrv_CAN_IncreaseTimer(void)
 {
-	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	pstCAN->vuwCanTimer++;
 }
 
 U16 EngDrv_CAN_GetBufferedCount(void)
 {
-	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	return pstCAN->aulCANTransmitCount[0] - pstCAN->aulCANTransmitCount[1];
 }
 
 
 U16 EngDrv_CAN_GetMaxBufferedCount(void)
 {
-	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+	TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 	return pstCAN->uwMaxPendingTransmitCount;
 }

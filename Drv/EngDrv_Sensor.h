@@ -52,9 +52,7 @@ EXTERN U16 EngDrv_Sensor_GetOnOffError(void);
 EXTERN void EngHAL_Sensor_PortControl(U8 ubAddress, GPIO_TypeDef* pHalBaseID, U32 ulHalPinID, U8 ubSet);
 EXTERN void EngHAL_Sensor_SetLevel(TSensorName ulSensorName, TSensorLevel eLevel);
 EXTERN void EngHAL_Sensor_PowerControl(U8 ubOnOff);
-EXTERN void EngHAL_LRJB_SelectAddress(THalLRJBAddressType eAddressType);
 EXTERN U16 EngHAL_Sensor_GetADCValue(TADCType eType);
-EXTERN U8 EngHAL_Sensor_ReadFromDataBus(TSensorReadDataBus eReadDataNum);
 
 
 #endif /* __ENGDRV_SENSOR_H__ */

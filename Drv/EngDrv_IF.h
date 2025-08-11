@@ -36,13 +36,10 @@ EXTERN void EngDrv_IF_Initialize();     // #3
 
 EXTERN void *EngDrv_IF_GetDevice(U32 ulDeviceKey);
 EXTERN TCAN *EngDrv_IF_GetCAN(U32 ulDeviceKey);
-EXTERN TETH *EngDrv_IF_GetETH(U32 ulDeviceKey);
+//EXTERN TETH *EngDrv_IF_GetETH(U32 ulDeviceKey);
 EXTERN TSensor *EngDrv_IF_GetSensor(U32 ulDeviceKey);
-EXTERN TMotor *EngDrv_IF_GetMotor(U32 ulDeviceKey);
 EXTERN TADC *EngDrv_IF_GetADC(U32 ulDeviceKey);
-EXTERN TSolenoid *EngDrv_IF_GetSolenoid(U32 ulDeviceKey);
 EXTERN TEncoder *EngDrv_IF_GetEncoder(U32 ulDeviceKey);
-EXTERN TEeprom *EngDrv_IF_GetEeprom(U32 ulDeviceKey);
 EXTERN TSPI* EngDrv_IF_GetSPI(U32 ulDeviceKey);
 EXTERN TUART* EngDrv_IF_GetUART(U32 ulDeviceKey);
 

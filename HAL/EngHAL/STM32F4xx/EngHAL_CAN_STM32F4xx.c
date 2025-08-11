@@ -49,6 +49,7 @@ typedef struct _THalCANTxBuffer
 THalCANRxBuffer astHalCANRxBuffer[CAN_CHANNEL_COUNT];
 THalCANTxBuffer astHalCANTxBuffer[CAN_CHANNEL_COUNT];
 
+HAL_EVENT_CALLBACK g_pfnHalCanEventCallback[HAL_EVENT_CAN_MAX] = {0}; // CAN-RX Callback pointer
 
 /**
   * @brief CAN Interface Functions
@@ -178,6 +179,11 @@ void EngHAL_CAN_DisableInterrupt_F4xx(THalCANPorting *pstHalPorting)
     {
         Error_Handler();
     }
+}
+
+void EngHAL_CAN_RegisterCallback_F4xx(U32 ulEventId, void (*pfnCallback)(void))
+{
+    g_pfnHalCanEventCallback[ulEventId] = pfnCallback;
 }
 
 BOOL EngHAL_CAN_IsRxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting)
@@ -343,6 +349,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         Error_Handler();
     }
 
+    taskENTER_CRITICAL();
     pRxBuffer = &astHalCANRxBuffer[0];
 
     //printf("Received CAN message with ID: 0x%03X, Data: ", RxHeader.StdId);
@@ -352,6 +359,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         pRxBuffer->pubData[i] = RxData[i];
     }
     pRxBuffer->ubLength = RxHeader.DLC;
+    taskEXIT_CRITICAL();
 }
 
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -365,6 +373,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
         Error_Handler();
     }
 
+    taskENTER_CRITICAL();
     pRxBuffer = &astHalCANRxBuffer[1];
 
     //printf("Received CAN message with ID: 0x%03X, Data: ", RxHeader.StdId);
@@ -374,5 +383,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
         pRxBuffer->pubData[i] = RxData[i];
     }
     pRxBuffer->ubLength = RxHeader.DLC;
+    taskEXIT_CRITICAL();
 }
 

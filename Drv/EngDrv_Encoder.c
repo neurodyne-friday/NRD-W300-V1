@@ -45,7 +45,7 @@ void EngDrv_Encoder_Initialize(TEncoder* pstEncoder)
 {
     TCAN* pstCAN = NULL;
 
-    if(pstEncoder->enType == ENCODER_TYPE_SERVO_RMDX)
+    if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
         pstCAN = EngDrv_IF_GetCAN(pstEncoder->ulCANDeviceKey);
         if(pstCAN)
@@ -63,9 +63,9 @@ void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
 {
     pstEncoder->slCounter = slCount;
 
-    if(pstEncoder->enType == ENCODER_TYPE_SERVO_RMDX)
+    if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
-        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
         U8 pubCommand[8] = {0, };
 
         pubCommand[0] = 0x63;
@@ -80,9 +80,9 @@ void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
 
 S32 EngDrv_Encoder_Get(TEncoder* pstEncoder)
 {
-    if(pstEncoder->enType == ENCODER_TYPE_SERVO_RMDX)
+    if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
-        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
         U8 pubCommand[8] = {0, };
 
         pubCommand[0] = 0x60;
@@ -95,9 +95,9 @@ S32 EngDrv_Encoder_Get(TEncoder* pstEncoder)
 
 void EngDrv_Encoder_Reset(TEncoder* pstEncoder)
 {
-    if(pstEncoder->enType == ENCODER_TYPE_SERVO_RMDX)
+    if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
-        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
         U8 pubCommand[8] = {0, };
 
         pubCommand[0] = 0x64; // Write the current multi-turn position of the encoder(ROM) as the motor zero offset

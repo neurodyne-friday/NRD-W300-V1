@@ -46,8 +46,9 @@ BOOL EngSM_IF_Initialize(void)
     /* Initialize the Hardware */
     EngHAL_LibraryEntry();
 
-    /* Initialize the Hardware */
-	EngHAL_PWR_RegisterCallback(EngSM_PowerOff);
+    /* Register the Hardware Interrupts */
+	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN0_RX, EngSM_PowerOff);
+	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_PowerOff);
 
 	/* Create & Initialize Device Driver */
 	EngDrv_IF_Create();

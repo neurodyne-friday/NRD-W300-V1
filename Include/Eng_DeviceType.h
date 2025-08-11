@@ -65,7 +65,7 @@ typedef enum
 
 typedef enum
 {
-	CAN_NAME_MOTOR_CTRL			= DEVICE_CAN_KEY_BASE,
+	CAN_NAME_MAIN   			= DEVICE_CAN_KEY_BASE,
     CAN_NAME_MAX,
     CAN_NAME_UNSPECIFIED        = CAN_NAME_MAX
 } TCANName;
@@ -214,47 +214,10 @@ typedef struct _TETH
 
 typedef enum
 {
-	SENSOR_NAME_ML_FANDS			= DEVICE_SENSOR_KEY_BASE,
-    SENSOR_NAME_ML_FBNDS,
-    SENSOR_NAME_ML_FCNDS,
-    SENSOR_NAME_ML_FDNDS,
-    SENSOR_NAME_ML_FENDS,
-    SENSOR_NAME_ML_FLNOS,
-    SENSOR_NAME_ML_FLNIS,
-    /* Interrup Sensor */
-    SENSOR_NAME_ML_FADDI,
-    SENSOR_NAME_ML_FBDDI,
-    SENSOR_NAME_ML_FCDDI,
-    SENSOR_NAME_ML_FDDDI,
-    SENSOR_NAME_ML_FEDDI,
-    SENSOR_NAME_ML_FRDDI,
-    SENSOR_NAME_ML_FLEDI, // ML BLDC Encoder
-    /* Short Sensor */
-    SENSOR_NAME_RJP_RANPS,
-    SENSOR_NAME_RJP_RBNPS,
-    /* Short Sensor */
-    SENSOR_NAME_RJB_RAINS,
-    SENSOR_NAME_RJB_RBINS,
-    SENSOR_NAME_RJB_RCINS,
-    /* Long Sensor */
-    SENSOR_NAME_RJB_RAFNS,
-    SENSOR_NAME_RJB_RBFNS,
-    SENSOR_NAME_RJB_RCFNS,
-    SENSOR_NAME_RJB_RAENS,
-    SENSOR_NAME_RJB_RBENS,
-    SENSOR_NAME_RJB_RCENS,
-    SENSOR_NAME_RJB_RDANS,
-    /* Interrup Sensor */
-    SENSOR_NAME_RJB_RAFPI,
-    SENSOR_NAME_RJB_RBSDI,
-    SENSOR_NAME_RJB_RTSDI,
-    /* ADC Sensor */
-    SENSOR_NAME_ADC_RANGD,
-    SENSOR_NAME_ADC_RBNGD,
-    SENSOR_NAME_ADC_24V,
+	SENSOR_NAME_NONAME          = DEVICE_SENSOR_KEY_BASE,
 
     SENSOR_NAME_MAX,
-    SENSOR_NAME_UNSPECIFIED       = SENSOR_NAME_MAX
+    SENSOR_NAME_UNSPECIFIED     = SENSOR_NAME_MAX
 } TSensorName;
 
 typedef enum
@@ -288,30 +251,7 @@ typedef enum
 	SENSOR_LEVEL_UNSPECIFIED
 } TSensorLevel;
 
-typedef enum
-{
-	HAL_LRJB_ADDRESS_TYPE_0,	// 1100
-	HAL_LRJB_ADDRESS_TYPE_1,	// 1010
-	HAL_LRJB_ADDRESS_TYPE_2,	// 0110
-	HAL_LRJB_ADDRESS_TYPE_3,	// 1001
-	HAL_LRJB_ADDRESS_TYPE_4,	// 0101
-	HAL_LRJB_ADDRESS_TYPE_MAX,
-} THalLRJBAddressType;
-
-typedef enum
-{
-	SENSOR_READ_BUS_1,
-	SENSOR_READ_BUS_2,
-	SENSOR_READ_BUS_3,
-	SENSOR_READ_BUS_4,
-	SENSOR_READ_BUS_UNSPECIFIED,
-	SENSOR_READ_BUS_MAX = SENSOR_READ_BUS_UNSPECIFIED
-} TSensorReadDataBus;
-
-
 #define SENSOR_BUFFER_SIZE  3
-#define MAX_SHORT_SENSOR_LEVEL  3
-#define MAX_LONG_SENSOR_LEVEL	1
 
 typedef void (*TSENSOR_CALLBACK)(U8 *parg);
 
@@ -326,7 +266,6 @@ typedef struct _TSensor
     THalGPIOActive eIOActiveType;
     TSensorReadType enReadType;
 	TSensorReadCtrl enReadCtrl;
-    TSensorReadDataBus eSelectDataBus;
 	/******************************************************************/
 
 	U8 ubOnCnt;
@@ -351,251 +290,253 @@ typedef struct _TSensor
 /**
  * Device Information of Motors
  */
-typedef enum
-{
-    MOTOR_NAME_HEAD_ROLL         = DEVICE_MOTOR_KEY_BASE, 
-    MOTOR_NAME_HEAD_YAW,
-	MOTOR_NAME_RIGHT_SHOULDER1,
-    MOTOR_NAME_RIGHT_SHOULDER2,
-    MOTOR_NAME_RIGHT_SHOULDER3,
-    MOTOR_NAME_RIGHT_ELBOW,
-    MOTOR_NAME_RIGHT_WRIST1,
-    MOTOR_NAME_RIGHT_WRIST2,
-    MOTOR_NAME_MAX,
-    MOTOR_NAME_UNSPECIFIED = MOTOR_NAME_MAX
-} TMotorName;
 
-typedef enum
-{
-	MOTOR_TYPE_STEP,
-	MOTOR_TYPE_BLDC,
-	MOTOR_TYPE_DC,
-	MOTOR_TYPE_SERVO_RMDX,
-    MOTOR_TYPE_SERVO_DYNAMIXEL,
-	MOTOR_TYPE_UNSPECIFIED
-} TMotorType;
+// typedef enum
+// {
+//     MOTOR_NAME_HEAD_ROLL         = DEVICE_MOTOR_KEY_BASE, 
+//     MOTOR_NAME_HEAD_YAW,
+// 	MOTOR_NAME_RIGHT_SHOULDER1,
+//     MOTOR_NAME_RIGHT_SHOULDER2,
+//     MOTOR_NAME_RIGHT_SHOULDER3,
+//     MOTOR_NAME_RIGHT_ELBOW,
+//     MOTOR_NAME_RIGHT_WRIST1,
+//     MOTOR_NAME_RIGHT_WRIST2,
+//     MOTOR_NAME_MAX,
+//     MOTOR_NAME_UNSPECIFIED = MOTOR_NAME_MAX
+// } TMotorName;
 
-typedef enum
-{
-	MOTOR_DIR_BACKWARD, //MOTOR_DIR_CW,
-	MOTOR_DIR_FORWARD,  //MOTOR_DIR_CCW,
-	MOTOR_DIR_UNSPECIFIED
-} TMotorDirection;
+// typedef enum
+// {
+// 	MOTOR_TYPE_STEP,
+// 	MOTOR_TYPE_BLDC,
+// 	MOTOR_TYPE_DC,
+// 	MOTOR_TYPE_SERVO_RMDX,
+//     MOTOR_TYPE_SERVO_DYNAMIXEL,
+// 	MOTOR_TYPE_UNSPECIFIED
+// } TMotorType;
 
-typedef enum
-{
-	MOTOR_MODE_FULL			= 0,
-	MOTOR_MODE_HALF			= 1,
-	MOTOR_MODE_QUARTER		= 2,
-	MOTOR_MODE_EIGHTH		= 3,
-	MOTOR_MODE_UNSPECIFIED
-} TMotorMode;
+// typedef enum
+// {
+// 	MOTOR_DIR_BACKWARD, //MOTOR_DIR_CW,
+// 	MOTOR_DIR_FORWARD,  //MOTOR_DIR_CCW,
+// 	MOTOR_DIR_UNSPECIFIED
+// } TMotorDirection;
 
-typedef enum
-{
-	MOTOR_ST_STOP,				/**< detent position */
-	MOTOR_ST_EXCITATION,		/**< Settling time from detent position to equilibrium position : ~250ms */
-	MOTOR_ST_ACCELERATION,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : ACC = dV/dT */
-	MOTOR_ST_ACCELERATION2,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : ACC = dV/dT */
-	MOTOR_ST_STEADY,			/**< Standard deviation of velocity at steady state : Ripple */
-	MOTOR_ST_DECELERATION,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : DEC = dV/dT */
-	MOTOR_ST_DE_EXCITATION,		/**< Settling time from equilibrium position to detent position : 10ms~ */
-	MOTOR_ST_HOLD				/**< Keep up time at detent or equilibrium position */
-} TMotorState;
+// typedef enum
+// {
+// 	MOTOR_MODE_FULL			= 0,
+// 	MOTOR_MODE_HALF			= 1,
+// 	MOTOR_MODE_QUARTER		= 2,
+// 	MOTOR_MODE_EIGHTH		= 3,
+// 	MOTOR_MODE_UNSPECIFIED
+// } TMotorMode;
 
-typedef enum
-{
-	MOTOR_CURRENT_LOW,
-	MOTOR_CURRENT_MIDDLE,
-	MOTOR_CURRENT_HIGH,
-	MOTOR_CURRENT_PWM,
-	MOTOR_CURRENT_UNSPECIFIED
-} TMotorCurrent;
+// typedef enum
+// {
+// 	MOTOR_ST_STOP,				/**< detent position */
+// 	MOTOR_ST_EXCITATION,		/**< Settling time from detent position to equilibrium position : ~250ms */
+// 	MOTOR_ST_ACCELERATION,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : ACC = dV/dT */
+// 	MOTOR_ST_ACCELERATION2,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : ACC = dV/dT */
+// 	MOTOR_ST_STEADY,			/**< Standard deviation of velocity at steady state : Ripple */
+// 	MOTOR_ST_DECELERATION,		/**< Linear (motion in straight line) or Nonlinear (S-Curve) : DEC = dV/dT */
+// 	MOTOR_ST_DE_EXCITATION,		/**< Settling time from equilibrium position to detent position : 10ms~ */
+// 	MOTOR_ST_HOLD				/**< Keep up time at detent or equilibrium position */
+// } TMotorState;
 
-typedef enum
-{
-	MOTOR_CTRL_INIT,
-	MOTOR_CTRL_DOWNLOAD_SPEED_TABLE,
-	MOTOR_CTRL_START,
-	MOTOR_CTRL_CHANGE_SPEED,
-	MOTOR_CTRL_BACKWARD_START,
-	MOTOR_CTRL_HOLD,
-	MOTOR_CTRL_STOP,
-	MOTOR_CTRL_SET_CURRENT,
-	MOTOR_CTRL_GET_STATE,
-	MOTOR_CTRL_CHK_CONNECTION,
-	MOTOR_CTRL_READY_CHK,
-	MOTOR_CTRL_CHANGE_CURRVELOCITY,
-	MOTOR_CTRL_CHECK_MOTOR_STOP_STABLE,	
-	MOTOR_CTRL_GET_MOTOR_STOP_STABLE_TIME,	
-	MOTOR_CTRL_GET_CURR_SPEED_RATIO,
-	MOTOR_CTRL_GET_ENABLE_POINT_TIME,
-	MOTOR_CTRL_GET_STEP_PPS,
-	MOTOR_CTRL_GET_START_ELAPSED_TIME,
-	MOTOR_CTRL_GET_MOTOR_ACC_TOTAL_TIME,
-	MOTOR_CTRL_REGIST_LOAD_SENS_MONITOR_FUNC,
-	MOTOR_CTRL_MAX
-} TMotorCtrlCode;
+// typedef enum
+// {
+// 	MOTOR_CURRENT_LOW,
+// 	MOTOR_CURRENT_MIDDLE,
+// 	MOTOR_CURRENT_HIGH,
+// 	MOTOR_CURRENT_PWM,
+// 	MOTOR_CURRENT_UNSPECIFIED
+// } TMotorCurrent;
 
-typedef enum
-{
-	MOTOR_BLDC_HALL_SENSOR_A,
-	MOTOR_BLDC_HALL_SENSOR_B,
-	MOTOR_BLDC_HALL_SENSOR_C,
-	MOTOR_BLDC_HALL_SENSOR_MAX
-} TMotorBLDCHallType;
+// typedef enum
+// {
+// 	MOTOR_CTRL_INIT,
+// 	MOTOR_CTRL_DOWNLOAD_SPEED_TABLE,
+// 	MOTOR_CTRL_START,
+// 	MOTOR_CTRL_CHANGE_SPEED,
+// 	MOTOR_CTRL_BACKWARD_START,
+// 	MOTOR_CTRL_HOLD,
+// 	MOTOR_CTRL_STOP,
+// 	MOTOR_CTRL_SET_CURRENT,
+// 	MOTOR_CTRL_GET_STATE,
+// 	MOTOR_CTRL_CHK_CONNECTION,
+// 	MOTOR_CTRL_READY_CHK,
+// 	MOTOR_CTRL_CHANGE_CURRVELOCITY,
+// 	MOTOR_CTRL_CHECK_MOTOR_STOP_STABLE,	
+// 	MOTOR_CTRL_GET_MOTOR_STOP_STABLE_TIME,	
+// 	MOTOR_CTRL_GET_CURR_SPEED_RATIO,
+// 	MOTOR_CTRL_GET_ENABLE_POINT_TIME,
+// 	MOTOR_CTRL_GET_STEP_PPS,
+// 	MOTOR_CTRL_GET_START_ELAPSED_TIME,
+// 	MOTOR_CTRL_GET_MOTOR_ACC_TOTAL_TIME,
+// 	MOTOR_CTRL_REGIST_LOAD_SENS_MONITOR_FUNC,
+// 	MOTOR_CTRL_MAX
+// } TMotorCtrlCode;
 
-typedef enum
-{
-	MOTOR_BLDC_SPEED_IDLE,
-	MOTOR_BLDC_SPEED_LOCK,
-	MOTOR_BLDC_SPEED_ADJUST,
-	MOTOR_BLDC_SPEED_MAX
-} TMotorBLDCSpeedState;
+// typedef enum
+// {
+// 	MOTOR_BLDC_HALL_SENSOR_A,
+// 	MOTOR_BLDC_HALL_SENSOR_B,
+// 	MOTOR_BLDC_HALL_SENSOR_C,
+// 	MOTOR_BLDC_HALL_SENSOR_MAX
+// } TMotorBLDCHallType;
 
-
-typedef struct
-{
-	TMotorState enState;
-	TMotorCurrent enCurrent;
-	U32 ulTime;
-	//TMotorSpeedTable *pstSpeedTbl;
-} TMotorCtrlParameter;
-
-typedef struct
-{
-	F32 fPGain;
-    F32 fIGain;
-    F32 fDGain;
-} TMotorPIDCtrlGain;
-
-typedef struct
-{
-	GPIO_TypeDef* pstEnablePort;
-	U32 ulEnablePin;
-	GPIO_TypeDef* pstDirectionPort;
-	U32 ulDirectionPin;
-	GPIO_TypeDef* pstHoldPort;
-	U32 ulHoldPin;
-	GPIO_TypeDef* pstPulsePort;
-	U32 ulPulsePin;
-	GPIO_TypeDef* pstMD0Port;
-	U32 ulMD0Pin;
-	GPIO_TypeDef* pstMD1Port;
-	U32 ulMD1Pin;
-} TMotorStepCtrlHalInfo;
-
-typedef struct
-{
-	U32 ulSPIDeviceKey; // if use SPI config type
-
-	GPIO_TypeDef* pstEnablePort;
-	U32 ulEnablePin;
-	GPIO_TypeDef* pstDirectionPort;
-	U32 ulDirectionPin;
-	GPIO_TypeDef* pstBrakePort;
-	U32 ulBrakePin;
-	GPIO_TypeDef* pstClkPort;
-	U32 ulClkPin;
-	GPIO_TypeDef* pstFaultPort;
-	U32 ulFaultPin;
-	GPIO_TypeDef* pstLockPort;
-	U32 ulLockPin;
-	GPIO_TypeDef* pstFGOutPort;
-	U32 ulFGOutPin;
-} TMotorBLDCCtrlHalInfo;
-
-/*
- * SERVO_RMDX PARAMETERS
- */
-
-#define MOTOR_SERVO_RMDX_POS_KP_COEF	0.00039062
-#define MOTOR_SERVO_RMDX_POS_KI_COEF	0.00003906
-#define MOTOR_SERVO_RMDX_VEL_KP_COEF	0.00039062
-#define MOTOR_SERVO_RMDX_VEL_KI_COEF	0.00003906
-#define MOTOR_SERVO_RMDX_CUR_KP_COEF	0.01171875
-#define MOTOR_SERVO_RMDX_CUR_KI_COEF	0.00039062
-
-#define MOTOR_SERVO_RMDX_POS_COEF		0.01
-#define MOTOR_SERVO_RMDX_POS_LIMIT		500         // deg
-#define MOTOR_SERVO_RMDX_VEL_COEF		0.01
-#define MOTOR_SERVO_RMDX_VEL_LIMIT		500         // deg/sec
+// typedef enum
+// {
+// 	MOTOR_BLDC_SPEED_IDLE,
+// 	MOTOR_BLDC_SPEED_LOCK,
+// 	MOTOR_BLDC_SPEED_ADJUST,
+// 	MOTOR_BLDC_SPEED_MAX
+// } TMotorBLDCSpeedState;
 
 
-typedef struct _TMotor
-{
-	/************ Below variables are initialized in table ************/
-	U32 ulDeviceKey;
+// typedef struct
+// {
+// 	TMotorState enState;
+// 	TMotorCurrent enCurrent;
+// 	U32 ulTime;
+// 	//TMotorSpeedTable *pstSpeedTbl;
+// } TMotorCtrlParameter;
 
-	U8 *pubName;
-	TMotorType enType;
-	U32 ulHalID;
+// typedef struct
+// {
+// 	F32 fPGain;
+//     F32 fIGain;
+//     F32 fDGain;
+// } TMotorPIDCtrlGain;
 
-    TMotorStepCtrlHalInfo *pstStepCtrlHalParam;
-    TMotorBLDCCtrlHalInfo *pstBLDCCtrlHalParam;
+// typedef struct
+// {
+// 	GPIO_TypeDef* pstEnablePort;
+// 	U32 ulEnablePin;
+// 	GPIO_TypeDef* pstDirectionPort;
+// 	U32 ulDirectionPin;
+// 	GPIO_TypeDef* pstHoldPort;
+// 	U32 ulHoldPin;
+// 	GPIO_TypeDef* pstPulsePort;
+// 	U32 ulPulsePin;
+// 	GPIO_TypeDef* pstMD0Port;
+// 	U32 ulMD0Pin;
+// 	GPIO_TypeDef* pstMD1Port;
+// 	U32 ulMD1Pin;
+// } TMotorStepCtrlHalInfo;
 
-    BOOL bEnable;
-    BOOL bDir;
-    BOOL bStopMode;
 
-	/******************************************************************/
+// typedef struct
+// {
+// 	U32 ulSPIDeviceKey; // if use SPI config type
 
-    // CW: (+), CCW: (-)
-    F32 fPosition;      // rad
-    F32 fVelocity;      // rad/sec
-    F32 fAccelaration;  // rad/sec^2
+// 	GPIO_TypeDef* pstEnablePort;
+// 	U32 ulEnablePin;
+// 	GPIO_TypeDef* pstDirectionPort;
+// 	U32 ulDirectionPin;
+// 	GPIO_TypeDef* pstBrakePort;
+// 	U32 ulBrakePin;
+// 	GPIO_TypeDef* pstClkPort;
+// 	U32 ulClkPin;
+// 	GPIO_TypeDef* pstFaultPort;
+// 	U32 ulFaultPin;
+// 	GPIO_TypeDef* pstLockPort;
+// 	U32 ulLockPin;
+// 	GPIO_TypeDef* pstFGOutPort;
+// 	U32 ulFGOutPin;
+// } TMotorBLDCCtrlHalInfo;
 
-    U32 ulState;
+// /*
+//  * SERVO_RMDX PARAMETERS
+//  */
 
-	/* STEP Parameters */
-	U8 ubMakePulse;
-	U8 ubActOption;
-	U16 uwStepCount;
+// #define MOTOR_SERVO_RMDX_POS_KP_COEF	0.00039062
+// #define MOTOR_SERVO_RMDX_POS_KI_COEF	0.00003906
+// #define MOTOR_SERVO_RMDX_VEL_KP_COEF	0.00039062
+// #define MOTOR_SERVO_RMDX_VEL_KI_COEF	0.00003906
+// #define MOTOR_SERVO_RMDX_CUR_KP_COEF	0.01171875
+// #define MOTOR_SERVO_RMDX_CUR_KI_COEF	0.00039062
 
-    /* BLDC Parameters */
-    U16 uwTargetSpeed;
-    U16 uwSpeedRegister; // DRV8308 SPEED Value
-    U32 aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_MAX]; // Hall Sensor
-    U32 aulOldHallCount[MOTOR_BLDC_HALL_SENSOR_MAX];
-    U32 ulCurWheelCount; // Encoder
-    U32 ulOldWheelCount;
+// #define MOTOR_SERVO_RMDX_POS_COEF		0.01
+// #define MOTOR_SERVO_RMDX_POS_LIMIT		500         // deg
+// #define MOTOR_SERVO_RMDX_VEL_COEF		0.01
+// #define MOTOR_SERVO_RMDX_VEL_LIMIT		500         // deg/sec
 
-    /* Servo-RMDX Parameters */
-    U8 ubMotorCANID;
-    U32 ulCANDeviceKey;
-    TCANObserver stCANObserver;
-    U16 uwMaxSpeed;
-    TMotorPIDCtrlGain stPIDGain;
 
-    /* Common Interfaces */
-    void (*pfnInitialize)(struct _TMotor *pstMotor);
-	void (*pfnStart)(struct _TMotor *pstMotor);
-	void (*pfnChangeSpeed)(struct _TMotor *pstMotor, U32 ulVelocity);
-	void (*pfnStartBackward)(struct _TMotor *pstMotor);
-	/* STEP Interfaces */
-    void (*pfnSTEPSetEnable)(struct _TMotor *pstMotor, BOOL bValue, BOOL bActiveLow);
-    void (*pfnSTEPSetDirection)(struct _TMotor *pstMotor, BOOL bValue);
-    void (*pfnSTEPSetHold)(struct _TMotor *pstMotor, BOOL bValue, BOOL bActiveLow);
-    void (*pfnSTEPSetPulse)(struct _TMotor *pstMotor, BOOL bValue);
-	void (*pfnSTEPStop)(struct _TMotor *pstMotor, BOOL bHoldStop, BOOL bActiveLow);
-    /* BLDC Interfaces */
-    void (*pfnBLDCSetEnable)(struct _TMotor *pstMotor, U8 ubEnable);
-    void (*pfnBLDCStop)(struct _TMotor *pstMotor);
-    void (*pfnBLDCOff)(struct _TMotor *pstMotor);
-    void (*pfnBLDCSetDirection)(struct _TMotor *pstMotor, U8 ubDirection);
-    void (*pfnBLDCSetBrake)(struct _TMotor *pstMotor, U8 ubBrake);
-    void (*pfnBLDCSetSpeed)(struct _TMotor *pstMotor, U16 uwValue);
-    U32 (*pfnBLDCGetWheelCount)(struct _TMotor *pstMotor);
-    void (*pfnBLDCSetWheelCount)(struct _TMotor *pstMotor, U32 ulValue);
-    /* Servo-RMDX Interfaces */
-    void (*pfnNotifiedByCAN)(U32 ulDeviceKey, U8* pubData, U16 uwLength);
-    void (*pfnRMDXEnable)(struct _TMotor *pstMotor);
-    void (*pfnRMDXStop)(struct _TMotor *pstMotor);
-    void (*pfnRMDXSetPosition)(struct _TMotor *pstMotor, S32 uwValue);
-    void (*pfnRMDXSetVelocity)(struct _TMotor *pstMotor, S32 uwValue);
-    void (*pfnRMDXShutdown)(struct _TMotor *pstMotor);
-    void (*pfnRMDXSetID)(struct _TMotor *pstMotor, U16 uwID);
-} TMotor;
+// typedef struct _TMotor
+// {
+// 	/************ Below variables are initialized in table ************/
+// 	U32 ulDeviceKey;
+
+// 	U8 *pubName;
+// 	TMotorType enType;
+// 	U32 ulHalID;
+
+//     TMotorStepCtrlHalInfo *pstStepCtrlHalParam;
+//     TMotorBLDCCtrlHalInfo *pstBLDCCtrlHalParam;
+
+//     BOOL bEnable;
+//     BOOL bDir;
+//     BOOL bStopMode;
+
+// 	/******************************************************************/
+
+//     // CW: (+), CCW: (-)
+//     F32 fPosition;      // rad
+//     F32 fVelocity;      // rad/sec
+//     F32 fAccelaration;  // rad/sec^2
+
+//     U32 ulState;
+
+// 	/* STEP Parameters */
+// 	U8 ubMakePulse;
+// 	U8 ubActOption;
+// 	U16 uwStepCount;
+
+//     /* BLDC Parameters */
+//     U16 uwTargetSpeed;
+//     U16 uwSpeedRegister; // DRV8308 SPEED Value
+//     U32 aulCurHallCount[MOTOR_BLDC_HALL_SENSOR_MAX]; // Hall Sensor
+//     U32 aulOldHallCount[MOTOR_BLDC_HALL_SENSOR_MAX];
+//     U32 ulCurWheelCount; // Encoder
+//     U32 ulOldWheelCount;
+
+//     /* Servo-RMDX Parameters */
+//     U8 ubMotorCANID;
+//     U32 ulCANDeviceKey;
+//     TCANObserver stCANObserver;
+//     U16 uwMaxSpeed;
+//     TMotorPIDCtrlGain stPIDGain;
+
+//     /* Common Interfaces */
+//     void (*pfnInitialize)(struct _TMotor *pstMotor);
+// 	void (*pfnStart)(struct _TMotor *pstMotor);
+// 	void (*pfnChangeSpeed)(struct _TMotor *pstMotor, U32 ulVelocity);
+// 	void (*pfnStartBackward)(struct _TMotor *pstMotor);
+// 	/* STEP Interfaces */
+//     void (*pfnSTEPSetEnable)(struct _TMotor *pstMotor, BOOL bValue, BOOL bActiveLow);
+//     void (*pfnSTEPSetDirection)(struct _TMotor *pstMotor, BOOL bValue);
+//     void (*pfnSTEPSetHold)(struct _TMotor *pstMotor, BOOL bValue, BOOL bActiveLow);
+//     void (*pfnSTEPSetPulse)(struct _TMotor *pstMotor, BOOL bValue);
+// 	void (*pfnSTEPStop)(struct _TMotor *pstMotor, BOOL bHoldStop, BOOL bActiveLow);
+//     /* BLDC Interfaces */
+//     void (*pfnBLDCSetEnable)(struct _TMotor *pstMotor, U8 ubEnable);
+//     void (*pfnBLDCStop)(struct _TMotor *pstMotor);
+//     void (*pfnBLDCOff)(struct _TMotor *pstMotor);
+//     void (*pfnBLDCSetDirection)(struct _TMotor *pstMotor, U8 ubDirection);
+//     void (*pfnBLDCSetBrake)(struct _TMotor *pstMotor, U8 ubBrake);
+//     void (*pfnBLDCSetSpeed)(struct _TMotor *pstMotor, U16 uwValue);
+//     U32 (*pfnBLDCGetWheelCount)(struct _TMotor *pstMotor);
+//     void (*pfnBLDCSetWheelCount)(struct _TMotor *pstMotor, U32 ulValue);
+//     /* Servo-RMDX Interfaces */
+//     void (*pfnNotifiedByCAN)(U32 ulDeviceKey, U8* pubData, U16 uwLength);
+//     void (*pfnRMDXEnable)(struct _TMotor *pstMotor);
+//     void (*pfnRMDXStop)(struct _TMotor *pstMotor);
+//     void (*pfnRMDXSetPosition)(struct _TMotor *pstMotor, S32 uwValue);
+//     void (*pfnRMDXSetVelocity)(struct _TMotor *pstMotor, S32 uwValue);
+//     void (*pfnRMDXShutdown)(struct _TMotor *pstMotor);
+//     void (*pfnRMDXSetID)(struct _TMotor *pstMotor, U16 uwID);
+// } TMotor;
 
 
 /**
@@ -604,31 +545,8 @@ typedef struct _TMotor
 
 typedef enum
 {
-	ADC_NAME_FANGD			    = DEVICE_ADC_KEY_BASE,
-    ADC_NAME_FBNGD, // ML
-    ADC_NAME_FCNGD,
-    ADC_NAME_FDNGD,
-    ADC_NAME_FENGD,
-    ADC_NAME_FLNOS,
-    ADC_NAME_FLNIS,
-
-    ADC_NAME_RANPS, // LRJB
-    ADC_NAME_RBNPS,
-    ADC_NAME_RANGD,
-    ADC_NAME_RBNGD,
-
-    ADC_NAME_LRJB_ADC, // For the pathing of 10-channels ADC in LRJB Module
-
-    ADC_NAME_RAINS, // 
-    ADC_NAME_RBINS,
-    ADC_NAME_RCINS,
-    ADC_NAME_RBFNS,
-    ADC_NAME_RBENS,
-    ADC_NAME_RCFNS,
-    ADC_NAME_RCENS,
-    ADC_NAME_RDANS,
-    ADC_NAME_RAFNS,
-    ADC_NAME_RAENS,
+	ADC_NAME_CURRENT1			    = DEVICE_ADC_KEY_BASE,
+    ADC_NAME_CURRENT2,
 
     ADC_NAME_MAX,
     ADC_NAME_UNSPECIFIED       = ADC_NAME_MAX
@@ -677,31 +595,6 @@ typedef struct _TADC
 
 
 /**
- * Device Information of Solienoids
- */
-
-typedef enum
-{
-	SOLENOID_NAME_MAIN			    = DEVICE_SOLENOID_KEY_BASE,
-    SOLENOID_NAME_MAX,
-    SOLENOID_NAME_UNSPECIFIED       = SOLENOID_NAME_MAX
-} TSolenoidName;
-
-typedef struct _TSolenoid
-{
-    U32 ulDeviceKey;
-	U8 *pubName;
-
-    void (*pfnInitialize)(struct _TSolenoid *pstSolenoid);
-    void (*pfnControl)(struct _TSolenoid *pstSolenoid, U8 ubState);
-	void (*pfnPWMOn)(struct _TSolenoid *pstSolenoid);
-	void (*pfnPWMOff)(struct _TSolenoid *pstSolenoid);
-
-} TSolenoid;
-
-
-
-/**
  * Device Information of Encoders
  */
 
@@ -715,7 +608,7 @@ typedef enum
 
 typedef enum
 {
-	ENCODER_TYPE_SERVO_RMDX,
+	ENCODER_TYPE_MAGNETIC,
 	ENCODER_TYPE_UNSPECIFIED
 } TEncoderType;
 
@@ -748,61 +641,61 @@ typedef struct _TEncoder
 } TEncoder;
 
 
-/**
- * Device Information of EEPROM
- */
+// /**
+//  * Device Information of EEPROM
+//  */
 
 
-typedef enum
-{
-	EEPROM_NAME_RJB			= DEVICE_EEPROM_KEY_BASE,
-    EEPROM_NAME_MAX,
-	EEPROM_NAME_UNSPECIFIED     = EEPROM_NAME_MAX
-} TEepromName;
+// typedef enum
+// {
+// 	EEPROM_NAME_RJB			= DEVICE_EEPROM_KEY_BASE,
+//     EEPROM_NAME_MAX,
+// 	EEPROM_NAME_UNSPECIFIED     = EEPROM_NAME_MAX
+// } TEepromName;
 
-#define EEPROM_MEM_SIZE			2048//0x1ff
-#define EEPROM_SIZE				10 //6 128바이트  8 //512바이트 
-#define EEPROM_SKLOW			10//신호유지 카운트(1200=>100으로 감소) 20110216
+// #define EEPROM_MEM_SIZE			2048//0x1ff
+// #define EEPROM_SIZE				10 //6 128바이트  8 //512바이트 
+// #define EEPROM_SKLOW			10//신호유지 카운트(1200=>100으로 감소) 20110216
 
-#define RJB_EEPROM_MEM_SIZE		2048//0x1ff
-#define RJB_EEPROM_SIZE			10 //6 128바이트  8 //512바이트 
-#define RJB_EEPROM_SKLOW		50//신호유지 카운트(1200=>100으로 감소) 20110216
+// #define RJB_EEPROM_MEM_SIZE		2048//0x1ff
+// #define RJB_EEPROM_SIZE			10 //6 128바이트  8 //512바이트 
+// #define RJB_EEPROM_SKLOW		50//신호유지 카운트(1200=>100으로 감소) 20110216
 
-#define DEVFLASH_BLOCK_SIZE     512
+// #define DEVFLASH_BLOCK_SIZE     512
 
-typedef enum 
-{
-    eEEPROM_ConfigType_CS,
-    eEEPROM_ConfigType_SCLK,
-    eEEPROM_ConfigType_DO,
-    eEEPROM_ConfigType_DI,
-    eEEPROM_ConfigType_UNDEFINED,
-} TEEPROMConfigType;
+// typedef enum 
+// {
+//     eEEPROM_ConfigType_CS,
+//     eEEPROM_ConfigType_SCLK,
+//     eEEPROM_ConfigType_DO,
+//     eEEPROM_ConfigType_DI,
+//     eEEPROM_ConfigType_UNDEFINED,
+// } TEEPROMConfigType;
 
-typedef struct
-{
-	GPIO_TypeDef* pstHalBaseID_SK;
-	U32 ulHalPinID_SK;
-	GPIO_TypeDef* pstHalBaseID_CS;
-	U32 ulHalPinID_CS;
-	GPIO_TypeDef* pstHalBaseID_DI;
-	U32 ulHalPinID_DI;
-	GPIO_TypeDef* pstHalBaseID_DO;
-	U32 ulHalPinID_DO;
-} TEEPROMCtrlHalInfo;
+// typedef struct
+// {
+// 	GPIO_TypeDef* pstHalBaseID_SK;
+// 	U32 ulHalPinID_SK;
+// 	GPIO_TypeDef* pstHalBaseID_CS;
+// 	U32 ulHalPinID_CS;
+// 	GPIO_TypeDef* pstHalBaseID_DI;
+// 	U32 ulHalPinID_DI;
+// 	GPIO_TypeDef* pstHalBaseID_DO;
+// 	U32 ulHalPinID_DO;
+// } TEEPROMCtrlHalInfo;
 
-typedef struct _TEeprom
-{
-	/************ Below variables are initialized in table ************/
-    U32 ulDeviceKey;
-	U8 *pubName;
-    TEEPROMCtrlHalInfo* pstCtrlHalInfo;
-    MutexId* osmMutex;
-	/******************************************************************/
+// typedef struct _TEeprom
+// {
+// 	/************ Below variables are initialized in table ************/
+//     U32 ulDeviceKey;
+// 	U8 *pubName;
+//     TEEPROMCtrlHalInfo* pstCtrlHalInfo;
+//     MutexId* osmMutex;
+// 	/******************************************************************/
  
-    void (*pfnInitialize)(struct _TEeprom *pstEeprom);
+//     void (*pfnInitialize)(struct _TEeprom *pstEeprom);
 
-} TEeprom;
+// } TEeprom;
 
 
 /**
@@ -818,10 +711,6 @@ typedef enum
 } TFlashName;
 
 
-#define FLASH_SECTOR_RJB		FLASH_Sector_9
-#define FLASH_SECTOR_RJP		FLASH_Sector_10
-#define FLASH_SECTOR_ML			FLASH_Sector_11
-
 #define FLASH_SECTOR_SIZE		0x20000
 
 #define FLASH_ADDRESS_RJB		0x08160000
@@ -834,7 +723,6 @@ typedef struct _TFlash
 	/************ Below variables are initialized in table ************/
     U32 ulDeviceKey;
 	U8 *pubName;
-	//OS_MUTEX osmMutex;
 	/******************************************************************/
  
     void (*pfnInitialize)(struct _TFlash *pstFlash);
@@ -851,8 +739,8 @@ typedef struct _TFlash
 
 typedef enum
 {
-	SPI_NAME_BLDC_ML		= DEVICE_SPI_KEY_BASE,
-	SPI_NAME_BLDC_RJP,
+	SPI_NAME_ENCODER		= DEVICE_SPI_KEY_BASE,
+	
     SPI_NAME_MAX,
 	SPI_NAME_UNSPECIFIED    = SPI_NAME_MAX
 } TSPIName;

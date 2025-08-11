@@ -82,7 +82,7 @@ void EngHAL_Interrupt_TimerInt(U8 ubTimIntNum)
 {
     if(ubTimIntNum == 3)
     {
-        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MOTOR_CTRL);
+        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
 
         // Global Timer
 
@@ -130,6 +130,6 @@ void EngHAL_Interrupt_UART(U8 ubUartIntNum)
 {
     if(ubUartIntNum == 1)
     {
-        
+
     }
 }

@@ -62,9 +62,9 @@ void EngHAL_PWR_PVD_Config_F4xx()
     HAL_NVIC_EnableIRQ(PVD_IRQn);
 }
 
-void EngHAL_PWR_RegisterCallback_F4xx(void (*pfnCallback)(void))
+void EngHAL_PWR_RegisterCallback_F4xx(U32 ulEventId, void (*pfnCallback)(void))
 {
-    g_pfnHalPwrEventCallback[HAL_EVENT_PWR_OFF] = pfnCallback;
+    g_pfnHalPwrEventCallback[ulEventId] = pfnCallback;
 }
 
 void PVD_IRQHandler(void)

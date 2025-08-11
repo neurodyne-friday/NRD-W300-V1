@@ -192,7 +192,7 @@ TCAN *EngDrv_IF_GetCAN(U32 ulDeviceKey)
 
     return NULL;
 }
-
+/*
 TETH *EngDrv_IF_GetETH(U32 ulDeviceKey)
 {
     TETH *pstETH = NULL;
@@ -212,7 +212,7 @@ TETH *EngDrv_IF_GetETH(U32 ulDeviceKey)
 
     return NULL;    
 }
-
+*/
 TSensor *EngDrv_IF_GetSensor(U32 ulDeviceKey)
 {
     TSensor *pstSensor = NULL;
@@ -233,25 +233,7 @@ TSensor *EngDrv_IF_GetSensor(U32 ulDeviceKey)
     return NULL;
 }
 
-TMotor *EngDrv_IF_GetMotor(U32 ulDeviceKey)
-{
-    TMotor *pstMotor = NULL;
-    U32 ulIndex = 0;
 
-    if(ulDeviceKey >= DEVICE_MOTOR_KEY_BASE && ulDeviceKey < MOTOR_NAME_MAX)
-    {
-        for(ulIndex = 0; ulIndex < DEVICE_SENSOR_KEY_BASE - DEVICE_MOTOR_KEY_BASE; ulIndex++)
-        {
-            pstMotor = &s_astDeviceMotorTbl[ulIndex];
-            if(ulDeviceKey == pstMotor->ulDeviceKey)
-            {
-                return pstMotor;
-            }
-        }
-    }
-
-    return NULL;
-}
 
 TADC *EngDrv_IF_GetADC(U32 ulDeviceKey)
 {
@@ -274,26 +256,6 @@ TADC *EngDrv_IF_GetADC(U32 ulDeviceKey)
 }
 
 
-TSolenoid *EngDrv_IF_GetSolenoid(U32 ulDeviceKey)
-{
-    TSolenoid *pstSolenoid = NULL;
-    U32 ulIndex = 0;
-
-    if(ulDeviceKey >= DEVICE_SOLENOID_KEY_BASE && ulDeviceKey < SOLENOID_NAME_MAX)
-    {
-        for(ulIndex = 0; ulIndex < DEVICE_SIO_KEY_BASE - DEVICE_SOLENOID_KEY_BASE; ulIndex++)
-        {
-            pstSolenoid = &s_astDeviceSolenoidTbl[ulIndex];
-            if(ulDeviceKey == pstSolenoid->ulDeviceKey)
-            {
-                return pstSolenoid;
-            }
-        }
-    }
-
-    return NULL;   
-}
-
 TEncoder *EngDrv_IF_GetEncoder(U32 ulDeviceKey)
 {
     TEncoder *pstEncoder = NULL;
@@ -314,25 +276,6 @@ TEncoder *EngDrv_IF_GetEncoder(U32 ulDeviceKey)
     return NULL;
 }
 
-TEeprom *EngDrv_IF_GetEeprom(U32 ulDeviceKey)
-{
-    TEeprom *pstEeprom = NULL;
-    U32 ulIndex = 0;
-
-    if(ulDeviceKey >= DEVICE_EEPROM_KEY_BASE && ulDeviceKey < EEPROM_NAME_MAX)
-    {
-        for(ulIndex = 0; ulIndex < DEVICE_SIO_KEY_BASE - DEVICE_EEPROM_KEY_BASE; ulIndex++)
-        {
-            pstEeprom = &s_astDeviceEepromTbl[ulIndex];
-            if(ulDeviceKey == pstEeprom->ulDeviceKey)
-            {
-                return pstEeprom;
-            }
-        }
-    }
-
-    return NULL;
-}
 
 // TFlash *EngDrv_IF_GetFlash(U32 ulDeviceKey)
 // {

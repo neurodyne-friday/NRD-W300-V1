@@ -38,6 +38,7 @@ EXTERN void EngHAL_Core_Init(void);
 EXTERN void EngHAL_CAN_Init(U32 ulHalName);
 EXTERN void EngHAL_CAN_EnableInterrupt(U32 ulHalName);
 EXTERN void EngHAL_CAN_DisableInterrupt(U32 ulHalName);
+EXTERN void EngHAL_CAN_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
 EXTERN BOOL EngHAL_CAN_IsRxFIFOEmpty(U32 ulHalName);
 EXTERN BOOL EngHAL_CAN_IsTxFIFOEmpty(U32 ulHalName);
 EXTERN BOOL EngHAL_CAN_IsTxFIFOFull(U32 ulHalName);
@@ -71,7 +72,7 @@ EXTERN void EngHAL_TIM_Init(void);
 
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);
-EXTERN void EngHAL_PWR_RegisterCallback(void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
+EXTERN void EngHAL_PWR_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
 
 /* EngChip - USB_OTG Interface */
 EXTERN void EngHAL_USB_OTG_FS_PCD_Init(void);
