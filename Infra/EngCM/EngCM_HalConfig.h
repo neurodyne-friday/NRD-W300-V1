@@ -116,9 +116,9 @@ EXTERN THalUARTPorting astHalUARTTbl[HAL_UART_NAME_MAX];
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalSPIPorting astHalSPITbl[] =
 {
-    /*	Input Name						ChipType			       Channel 		*/
-    {   HAL_SPI_NAME_MOTOR_DRV,        HAL_CHIP_STM32F4xx,         1			},
-	{   HAL_SPI_NAME_ENCODER,          HAL_CHIP_STM32F4xx,         3			},
+    /*	Input Name						ChipType			       	Channel 				*/
+    {   HAL_SPI_NAME_MOTOR_DRV,			HAL_CHIP_STM32F4xx,			HAL_SPI_CHANNEL_1		},
+	{   HAL_SPI_NAME_ENCODER,			HAL_CHIP_STM32F4xx,         HAL_SPI_CHANNEL_3		},
 
 	{	HAL_SPI_NAME_UNSPECIFIED	}
 };
