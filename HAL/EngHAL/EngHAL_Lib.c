@@ -514,6 +514,16 @@ void EngHAL_TIM_Init(void)
 }
 
 /**
+  * @brief SPI Interface Functions
+  * @param None
+  * @retval None
+  */
+void EngHAL_SPI_Init(void)
+{
+    EngHAL_SPI_Init_F4xx();
+}
+
+/**
   * @brief PWR Interface Functions
   * @param None
   * @retval None

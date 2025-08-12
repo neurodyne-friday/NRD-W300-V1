@@ -76,6 +76,9 @@ EXTERN BOOL EngHAL_SRAM_IsValid(void);
 /* EngChip - TIM Interface */
 EXTERN void EngHAL_TIM_Init(void);
 
+/* EngChip - SPI Interface */
+EXTERN void EngHAL_SPI_Init(void);
+
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);
 EXTERN void EngHAL_PWR_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
