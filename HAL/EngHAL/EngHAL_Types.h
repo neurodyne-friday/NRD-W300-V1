@@ -303,6 +303,35 @@ typedef struct
 } THalUARTPorting;
 
 /**
+ * The SPI HAL 
+ */
+typedef enum
+{
+	HAL_SPI_NAME_MOTOR_DRV,
+	HAL_SPI_NAME_ENCODER,
+	HAL_SPI_NAME_MAX,
+	HAL_SPI_NAME_UNSPECIFIED = HAL_SPI_NAME_MAX
+} THalSPIName;
+
+typedef enum
+{
+	HAL_SPI_CHANNEL_1,
+	HAL_SPI_CHANNEL_2,
+	HAL_SPI_CHANNEL_3,
+	HAL_SPI_CHANNEL_4,
+	HAL_SPI_CHANNEL_NONE
+} THalSPIChannel;
+
+
+typedef struct
+{
+   	U32 ulName;
+	THalChipType enChipType;
+	U32 ulChannel;
+} THalSPIPorting;
+
+
+/**
  * The RTC HAL 
  */
 typedef struct _THalRTCData
@@ -379,6 +408,15 @@ typedef struct
 } THalUARTFunction;
 
 
+/**
+ * @brief .
+ */
+typedef struct
+{
+	void (*pfnInit)(THalSPIPorting *);						/* 0 */
+} THalSPIFunction;
+
+
 
 /**
  * @brief The structure of HAL Function
@@ -391,6 +429,7 @@ typedef struct
 	THalUARTFunction stUART;									// 8
 	// THalGPIOFunction stGPIO;									// 4
 	// THalPWMFunction stPWM;									// 4
+	THalSPIFunction stSPI;										// 1
 	THalADCFunction stADC;										// 2
 	// THalMotorFunction stMotor;								// 9
 	// THalDMUFunction stDMU;									// 2

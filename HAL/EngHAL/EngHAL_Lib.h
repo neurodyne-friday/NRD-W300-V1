@@ -77,7 +77,7 @@ EXTERN BOOL EngHAL_SRAM_IsValid(void);
 EXTERN void EngHAL_TIM_Init(void);
 
 /* EngChip - SPI Interface */
-EXTERN void EngHAL_SPI_Init(void);
+EXTERN void EngHAL_SPI_Init(U32 ulHalName);
 
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);
@@ -97,5 +97,6 @@ EXTERN void EngHAL_OS_Delay(uint32_t ticks);
 
 EXTERN THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName);
 EXTERN THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName);
+EXTERN THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName);
 
 #endif //__ENGHAL_LIB_H__

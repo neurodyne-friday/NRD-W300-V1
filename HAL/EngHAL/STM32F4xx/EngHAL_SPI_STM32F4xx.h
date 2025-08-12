@@ -31,6 +31,8 @@
 
 
 
-EXTERN void EngHAL_SPI_Init_F4xx();
+EXTERN void EngHAL_SPI_Init_F4xx(THalSPIPorting *pstHalPorting);
+EXTERN void EngHAL_SPI_Write_F4xx(THalSPIPorting *pstHalPorting, uint8_t *tx, uint16_t len);
+EXTERN void EngHAL_SPI_WriteRead_F4xx(THalSPIPorting *pstHalPorting, uint8_t *tx, uint8_t *rx, uint16_t len);
 
 #endif //__ENGHAL_SPI_STM32F4xx_H__

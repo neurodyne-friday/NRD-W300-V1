@@ -62,19 +62,19 @@ BOOL EngHAL_LibraryEntry(void)
     THalFunction *pstHalFunction = NULL;
 
     /* Initilize all hal items */
-    // pstHalFunction = &astHalFunctionTbl[0];
-    // if(pstHalFunction != NULL)
-    // {
-    //     /* CAN Initialize */
-    //     if((void *)pstHalFunction->stCAN.pfnInit != NULL)
-    //     {
-    //         THalCANPorting *pstCANHal = &astHalCANTbl[0];
-    //         while(pstCANHal->ulName != HAL_CAN_NAME_UNSPECIFIED)
-    //         {
-    //             pstHalFunction->stCAN.pfnInit(pstCANHal);
-    //             pstCANHal++;
-    //         }
-    //     }
+    pstHalFunction = &astHalFunctionTbl[0];
+    if(pstHalFunction != NULL)
+    {
+        /* CAN Initialize */
+        if((void *)pstHalFunction->stCAN.pfnInit != NULL)
+        {
+            THalCANPorting *pstCANHal = &astHalCANTbl[0];
+            while(pstCANHal->ulName != HAL_CAN_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stCAN.pfnInit(pstCANHal);
+                pstCANHal++;
+            }
+        }
 
     //     /* Ethernet Initialize */
     //     if((void *)pstHalFunction->stETH.pfnInit != NULL)
@@ -108,8 +108,19 @@ BOOL EngHAL_LibraryEntry(void)
     //             pstADCHal++;
     //         }
 
+        /* SPI Initialize */
+        if((void *)pstHalFunction->stUART.pfnInit != NULL)
+        {
+            THalSPIPorting *pstSPIHal = &astHalSPITbl[0];
+            while(pstSPIHal->ulName != HAL_SPI_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stSPI.pfnInit(pstSPIHal);
+                pstSPIHal++;
+            }
+        }
+
     //     }
-    // }
+    }
 
     EngHAL_RTC_Init();
     EngHAL_TIM_Init();
@@ -518,9 +529,26 @@ void EngHAL_TIM_Init(void)
   * @param None
   * @retval None
   */
-void EngHAL_SPI_Init(void)
+void EngHAL_SPI_Init(U32 ulHalName)
 {
-    EngHAL_SPI_Init_F4xx();
+	THalSPIPorting *pstHalSPIPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalSPIPorting = EngHAL_FindHalSPI(ulHalName);
+    
+	if(pstHalSPIPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stSPI.pfnInit != NULL)
+	{
+		pstHalFunction->stSPI.pfnInit(pstHalSPIPorting);
+	}
+
 }
 
 /**
@@ -607,4 +635,20 @@ THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName)
     }
 
     return pstHalUARTPorting;
+}
+
+THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName)
+{
+	THalSPIPorting *pstHalSPIPorting = NULL;
+
+	for(U8 ubIndex = 0; ubIndex < HAL_SPI_NAME_MAX; ubIndex++)
+	{
+		if(ulHalName == astHalSPITbl[ubIndex].ulName)
+		{
+			pstHalSPIPorting = &astHalSPITbl[ubIndex];
+			return pstHalSPIPorting;
+		}
+	}
+
+	return pstHalSPIPorting;
 }
