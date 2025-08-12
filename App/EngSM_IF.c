@@ -46,9 +46,12 @@ BOOL EngSM_IF_Initialize(void)
     /* Initialize the Hardware */
     EngHAL_LibraryEntry();
 
+    /* Do power on sequence: backup data restore */
+	EngSM_PowerOn();
+
     /* Register the Hardware Interrupts */
-	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN0_RX, EngSM_PowerOff);
-	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_PowerOff);
+	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN1_RX, EngSM_IF_NotifyEventByCAN1);
+	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_IF_NotifyEventByPowerOff);
 
 	/* Create & Initialize Device Driver */
 	EngDrv_IF_Create();
@@ -296,3 +299,43 @@ void EngSM_IF_Main(void)
 	EngSM_Main();
 }
 
+/** 
+* @brief	   	Power off the system
+* @param[in]	None
+* @range			
+* @retval		None
+* @global			
+* @remarks     		
+*/
+
+void EngSM_IF_NotifyEventByPowerOff(void)
+{
+	EngSM_PowerOff();
+}
+
+/**
+ * @brief 	  	Event handler for CAN1
+ * @param[in]	None
+ * @range
+ * @retval		None
+ * @global
+ * @remarks		This function is called when a CAN1 event occurs.
+ */
+
+void EngSM_IF_NotifyEventByCAN1(void)
+{
+
+}
+
+/**
+ * @brief 	  	Event handler for CAN2
+ * @param[in]	None
+ * @range
+ * @retval		None
+ * @global
+ * @remarks		This function is called when a CAN2 event occurs.
+ */
+void EngSM_IF_NotifyEventByCAN2(void)
+{
+
+}

@@ -360,6 +360,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
     pRxBuffer->ubLength = RxHeader.DLC;
     taskEXIT_CRITICAL();
+
+    if(g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX] != NULL)
+    {
+        g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX](); // Call the registered callback for CAN1 RX
+    }
 }
 
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -384,5 +389,10 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
     pRxBuffer->ubLength = RxHeader.DLC;
     taskEXIT_CRITICAL();
+
+    if(g_pfnHalCanEventCallback[HAL_EVENT_CAN2_RX] != NULL)
+    {
+        g_pfnHalCanEventCallback[HAL_EVENT_CAN2_RX](); // Call the registered callback for CAN2 RX
+    }
 }
 

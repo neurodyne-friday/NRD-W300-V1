@@ -77,6 +77,34 @@ typedef struct
 } THndIFFuncTable;
 
 /*
+ * @brief Structure Definitions of Emergency Backup Data
+ * Do not over 4KB size
+ */
+
+typedef struct _TEngRTCSnapshot // 16Bytes
+{
+	U32 ulTag;				// 'RTCs' 마커 = 0x52544373 (디버그용)
+    U8  ubYear;				// 0~99  (RTC_FORMAT_BIN 기준)
+    U8  ubMonth;			// 1~12
+    U8  ubDay;				// 1~31
+    U8  ubWeekDay;			// 1~7
+    U8  ubHour;				// 0~23
+    U8  ubMinute;			// 0~59
+    U8  ubSecond;			// 0~59
+    U8  ubReserved;			// 정렬용
+    U16 uwSubSecond;		// RTC->SSR 현재 값
+    U16 uwSecondFraction;	// RTC->PRER의 SynchPrediv (초 분해능 계산용)
+} TEngRTCSnapshot;
+
+typedef struct _TEngEmergencyBackupData
+{
+	TEngRTCSnapshot stRTCSnapshot;	/**<  RTC Snapshot Data(16Bytes) */
+	U32 ulErrorCode;			/**<  TBD  */
+	U32 ulErrorTime;			/**<  TBD  */
+	U32 ulErrorData[4];			/**<  TBD  */
+} TEngEmergencyBackupData;
+
+/*
  * @brief Structure Definitions
  */
 typedef struct _TEngSystemManager
@@ -118,6 +146,8 @@ typedef struct _TEngSystemManager
 
 	BOOL fEnterSleepMode;
 	BOOL fPower24VOnOffFlag;
+
+	TEngEmergencyBackupData stEmergencyBackupData;	/**<  TBD  */
 
 	U32 (*pfnCheckContinuousCondition)(struct _TEngSystemManager *pstThis);
 	BOOL (*pfnCheckWaitToPrintCondition)(struct _TEngSystemManager *pstThis);

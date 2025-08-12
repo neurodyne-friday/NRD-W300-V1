@@ -26,7 +26,7 @@
 
 
 RTC_HandleTypeDef hrtc;
-
+THalRTCData g_stHalRTCData = {0}; // RTC 데이터 구조체 초기화
 
 /**
   * @brief PWR Interface Functions
@@ -77,20 +77,26 @@ void EngHAL_RTC_Init_F4xx()
 }
 
 
-void EngHAL_RTC_GetDateTime_F4xx(U8* pubDateTime)
+void EngHAL_RTC_GetDateTime_F4xx(THalRTCData* pstRTCData)
 {
-    RTC_TimeTypeDef sTime;
-    RTC_DateTypeDef sDate;
-    
-    if (HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
+    RTC_TimeTypeDef t;
+    RTC_DateTypeDef d;
+
+    if (HAL_RTC_GetTime(&hrtc, &t, RTC_FORMAT_BCD) != HAL_OK) {
         Error_Handler();
     }
 
-    if (HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
+    if (HAL_RTC_GetDate(&hrtc, &d, RTC_FORMAT_BCD) != HAL_OK) {
         Error_Handler();
     }
 
-    //printf("Time: %02x:%02x:%02x\n", sTime.Hours, sTime.Minutes, sTime.Seconds);
-    //printf("Date: %02x/%02x/20%02x\n", sDate.Date, sDate.Month, sDate.Year);
-    sprintf(pubDateTime, "%02x/%02x/20%02x %02x:%02x:%02x", sDate.Date, sDate.Month, sDate.Year, sTime.Hours, sTime.Minutes, sTime.Seconds);
+    pstRTCData->ulTag = 0x52544373u;    // 'RTCs'
+    pstRTCData->ubYear = d.Year;
+    pstRTCData->ubMonth = d.Month;
+    pstRTCData->ubDay = d.Date;
+    pstRTCData->ubWeekDay = d.WeekDay;
+    pstRTCData->ubHour = t.Hours;
+    pstRTCData->ubMinute = t.Minutes;
+    pstRTCData->ubSecond = t.Seconds;
+    pstRTCData->uwSubSecond = t.SubSeconds;
 }

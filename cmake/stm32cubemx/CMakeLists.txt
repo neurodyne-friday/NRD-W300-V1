@@ -76,6 +76,7 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngHAL/STM32F4xx/EngHAL_UART_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_PWR_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_RTC_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_SRAM_STM32F4xx.c
 
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c

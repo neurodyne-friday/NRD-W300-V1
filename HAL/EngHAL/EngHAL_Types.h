@@ -50,8 +50,8 @@ typedef void (*HAL_EVENT_CALLBACK)(void);
 #define HAL_EVENT_PWR_MAX	2	// Maximum Event ID
 
 /* CAN Event */
-#define HAL_EVENT_CAN0_RX	0	// CAN0 Receive Event
-#define HAL_EVENT_CAN1_RX	1	// CAN1 Receive Event
+#define HAL_EVENT_CAN1_RX	0	// CAN0 Receive Event
+#define HAL_EVENT_CAN2_RX	1	// CAN1 Receive Event
 #define HAL_EVENT_CAN_MAX	2	// Maximum Event ID
 
 
@@ -302,6 +302,23 @@ typedef struct
 	U32 ulBaudRate;
 } THalUARTPorting;
 
+/**
+ * The RTC HAL 
+ */
+typedef struct _THalRTCData
+{
+	U32 ulTag;				// 'RTCs' 마커 = 0x52544373 (디버그용)
+    U8  ubYear;				// 0~99  (RTC_FORMAT_BIN 기준)
+    U8  ubMonth;			// 1~12
+    U8  ubDay;				// 1~31
+    U8  ubWeekDay;			// 1~7
+    U8  ubHour;				// 0~23
+    U8  ubMinute;			// 0~59
+    U8  ubSecond;			// 0~59
+    U8  ubReserved;			// 정렬용
+    U16 uwSubSecond;		// RTC->SSR 현재 값
+    U16 uwSecondFraction;	// RTC->PRER의 SynchPrediv (초 분해능 계산용)
+} THalRTCData;
 
 
 /**

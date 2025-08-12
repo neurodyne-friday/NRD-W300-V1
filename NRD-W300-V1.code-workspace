@@ -38,7 +38,11 @@
 			"enghal_can_stm32f4xx.h": "c",
 			"enghal_core_stm32f4xx.h": "c",
 			"stm32f4xx_hal.h": "c",
-			"enghal_lib.h": "c"
+			"enghal_lib.h": "c",
+			"stm32f4xx_hal_pwr_ex.h": "c",
+			"stm32f4xx_hal_pwr.h": "c",
+			"stm32f4xx_hal_conf.h": "c",
+			"stdbool.h": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}

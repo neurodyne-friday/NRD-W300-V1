@@ -38,6 +38,7 @@
 	#include "EngHAL_UART_STM32F4xx.h"
 	#include "EngHAL_PWR_STM32F4xx.h"
 	#include "EngHAL_RTC_STM32F4xx.h"
+	#include "EngHAL_SRAM_STM32F4xx.h"
 #elif defined(STM32F7XX_SUPPORT)
 	#include "EngHAL_GPIO_STM32F7xx.h"
 	#include "EngHAL_ADC_STM32F7xx.h"

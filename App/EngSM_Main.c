@@ -681,9 +681,51 @@ U32 EngSM_EngineState(U32 ulSetGet, U32 ulDeviceStatusID, U32 ulValue)
 * @global
 * @remarks
 */
+void EngSM_PowerOn(void)
+{
+	TEngSystemManager *pstSystemManager = &s_stSystemManager;
+	TEngEmergencyBackupData *pstEmergencyBackupData = &pstSystemManager->stEmergencyBackupData;
+	uint32_t len=0, seq=0;
+
+	/* Data restore sequence */
+	if(EngHAL_SRAM_Load(pstEmergencyBackupData->ulErrorData, sizeof(pstEmergencyBackupData->ulErrorData), &len, &seq))
+	{
+	}
+	else
+	{
+        memset(pstEmergencyBackupData->ulErrorData, 0, sizeof(pstEmergencyBackupData->ulErrorData));
+    }
+}
+
+/**
+* @brief 	  Power Off the Engine System Manager.
+*
+* @param[in]		None
+* @range
+* @retval			None
+* @global
+* @remarks
+*/
 void EngSM_PowerOff(void)
 {
+	TEngSystemManager *pstSystemManager = &s_stSystemManager;
+	TEngEmergencyBackupData *pstEmergencyBackupData = &pstSystemManager->stEmergencyBackupData;
+	TEngRTCSnapshot *pstRTCSnapshot = &pstEmergencyBackupData->stRTCSnapshot;
+	THalRTCData stRTCData = {0};
 	//DBG_ENGSM(ENG_DBG_STRING"Power Off", ENG_TICK, "SM");
 
 	/* Data backup sequence */
+	EngHAL_RTC_GetDateTime(&stRTCData);
+	pstRTCSnapshot->ulTag			= stRTCData.ulTag;
+	pstRTCSnapshot->ubYear			= stRTCData.ubYear;
+	pstRTCSnapshot->ubMonth			= stRTCData.ubMonth;
+	pstRTCSnapshot->ubDay			= stRTCData.ubDay;
+	pstRTCSnapshot->ubWeekDay		= stRTCData.ubWeekDay;
+	pstRTCSnapshot->ubHour			= stRTCData.ubHour;
+	pstRTCSnapshot->ubMinute		= stRTCData.ubMinute;
+	pstRTCSnapshot->ubSecond		= stRTCData.ubSecond;
+	pstRTCSnapshot->uwSubSecond		= stRTCData.uwSubSecond;
+	pstRTCSnapshot->uwSecondFraction= stRTCData.uwSecondFraction;
+	
+	EngHAL_SRAM_Save(pstEmergencyBackupData->ulErrorData, sizeof(pstEmergencyBackupData->ulErrorData));
 }

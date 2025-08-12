@@ -65,7 +65,13 @@ EXTERN void EngHAL_ETH_Transmit(U32 ulHalName, U8 pubData[], U16 uwLength);
 
 /* EngChip - RTC Interface */
 EXTERN void EngHAL_RTC_Init(void);
-EXTERN void EngHAL_RTC_GetDateTime(U8* pubDateTime);
+EXTERN void EngHAL_RTC_GetDateTime(THalRTCData* pstRTCData);
+
+/* EngChip - SRAM Interface */
+EXTERN void EngHAL_SRAM_Init(void);
+EXTERN BOOL EngHAL_SRAM_Save(const void *data, uint32_t len);
+EXTERN BOOL EngHAL_SRAM_Load(void *out, uint32_t bufsize, uint32_t *out_len, uint32_t *out_seq);
+EXTERN BOOL EngHAL_SRAM_IsValid(void);
 
 /* EngChip - TIM Interface */
 EXTERN void EngHAL_TIM_Init(void);

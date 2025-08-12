@@ -114,6 +114,7 @@ BOOL EngHAL_LibraryEntry(void)
     EngHAL_RTC_Init();
     EngHAL_TIM_Init();
     EngHAL_PWR_Init();
+	EngHAL_SRAM_Init();
     //EngHAL_USB_OTG_FS_PCD_Init(); // make it later
 }
 
@@ -469,10 +470,37 @@ void EngHAL_RTC_Init(void)
     EngHAL_RTC_Init_F4xx();
 }
 
-void EngHAL_RTC_GetDateTime(U8* pubDateTime)
+void EngHAL_RTC_GetDateTime(THalRTCData* pstRTCData)
 {
-    EngHAL_RTC_GetDateTime_F4xx(pubDateTime);
+    EngHAL_RTC_GetDateTime_F4xx(pstRTCData);
 }
+
+
+/**
+  * @brief SRAM Interface Functions
+  * @param None
+  * @retval None
+  */
+void EngHAL_SRAM_Init(void)
+{
+	EngHAL_SRAM_Init_F4xx();
+}
+
+BOOL EngHAL_SRAM_Save(const void *data, uint32_t len)
+{
+	return EngHAL_SRAM_Save_F4xx(data, len);
+}
+
+BOOL EngHAL_SRAM_Load(void *out, uint32_t bufsize, uint32_t *out_len, uint32_t *out_seq)
+{
+	return EngHAL_SRAM_Load_F4xx(out, bufsize, out_len, out_seq);
+}
+
+BOOL EngHAL_SRAM_IsValid(void)
+{
+	return EngHAL_SRAM_IsValid_F4xx();
+}
+
 
 
 /**
