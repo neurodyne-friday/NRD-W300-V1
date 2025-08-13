@@ -154,109 +154,35 @@ TLogParamInfo stLogInfoTbl[] =
 	{	DBG_ID_UART,						"UART",						DBG_LV3,	0,		0,		TRUE,	},
 	{	DBG_ID_EMERGENCY,					"EMERGENCY",				DBG_LV1,	TRUE,	TRUE,	0,		},
 	{	DBG_ID_ENGIFSVC,					"ENGIFSVC",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGIFSVC_DETAIL,				"ENGIFSVC_DETAIL",			DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGIFSVC_EI,					"ENGIFSVC_EI",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGTMSVC,					"ENGTMSVC",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_ENGSM,						"ENGSM",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGSM_PAGE,					"ENGSM_PAGE",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGSM_STATE,					"ENGSM_STATE",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGSM_STATUS,				"ENGSM_STATUS",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGSM_TIMING,				"ENGSM_TIMING",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGMH,						"ENGMH",					DBG_LV2,	0,		TRUE,	0,		},
+	{	DBG_ID_ENGFOC,						"ENGFOC",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_ENGEH,						"ENGEH",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGEH_DETAIL,				"ENGEH_DETAIL",				DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_ENGTM,						"ENGTM",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_ENGLIB,						"ENGLIB",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGDM,						"ENGDM",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGDW,						"ENGDW",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGVM,						"ENGVM",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_ENGCM,						"ENGCM",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGEDC,						"ENGEDC",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_MOTORDRV,					"MOTORDRV",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_SENSORDRV,					"SENSORDRV",				DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_ADCDRV,						"ADCDRV",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_HVPSDRV,						"HVPSDRV",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_DEVEDRV,						"DEVEDRV",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_FANDRV,						"FANDRV",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_CLUTCHDRV,					"CLUTCHDRV",				DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_UARTDRV,						"UARTDRV",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_UARTMSG,						"UARTMSG",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_SIODRV,						"SIODRV",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_SPIDRV,						"SPIDRV",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_POWERDRV,					"POWERDRV",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGPIFC,						"ENGPIFC",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_STATE,						"STATE",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_SEMAPHORE,					"SEMAPHORE",				DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_ENGHAL_LIB,					"ENGHAL_LIB",				DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_ENGHAL_GPIO,					"ENGHAL_GPIO",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_ENGHAL_I2C,					"ENGHAL_I2C",				DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_ENGHAL_ENGTIMER,				"ENGHAL_ENGTIMER",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_FAST_FPOT,					"FAST_FPOT",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_SLEEP_TO_PRINT,				"SLEEP_TO_PRINT",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TRAY_DOWNLOAD,				"TRAY_DOWNLOAD",			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_CTS,							"CTS",						DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_CSI_TEST,					"CSI_TEST",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TONER_SUPPLY,				"TONER_SUPPLY",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_TONER_DRAIN,					"TONER_DRAIN",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_FOOTER,						"FOOTER",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_PAPER_INTERVAL_CHECK,		"PAPER_INTERVAL_CHECK",		DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_HEATING_READY,				"HEATING_READY",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_MANUAL_DETECT,				"MANUAL_DETECT",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_MAA,							"MAA",						DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_MAA_PSEUDO,					"MAA_PSEUDO",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_OVER_VOLTAGE,				"OVER_VOLTAGE",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_SPEED_DOWN,					"SPEED_DOWN",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_DEVIATION_CTRL,				"DEVIATION_CTRL",			DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ETM_CTRL,					"ETM_CTRL",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_TIMING_CSI,					"DBG_ID_TIMING_CSI",		DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TIMING_DEVICE,				"TIMING_DEVICE",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TIMING_ADC,					"TIMING_ADC",				DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_MICOM,						"MICOM",					DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TIMING_SENSOR_SW,			"TIMING_SENSOR_SW",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_TIMING_SENSOR,				"TIMING_SENSOR",			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_TIMING_SENSOR_EMERGENCY,		"TIMING_SENSOR_EMERGENCY",	DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_TIMING_CLUTCH,				"TIMING_CLUTCH",			DBG_LV1,	TRUE,	TRUE,	TRUE,	},
-	{	DBG_ID_TIMING_MOTOR,				"TIMING_MOTOR",				DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_TIMING_COMMON_INFO,			"TIMING_COMMON_INFO",		DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_TIMING_STATE,				"TIMING_STATE",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_TIMING_FAN,					"TIMING_FAN",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_ENGWAIT, 					"ENGWAIT",					DBG_LV2,	0,		TRUE,	0,		},
 	{	DBG_ID_SENSOR,						"SENSOR",					DBG_LV3,	0,		0,		0,		},
 	{	DBG_ID_LMS_HEADER,					"LMS_HEADER",				DBG_LV1,	0,		0,		0,		},
-	{	DBG_ID_LMS_SA_TIMING_STATE, 		"LMS_SA_TIMING_STATE", 		DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_COMMON_INFO,				"LMS_COMMON_INFO",			DBG_LV1,	TRUE,	TRUE,	0,		},
 	{	DBG_ID_LMS_POWER_INFO, 				"LMS_POWER_INFO", 			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_ACRCTD_INFO, 			"LMS_ACRCTD_INFO", 			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_WAIT_INFO, 				"LMS_WAIT_INFO", 			DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_HVPS_STATUS,				"LMS_HVPS_STATUS",			DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_ASSERT,					"LMS_ASSERT",				DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_SPECS,					"LMS_SPECS",				DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_CONTINUOUS_COUNT,		"LMS_CONTINUOUS_COUNT",		DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_DATE,					"LMS_DATE",					DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_STATE,					"LMS_STATE",				DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_ISR_CALL, 				"LMS_ISR_CALL", 			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_ISR_EXE,					"LMS_ISR_EXE",				DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_VM_COUNT, 				"LMS_VM_COUNT", 			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_FPOT,					"LMS_FPOT",					DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_FUSER, 					"LMS_FUSER", 				DBG_LV1,	TRUE,	TRUE,	0,		},
 	{	DBG_ID_LMS_BIG_DATA,				"LMS_BIG_DATA",				DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_STATUS,					"LMS_STATUS",				DBG_LV1,	TRUE,	0,		0,		},
 	{	DBG_ID_LMS_LIFE,					"LMS_LIFE",					DBG_LV1,	TRUE,	0,		0,		},
-	{	DBG_ID_LMS_IMAGE,					"LMS_IMAGE",				DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_LMS_PAPER,					"LMS_PAPER",				DBG_LV1,	TRUE,	TRUE,	0,		},
 	{	DBG_ID_LMS_DEVICE,					"LMS_DEVICE",				DBG_LV1,	0,		0,		0,		},
-#ifdef FR_EMBEDDED_ENGINE_SIMULATOR
-	{	DBG_ID_EES,							"EES",						DBG_LV1,	TRUE,	TRUE,	TRUE,	},
-#endif
-	{	DBG_ID_NEWIF,						"NEWIF",					DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_CORE,					"NEWIF_CORE",				DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_VERIFICATION,			"NEWIF_VERIFICATION",		DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_REQINFO,				"NEWIF_REQINFO",			DBG_LV3,	0,		0,		0,		},
-	{	DBG_ID_NEWIF_REQINFO_CORE,			"NEWIF_REQINFO_CORE",		DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_PRINTJOB,				"NEWIF_PRINTJOB",			DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_COMMAND,				"NEWIF_COMMAND",			DBG_LV2,	0,		TRUE,	0,		},
-	{	DBG_ID_NEWIF_SIMPLEFIED,			"NEWIF_SIMPLEFIED",			DBG_LV1,	TRUE,	TRUE,	0,		},
-	{	DBG_ID_NEWIF_DOWNLOAD,				"NEWIF_DOWNLOAD", 			DBG_LV1,	TRUE,	TRUE,	0,		}
 };
 #endif
 
@@ -330,6 +256,7 @@ EXTERN U32 g_ulContinuousCnt;
 	#define DBG_ENG								ENG_PRINT
 	#define DBG_EMERGENCY_UART					ENG_PRINT
 	#define DBG_UART							EngLog_IF_PrintToUart//EngLog_IF_DumpPrintToUart
+	#define DBG_SWO								EngLog_IF_PrintToSWO//EngLog_IF_DumpPrintToUart
 	#define DBG_EMERGENCY						EngLog_IF_DumpPrintEmergency
 	#define DBG_ENGIFSVC						EngLog_IF_DumpPrintEngIFSvc
 	#define DBG_ENGTMSVC		
@@ -342,15 +269,9 @@ EXTERN U32 g_ulContinuousCnt;
 #endif
 	#define DBG_ENGTM							EngLog_IF_DumpPrintEngTM
 	#define DBG_ENGLIB							EngLog_IF_DumpPrintEngLib
-	#define DBG_ENGDM							EngLog_IF_DumpPrintEngDM
-	#define DBG_ENGDW							EngLog_IF_DumpPrintEngDW
-	#define DBG_ENGVM							EngLog_IF_DumpPrintEngVM
 	#define DBG_ENGCM							EngLog_IF_DumpPrintEngCM
-	#define DBG_ENGEDC							EngLog_IF_DumpPrintEngEDC
-	#define DBG_FANDRV							EngLog_IF_DumpPrintFanDrv
 	#define DBG_UARTDRV							EngLog_IF_DumpPrintUartDrv
 	#define DBG_UARTMSG							EngLog_IF_DumpPrintUartMsg
-	#define DBG_SIODRV							EngLog_IF_DumpPrintSIODrv
 	#define DBG_SPIDRV							EngLog_IF_DumpPrintSPIDrv
 	#define DBG_POWERDRV						EngLog_IF_DumpPrintFowerDrv
 		
@@ -363,7 +284,6 @@ EXTERN U32 g_ulContinuousCnt;
 	#define DBG_SEMAPHORE						EngLog_IF_DumpPrintSemaphore
 	#define DBG_ENGHAL_LIB						EngLog_IF_DumpPrintEngHalLib
 	#define DBG_ENGHAL_GPIO						EngLog_IF_DumpPrintEngHalGPIO
-	#define DBG_ENGHAL_I2C						EngLog_IF_DumpPrintEngHalI2C
 	#define DBG_ENGHAL_ENGTIMER					EngLog_IF_DumpPrintEngHalEngTimer
 	
 	#define DBG_TIMING_CSI

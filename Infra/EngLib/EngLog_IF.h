@@ -29,17 +29,17 @@
 
 EXTERN void EngLog_IF_LibraryEntry(TInitialStepType enInitStep);
 EXTERN void EngLog_IF_DumpPrintToUart(const U8 *pubStr, ...);
+EXTERN void EngLog_IF_DumpPrintToSWO(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEmergency(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEngIFSvc(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEngTimerSvc(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEngSM(const U8 *pubStr, ...);
-EXTERN void EngLog_IF_DumpPrintEngTM(const U8 *pubStr, ...);
-EXTERN void EngLog_IF_DumpPrintEngMH(const U8 *pubStr, ...);
+EXTERN void EngLog_IF_DumpPrintEngFOC(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEngEH(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintEngLib(const U8 *pubStr, ...);
-EXTERN void EngLog_IF_DumpPrintEngVM(const U8 *pubStr, ...);
 EXTERN void EngLog_IF_DumpPrintState(const U8 *pubStr, ...);
 
 EXTERN void EngLog_IF_PrintToUart(const U8 *format, ...);
+EXTERN void EngLog_IF_PrintToSWO(const U8 *format, ...);
 
 #endif /* __EngLog_IF_H__ */

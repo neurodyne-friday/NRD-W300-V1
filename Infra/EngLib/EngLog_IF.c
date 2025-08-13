@@ -50,6 +50,22 @@ void EngLog_IF_DumpPrintToUart(const U8 *pubStr, ...)
 #endif
 }
 
+void EngLog_IF_DumpPrintToSWO(const U8 *pubStr, ...)
+{
+#ifdef FR_ENGLIB_LOG
+	va_list ap;
+	va_start(ap, pubStr);
+
+#ifdef FR_ENGLIB_TASK_LOGGING
+	EngLog_DynamicTaskLog(DBG_ID_SWO, pubStr, ap);
+#else
+	EngLog_DynamicDumpLog(DBG_ID_SWO, pubStr, ap);
+#endif
+
+	va_end(ap);
+#endif
+}
+
 
 void EngLog_IF_DumpPrintEmergency(const U8 *pubStr, ...)
 {
@@ -128,16 +144,16 @@ void EngLog_IF_DumpPrintEngTM(const U8 *pubStr, ...)
 #endif
 }
 
-void EngLog_IF_DumpPrintEngMH(const U8 *pubStr, ...)
+void EngLog_IF_DumpPrintEngFOC(const U8 *pubStr, ...)
 {
 #ifdef FR_ENGLIB_LOG
 	va_list ap;
 	va_start(ap, pubStr);
 
 #ifdef FR_ENGLIB_TASK_LOGGING
-	EngLog_DynamicTaskLog(DBG_ID_ENGEH, pubStr, ap);
+	EngLog_DynamicTaskLog(DBG_ID_ENGFOC, pubStr, ap);
 #else
-	EngLog_DynamicDumpLog(DBG_ID_ENGEH, pubStr, ap);
+	EngLog_DynamicDumpLog(DBG_ID_ENGFOC, pubStr, ap);
 #endif
 
 	va_end(ap);
@@ -177,22 +193,6 @@ void EngLog_IF_DumpPrintEngLib(const U8 *pubStr, ...)
 #endif
 }
 
-void EngLog_IF_DumpPrintEngVM(const U8 *pubStr, ...)
-{
-#ifdef FR_ENGLIB_LOG
-	va_list ap;
-	va_start(ap, pubStr);
-
-#ifdef FR_ENGLIB_TASK_LOGGING
-	EngLog_DynamicTaskLog(DBG_ID_ENGVM, pubStr, ap);
-#else	
-	EngLog_DynamicDumpLog(DBG_ID_ENGVM, pubStr, ap);
-#endif
-
-	va_end(ap);
-#endif
-}
-
 void EngLog_IF_DumpPrintState(const U8 *pubStr, ...)
 {
 #ifdef FR_ENGLIB_LOG
@@ -201,7 +201,7 @@ void EngLog_IF_DumpPrintState(const U8 *pubStr, ...)
 
 #ifdef FR_ENGLIB_TASK_LOGGING
 	EngLog_DynamicTaskLog(DBG_ID_STATE, pubStr, ap);
-#else	
+#else
 	EngLog_DynamicDumpLog(DBG_ID_STATE, pubStr, ap);
 #endif
 
@@ -209,7 +209,27 @@ void EngLog_IF_DumpPrintState(const U8 *pubStr, ...)
 #endif
 }
 
+
+
 void EngLog_IF_PrintToUart(const U8 *format, ...)
+{
+#ifdef FR_ENGLIB_LOG
+	va_list args;
+	TUART* pstUART = EngDrv_IF_GetUART(UART_NAME_MAIN);
+
+	//EngLog_DynamicTaskLog(DBG_ID_UART, pubStr, ap);
+
+	U8 aubTempBuff[C_ENG_LOG_1LINE_BUFF_SIZE] = {0};
+
+	va_start(args, format);
+	vsnprintf(aubTempBuff, sizeof(aubTempBuff), format, args);
+	va_end(args);
+
+	pstUART->pfnSendData(pstUART, aubTempBuff);
+#endif
+}
+
+void EngLog_IF_PrintToSWO(const U8 *format, ...)
 {
 #ifdef FR_ENGLIB_LOG
 	va_list args;

@@ -105,15 +105,16 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
 		stEngLogInfo.pstParamInfoTbl = stLogInfoTbl;
 		
 		stEngLogInfo.pstDumpLog = NULL;
-		stEngLogInfo.pstHDDLog = NULL;
+		stEngLogInfo.pstMicroSDLog = NULL;
 		stEngLogInfo.pstTaskDump = NULL;
 		stEngLogInfo.pstUartPrint = NULL;
+		stEngLogInfo.pstSwoPrint = NULL;
 
 		/* Initial for Engine Log Area Data */
 		EngLog_DumpLogCreate(&stEngLogInfo.pstDumpLog);
 
 		/* Initial for HDD Log Area Data */
-#if defined(HR_ENGLIB_DEBUG_MESSAGE_HDD_SAVE)
+#if defined(HR_ENGLIB_DEBUG_MESSAGE_MICRO_SD_SAVE)
 		EngLog_HDDLogCreate(&stEngLogInfo.pstHDDLog);
 #endif
 
@@ -135,17 +136,17 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
 		U32 ulStatus = 0;
 		
 #ifdef U_FR_ENGLIB_TASK_LOGGING
-		ulStatus = EngOS_OSALCreateSemaphore("STLOG", 1, &s_ulTaskLogSemaphoreID);
-		VOID_ASSERT(!ulStatus);
+		// ulStatus = EngOS_OSALCreateSemaphore("STLOG", 1, &s_ulTaskLogSemaphoreID);
+		// VOID_ASSERT(!ulStatus);
 
-		ulStatus = EngOS_OSALCreateTask((U8*)"TLog",
-                        (U32(*)())EngLog_TaskLoggingManager,
-                        NULL,
-                        TASK_LOGGING_STACK_SIZE,
-                        TASK_LOGGING_PRIORITY,
-                        &ulTaskLoggingID
-                        );
-    	VOID_ASSERT(!ulStatus);
+		// ulStatus = EngOS_OSALCreateTask((U8*)"TLog",
+        //                 (U32(*)())EngLog_TaskLoggingManager,
+        //                 NULL,
+        //                 TASK_LOGGING_STACK_SIZE,
+        //                 TASK_LOGGING_PRIORITY,
+        //                 &ulTaskLoggingID
+        //                 );
+    	// VOID_ASSERT(!ulStatus);
 
 		s_fEnableTaskLog = TRUE;
 		EngOS_CreateJobProperty(
