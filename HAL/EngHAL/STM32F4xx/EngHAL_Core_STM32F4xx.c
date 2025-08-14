@@ -101,14 +101,14 @@ void EngHAL_Core_SystemClock_Config_F4xx()
     __HAL_RCC_RTC_ENABLE();                       // RTC clock enable
 }
 
-void EngHAL_Core_SWO_Config_F4xx()
+void EngHAL_Core_SWO_Config_F4xx(uint32_t cpuHz, uint32_t swoHz)
 {
     // DBGMCU_CR Configuration: Trace activate
     DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN;
 
     // TPIU Configuration: Async Trace activate
     TPI->SPPR = 0x00000002; // NRZ Async
-    TPI->ACPR = (SystemCoreClock / 2000000) - 1; // 2MHz Baud Rate
+    TPI->ACPR = (cpuHz / swoHz) - 1; // 2MHz Baud Rate
 
     // DWT enable
     DWT->CTRL = 0x400003FE;

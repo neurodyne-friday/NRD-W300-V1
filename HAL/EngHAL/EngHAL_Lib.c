@@ -139,7 +139,7 @@ void EngHAL_Core_Init(void)
 
 	/* Configure the system clock */
 #ifdef FR_ENGLIB_SWO_DEBUG
-	EngHAL_Core_SWO_Config_F4xx();
+	EngHAL_Core_SWO_Config_F4xx(180000000UL, 2000000UL);
 #endif
 
 	/* Configure all configured peripherals before initialization */
