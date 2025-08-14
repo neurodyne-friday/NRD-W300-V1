@@ -39,4 +39,8 @@
  * @brief To support EngLog
  */ 
 #define FR_ENGLIB_LOG
+//#define HR_ENGLIB_DEBUG_MESSAGE_MICRO_SD_SAVE
 #define FR_ENGLIB_TASK_LOGGING
+//#define FR_ENGLIB_TASK_DUMP_DEBUG
+//#define FR_ENGLIB_UART_DEBUG
+#define FR_ENGLIB_SWO_DEBUG

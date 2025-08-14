@@ -34,9 +34,19 @@ EXTERN void EngLog_LibraryEntry(TInitialStepType enInitStep);
 EXTERN BOOL EngLog_InsertDataArg(TTaskLogArea enLogArea, U32 ulData);
 EXTERN void* EngLog_DumpLogDataMemoryAlloc(void);
 EXTERN BOOL EngLog_DumpLogCreate(TDumpLog** pstEngLogInfo);
+
 EXTERN void EngLog_DynamicTaskLog(U32 ulId, const U8 *pubStr, va_list ap);
 EXTERN void EngLog_DynamicDumpLog(U32 ulId, const U8 *pubStr, va_list ap);
 EXTERN void EngLog_SaveStrToDumpLogBuffer(TDumpLogData *pstDumpLogData, const U8 *pubSrcStr, U32 ulStrLen);
+
+#if defined(FR_ENGLIB_UART_DEBUG)
+EXTERN BOOL EngLog_UartPrintCreate(TUartPrint** pstUartPrintInfo);
+#endif
+
+#if defined(FR_ENGLIB_SWO_DEBUG)
+EXTERN BOOL EngLog_SWOPrintCreate(TSWOPrint** pstSwoPrintInfo);
+#endif
+
 
 EXTERN void EngLog_ClearAll(void);
 

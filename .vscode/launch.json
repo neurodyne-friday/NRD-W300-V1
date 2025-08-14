@@ -56,6 +56,40 @@
             ],
             /* If you use external loader, add additional arguments */
             //"serverArgs": ["--extload", "path/to/ext/loader.stldr"],
+        },
+        {
+            "name": "OpenOCD + SWO",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "executable": "${command:cmake.launchTargetPath}",
+            "cwd": "${workspaceFolder}",
+            "device": "STM32F446RETx",
+            "svdFile": "${config:STM32VSCodeExtension.cubeCLT.path}/STMicroelectronics_CMSIS_SVD/STM32F446.svd",
+      
+            "configFiles": [
+              "interface/stlink.cfg",
+              "target/stm32f4x.cfg"
+            ],
+      
+            "runToEntryPoint": "main",
+      
+            // OpenOCD에 SWO/ITM 설정 전달 (버전에 따라 둘 중 하나만으로도 OK)
+            "preLaunchCommands": [
+              "monitor tpiu config internal swo 180000000 2000000",
+              "monitor itm port 0 on"
+            ],
+      
+            // ★ Cortex-Debug의 SWO 수집 설정
+            "swoConfig": {
+                "enabled": true,
+                "source": "probe",             // OpenOCD 통해 프로브에서 직접 수집
+                "swoFrequency": 2000000,       // SWO 비트레이트 (프로젝트와 일치)
+                "cpuFrequency": 180000000,     // 실제 HCLK (SystemCoreClock)
+                "decoders": [
+                    { "type": "console", "label": "ITM0", "port": 0, "encoding": "ascii" }
+                ]
+            }
         }
-            ]
+    ]
 }

@@ -115,7 +115,7 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
 
 		/* Initial for HDD Log Area Data */
 #if defined(HR_ENGLIB_DEBUG_MESSAGE_MICRO_SD_SAVE)
-		EngLog_HDDLogCreate(&stEngLogInfo.pstHDDLog);
+		EngLog_MicroSDLogCreate(&stEngLogInfo.pstMicroSDLog);
 #endif
 
 		/* Initial for Task Log Print Info */
@@ -126,6 +126,11 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
 		/* Initial for Uart Log Print Info */
 #if defined(FR_ENGLIB_UART_DEBUG)
 		EngLog_UartPrintCreate(&stEngLogInfo.pstUartPrint);
+#endif
+
+		/* Initial for SWO Log Print Info */
+#if defined(FR_ENGLIB_SWO_DEBUG)
+		EngLog_SWOPrintCreate(&stEngLogInfo.pstSwoPrint);
 #endif
 
 		EngLog_ClearAll();
@@ -406,6 +411,41 @@ void EngLog_DynamicDumpLog(U32 ulId, const U8 *pubStr, va_list ap)
 	}
 }
 
+#if defined(FR_ENGLIB_UART_DEBUG)
+BOOL EngLog_UartPrintCreate(TUartPrint** pstUartPrintInfo)
+{
+	static TUartPrint stUartPrint = {0};
+
+	ASSERT(pstUartPrintInfo);
+		
+	stUartPrint.ulPrintedLenth = 0;
+	stUartPrint.ulPrintDataID = 0;	
+	
+	*pstUartPrintInfo = &stUartPrint;
+
+	return TRUE;
+}
+#endif
+
+#if defined(FR_ENGLIB_SWO_DEBUG)
+BOOL EngLog_SWOPrintCreate(TSWOPrint** pstSwoPrintInfo)
+{
+	static TSWOPrint stSwoPrint = {0};
+
+	ASSERT(pstSwoPrintInfo);
+		
+	stSwoPrint.ulPrintedLenth = 0;
+	stSwoPrint.ulPrintDataID = 0;	
+	
+	*pstSwoPrintInfo = &stSwoPrint;
+
+	/* Initialize Hardware SWO */
+
+	return TRUE;
+}
+#endif
+
+
 inline void EngLog_SaveStrToDumpLogBuffer(TDumpLogData *pstDumpLogData, const U8 *pubSrcStr, U32 ulStrLen)
 {	
 	if(pstDumpLogData != NULL)
@@ -459,10 +499,17 @@ void EngLog_ClearAll(void)
 	}
 #endif
 
-#ifdef HR_ENGLIB_DEBUG_MESSAGE_HDD_SAVE
-	if(stEngLogInfo.pstHDDLog != NULL)
+#ifdef FR_ENGLIB_SWO_DEBUG	
+	if(stEngLogInfo.pstSwoPrint != NULL)
 	{
-		stEngLogInfo.pstHDDLog->ulDumpDataHDDPoint = 0;
+		stEngLogInfo.pstSwoPrint->ulPrintedLenth = 0;
+	}
+#endif
+
+#ifdef HR_ENGLIB_DEBUG_MESSAGE_MICRO_SD_SAVE
+	if(stEngLogInfo.pstMicroSDLog != NULL)
+	{
+		stEngLogInfo.pstMicroSDLog->ulDumpDataHDDPoint = 0;
 	}
 #endif
 }

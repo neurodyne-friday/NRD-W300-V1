@@ -32,5 +32,6 @@
 
 EXTERN void EngHAL_Core_Init_F4xx();
 EXTERN void EngHAL_Core_SystemClock_Config_F4xx();
+EXTERN void EngHAL_Core_SWO_Config_F4xx();
 
 #endif //__ENGHAL_GPIO_H__

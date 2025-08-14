@@ -100,3 +100,21 @@ void EngHAL_Core_SystemClock_Config_F4xx()
     }
     __HAL_RCC_RTC_ENABLE();                       // RTC clock enable
 }
+
+void EngHAL_Core_SWO_Config_F4xx()
+{
+    // DBGMCU_CR Configuration: Trace activate
+    DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN;
+
+    // TPIU Configuration: Async Trace activate
+    TPI->SPPR = 0x00000002; // NRZ Async
+    TPI->ACPR = (SystemCoreClock / 2000000) - 1; // 2MHz Baud Rate
+
+    // DWT enable
+    DWT->CTRL = 0x400003FE;
+
+    // ITM activate
+    ITM->LAR = 0xC5ACCE55; // Lock Access Register: ITM activate
+    ITM->TCR = 0x0001000D; // Trace Control Register Configuration
+    ITM->TER = 0x00000001; // Trace Enable Register Configuration 
+}
