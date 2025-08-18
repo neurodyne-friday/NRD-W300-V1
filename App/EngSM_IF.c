@@ -41,6 +41,7 @@ BOOL EngSM_IF_Initialize(void)
 	DBG_ENGSM(ENG_DBG_STRING"EngSM_IF_Initialize", ENG_TICK, "SM");
 	
 	/* Initialize the Engine Library */
+	EngLib_IF_Entry(INIT_STEP_1ST);
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
     /* Initialize the Hardware */

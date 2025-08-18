@@ -233,7 +233,7 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 {
 #ifdef FR_ENGLIB_LOG
 	va_list args;
-	TUART* pstUART = EngDrv_IF_GetUART(UART_NAME_STLINK_DEBUG);
+	//TUART* pstUART = EngDrv_IF_GetUART(UART_NAME_STLINK_DEBUG);
 
 	//EngLog_DynamicTaskLog(DBG_ID_UART, pubStr, ap);
 
@@ -243,6 +243,25 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 	vsnprintf(aubTempBuff, sizeof(aubTempBuff), format, args);
 	va_end(args);
 
-	pstUART->pfnSendData(pstUART, aubTempBuff);
+	// if(pstUART && pstUART->pfnSendData != NULL)
+	// {
+	// 	pstUART->pfnSendData(pstUART, aubTempBuff);
+	// }
+
+	// Send the string to SWO (ITM)
+	for(int i = 0; i < sizeof(aubTempBuff); i++)
+	{
+		char ch = aubTempBuff[i];
+
+		if ((ITM->TCR & ITM_TCR_ITMENA_Msk)==0 || (ITM->TER & 1U)==0) 
+			return;
+		
+		while (ITM->PORT[0].u32 == 0) 
+		{ 
+			__NOP(); 
+		}
+		
+		ITM->PORT[0].u8 = (uint8_t)ch;
+	}
 #endif
 }

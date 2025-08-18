@@ -17,9 +17,7 @@ void EngDrv_UART_Create()
 
         pstInstance->pfnInitialize = EngDrv_UART_Initialize;
 		pstInstance->pfnSendData = EngDrv_UART_SendData;
-
     } 	
-
 }
 
 void EngDrv_UART_Initialize(TUART *pstUART)

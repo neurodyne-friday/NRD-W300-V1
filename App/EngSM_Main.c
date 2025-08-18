@@ -49,6 +49,7 @@ BOOL EngSM_Initialize(void)
 	TEngSystemManager *pstSystemManager = &s_stSystemManager;
 	
 	DBG_ENGSM(ENG_DBG_STRING"EngSM_Initialize", ENG_TICK, "SM");
+	DBG_SWO(ENG_DBG_STRING"EngSM_Initialize", ENG_TICK, "SM");
 	
     /* Initialize Engine System Manager Information Storage Variable */
 //	EngLib_MemorySet(pstSystemManager, 0, (sizeof(TEngSystemManager)));

@@ -48,7 +48,8 @@ BOOL EngFOC_Initialize(void)
 	TEngFOCManager *pstFOCManager = &s_stFOCManager;
     TTaskProperty* pstTaskProperty = NULL;
 	
-	DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
+	//DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
+    DBG_SWO(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 	
     pstTaskProperty = EngOS_Task_CreateProperty(
         "CurrentControlTask", 

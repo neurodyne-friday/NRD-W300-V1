@@ -111,7 +111,7 @@ void EngLog_LibraryEntry(TInitialStepType enInitStep)
 		stEngLogInfo.pstSwoPrint = NULL;
 
 		/* Initial for Engine Log Area Data */
-		EngLog_DumpLogCreate(&stEngLogInfo.pstDumpLog);
+		// EngLog_DumpLogCreate(&stEngLogInfo.pstDumpLog); // 추구 활성화
 
 		/* Initial for HDD Log Area Data */
 #if defined(HR_ENGLIB_DEBUG_MESSAGE_MICRO_SD_SAVE)
