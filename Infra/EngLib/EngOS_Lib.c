@@ -93,7 +93,7 @@ void EngOS_Task_Waiting(TTaskProperty* pProperty, U32 ulPreviousWakeTime)
 
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)
-	vTaskDelayUntil(&ulPreviousWakeTime, (TickType_t)pProperty->ulIntervalTime);
+	vTaskDelayUntil(&ulPreviousWakeTime, pdMS_TO_TICKS(pProperty->ulIntervalTime));
 #elif defined(ENGOS_UCOS)
 #endif
 }

@@ -471,30 +471,32 @@ U32 EngSM_GetIntervalTime(TIntervalTimeType enType)
 BOOL EngSM_Main(void)
 {
 	TEngSystemManager *pstSystemManager = &s_stSystemManager;
-	TMsgQCB *pstSystemMgrMsgQCB = &pstSystemManager->stMsgQCB;	/* Message Handler for Engine System Manager */
-	TMsgQ stRcvMsgQ = {0};
-	TEngState enNextState = ENG_ST_UNSPECIFIED;
-
-	while(EngLib_TaskToISRReceiveEvent(&stRcvMsgQ))
-	{
-		DBG_ENGSM(ENG_DBG_STRING"SendMsg:%x,%d,%d", ENG_TICK, "SM", stRcvMsgQ.ulMsgID, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-		EngSM_SendEvent(stRcvMsgQ.ulMsgID, NULL, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-	}
+	// TMsgQCB *pstSystemMgrMsgQCB = &pstSystemManager->stMsgQCB;	/* Message Handler for Engine System Manager */
+	// TMsgQ stRcvMsgQ = {0};
+	// TEngState enNextState = ENG_ST_UNSPECIFIED;
+	// while(EngLib_TaskToISRReceiveEvent(&stRcvMsgQ))
+	// {
+	// 	DBG_ENGSM(ENG_DBG_STRING"SendMsg:%x,%d,%d", ENG_TICK, "SM", stRcvMsgQ.ulMsgID, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
+	// 	EngSM_SendEvent(stRcvMsgQ.ulMsgID, NULL, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
+	// }
 
 	/* Message Handler for Engine System Manager */
-	while(EngLib_ReceiveMsgQ(pstSystemMgrMsgQCB, &stRcvMsgQ))
-	{
-		;//EngSM_DispatchMessage(&stRcvMsgQ);
-	}
+	// while(EngLib_ReceiveMsgQ(pstSystemMgrMsgQCB, &stRcvMsgQ))
+	// {
+	// 	;//EngSM_DispatchMessage(&stRcvMsgQ);
+	// }
 
 	/* Execute the state activity of Engine System Manager */
-	enNextState = EngLib_StateActivity(&pstSystemManager->stStateMachine, pstSystemManager);
-	enNextState = EngLib_StateGuardConditionActivity(&pstSystemManager->stStateMachine, pstSystemManager);
+	// enNextState = EngLib_StateActivity(&pstSystemManager->stStateMachine, pstSystemManager);
+	// enNextState = EngLib_StateGuardConditionActivity(&pstSystemManager->stStateMachine, pstSystemManager);
 
 	/* Update the Status DB of Engine System Manager */
-	EngSM_SetStatus(ENGSM_STS_PARENT_ENGINE_STATE, enNextState);
+	// EngSM_SetStatus(ENGSM_STS_PARENT_ENGINE_STATE, enNextState);
 	
-	EngSM_CountIntervalTime();
+	//EngSM_CountIntervalTime();
+
+	EngTimerSvc_IF_Main();
+	DBG_SWO(ENG_DBG_STRING"EngSM_Main called", ENG_TICK, "SM");
 	
 	return TRUE;
 }

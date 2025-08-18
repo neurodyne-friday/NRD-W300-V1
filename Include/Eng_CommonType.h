@@ -436,6 +436,7 @@ typedef enum
 #include "Eng_FeatureType.h"
 #include "Eng_MessageType.h"
 #include "Eng_StatusType.h"
+#include "EngTimerSvc_Types.h"
 #include "EngSM_Types.h"
 
 #include "EngCM_FeatureConfig.h"

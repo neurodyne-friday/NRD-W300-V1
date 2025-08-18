@@ -38,6 +38,7 @@
 */
 BOOL EngSM_IF_Initialize(void)
 {
+	TTaskProperty* pstTaskProperty = NULL;
 	DBG_ENGSM(ENG_DBG_STRING"EngSM_IF_Initialize", ENG_TICK, "SM");
 	
 	/* Initialize the Engine Library */
@@ -64,7 +65,11 @@ BOOL EngSM_IF_Initialize(void)
 #else
 	//EngCM_IF_Initialize();
 #endif
-	
+
+	/* Create and register SM Task */
+    pstTaskProperty = EngOS_Task_CreateProperty("SystemManagerTask", EngSM_IF_Main, TASK_RUNTYPE_Cycle, 1);
+    EngOS_Task_Register(pstTaskProperty);
+
 	/* Initialize the Engine System Manager */
 	EngSM_Initialize();
 
@@ -293,11 +298,27 @@ U32 EngSM_IF_GetIntervalTime(TIntervalTimeType enType)
 * @remarks     	
 */
 
-//BOOL EngSM_IF_Main(void)
 void EngSM_IF_Main(void)
 {
-    //return EngSM_Main();
-	EngSM_Main();
+	TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("SystemManagerTask");
+	U32 lastWakeTime = EngOS_GetSysTick();
+	const TickType_t xFrequency = pdMS_TO_TICKS(1);
+	TickType_t xLastWakeTime;
+
+	xLastWakeTime = xTaskGetTickCount();
+
+	if(pstTaskProperty == NULL)
+	{
+		DBG_ENGSM(ENG_DBG_STRING"Error!! Task Property is NULL", ENG_TICK, "SM");
+		return;
+	}
+
+	for(;;) 
+	{
+		EngSM_Main();
+		//EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
+		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+	}
 }
 
 /** 
