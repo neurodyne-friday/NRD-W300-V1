@@ -302,10 +302,6 @@ void EngSM_IF_Main(void)
 {
 	TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("SystemManagerTask");
 	U32 lastWakeTime = EngOS_GetSysTick();
-	const TickType_t xFrequency = pdMS_TO_TICKS(1);
-	TickType_t xLastWakeTime;
-
-	xLastWakeTime = xTaskGetTickCount();
 
 	if(pstTaskProperty == NULL)
 	{
@@ -316,8 +312,7 @@ void EngSM_IF_Main(void)
 	for(;;) 
 	{
 		EngSM_Main();
-		//EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
-		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+		EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
 	}
 }
 

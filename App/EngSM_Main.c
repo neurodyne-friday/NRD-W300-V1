@@ -496,7 +496,7 @@ BOOL EngSM_Main(void)
 	//EngSM_CountIntervalTime();
 
 	EngTimerSvc_IF_Main();
-	DBG_SWO(ENG_DBG_STRING"EngSM_Main called", ENG_TICK, "SM");
+	DBG_SWO(ENG_DBG_STRING"EngSM_Main called...", ENG_TICK, "SM");
 	
 	return TRUE;
 }

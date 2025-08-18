@@ -240,8 +240,13 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 	U8 aubTempBuff[C_ENG_LOG_1LINE_BUFF_SIZE] = {0};
 
 	va_start(args, format);
-	vsnprintf(aubTempBuff, sizeof(aubTempBuff), format, args);
+	U32 ulLength = vsnprintf(aubTempBuff, sizeof(aubTempBuff), format, args);
 	va_end(args);
+
+	if(ulLength == 0)
+	{
+		return; // No data to send
+	}
 
 	// if(pstUART && pstUART->pfnSendData != NULL)
 	// {
@@ -249,13 +254,14 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 	// }
 
 	// Send the string to SWO (ITM)
-	for(int i = 0; i < sizeof(aubTempBuff); i++)
+	if ((ITM->TCR & ITM_TCR_ITMENA_Msk)==0 || (ITM->TER & 1U)==0) 
+		return;
+
+	//for(int i = 0; i < sizeof(aubTempBuff); i++)
+	for(int i = 0; i < ulLength; i++)
 	{
 		char ch = aubTempBuff[i];
 
-		if ((ITM->TCR & ITM_TCR_ITMENA_Msk)==0 || (ITM->TER & 1U)==0) 
-			return;
-		
 		while (ITM->PORT[0].u32 == 0) 
 		{ 
 			__NOP(); 

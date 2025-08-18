@@ -342,7 +342,7 @@ void EngFOC_Task_SpeedControl(void *argument)
         // (i_d_ref는 여전히 0으로 유지)
         
         //vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
-        EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
+        EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
     }
 }
 
@@ -396,7 +396,7 @@ void EngFOC_Task_PositionControl(void *argument)
         pstFOCManager->fRefOmega = omega_cmd;
         
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
-        EngOS_Task_Waiting(pstTaskProperty, lastWakeTime);
+        EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
     }
 }
 

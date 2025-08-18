@@ -86,14 +86,14 @@ U32 EngOS_GetSysTick(void)
 #endif
 }
 
-void EngOS_Task_Waiting(TTaskProperty* pProperty, U32 ulPreviousWakeTime)
+void EngOS_Task_Waiting(TTaskProperty* pProperty, U32* ulPreviousWakeTime)
 {
 	if(pProperty == NULL)
 		return;
 
 #if defined(ENGOS_CMSIS_V2)
 #elif defined(ENGOS_FREERTOS)
-	vTaskDelayUntil(&ulPreviousWakeTime, pdMS_TO_TICKS(pProperty->ulIntervalTime));
+	vTaskDelayUntil(ulPreviousWakeTime, pdMS_TO_TICKS(pProperty->ulIntervalTime));
 #elif defined(ENGOS_UCOS)
 #endif
 }
