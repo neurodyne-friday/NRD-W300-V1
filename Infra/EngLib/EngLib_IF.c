@@ -127,23 +127,3 @@ void EngLib_VM_SendAssert(U32 ulValue, U8 *pubFileName, U32 ulLine)
 	}
 }
 
-#ifdef FR_ENGLIB_FOOTER
-void EngLib_IF_SetFooter(U32 ulID, U32 ulData)
-{
-	EngFooter_Set(ulID, ulData);
-}
-
-U32 EngLib_IF_GetFooter(U32 ulID)
-{
-	return EngFooter_Get(ulID);
-}
-
-#ifdef ALT_IFSVC_NEWIF
-U8* EngLib_IF_GetFooterBuffer(void)
-{
-	return EngFooter_GetBuffer();
-}
-#endif
-
-#endif
-

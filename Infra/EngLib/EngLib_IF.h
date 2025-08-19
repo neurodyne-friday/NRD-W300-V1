@@ -34,11 +34,5 @@ EXTERN void EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndl);
 EXTERN BOOL EngLib_IF_Assert(U32 ulValue, U8 *pubFileName, U32 ulLine);
 EXTERN void EngLib_VM_SendAssert(U32 ulValue, U8 *pubFileName, U32 ulLine);
 
-#ifdef FR_ENGLIB_FOOTER
-EXTERN void EngLib_IF_SetFooter(U32 ulID, U32 ulData);
-EXTERN U32 EngLib_IF_GetFooter(U32 ulID);
-EXTERN U8* EngLib_IF_GetFooterBuffer(void);
-#endif
-
 #endif /* __ENGLIB_IF_H__ */
 

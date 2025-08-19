@@ -36,10 +36,6 @@
 #endif
 
 
-#ifdef FR_IFSVC_ROM_SEPERATION
-EXTERN void (*ENGPrint)();
-EXTERN void (*ENGHDDPrint)();
-
 #ifdef ENG_DART_ANALYSYS
 #define ASSERT(ulGetValue) ( EngOS_Assert(ulGetValue, __FILE__, __LINE__) )
 #else
@@ -60,14 +56,6 @@ EXTERN void (*ENGHDDPrint)();
 EXTERN void (*ENGSprintf)();
 #if !defined(WIN32)
 #define sprintf (ENGSprintf)
-#endif
-
-#else
-#include <assert.h>
-
-#undef  ASSERT
-#define ASSERT assert   /**< Assert function definition */
-#define VOID_ASSERT(ulGetValue) if(!(ulGetValue)){ EngLib_IF_Assert(ulGetValue, __FILE__, __LINE__); return;}
 #endif
 
 //#undef  ASSERT
