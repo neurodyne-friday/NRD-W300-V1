@@ -233,8 +233,6 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 {
 #ifdef FR_ENGLIB_LOG
 	va_list args;
-	//TUART* pstUART = EngDrv_IF_GetUART(UART_NAME_STLINK_DEBUG);
-
 	//EngLog_DynamicTaskLog(DBG_ID_UART, pubStr, ap);
 
 	U8 aubTempBuff[C_ENG_LOG_1LINE_BUFF_SIZE] = {0};
@@ -248,16 +246,10 @@ void EngLog_IF_PrintToSWO(const U8 *format, ...)
 		return; // No data to send
 	}
 
-	// if(pstUART && pstUART->pfnSendData != NULL)
-	// {
-	// 	pstUART->pfnSendData(pstUART, aubTempBuff);
-	// }
-
 	// Send the string to SWO (ITM)
 	if ((ITM->TCR & ITM_TCR_ITMENA_Msk)==0 || (ITM->TER & 1U)==0) 
 		return;
 
-	//for(int i = 0; i < sizeof(aubTempBuff); i++)
 	for(int i = 0; i < ulLength; i++)
 	{
 		char ch = aubTempBuff[i];

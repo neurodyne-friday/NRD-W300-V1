@@ -471,24 +471,6 @@ U32 EngSM_GetIntervalTime(TIntervalTimeType enType)
 BOOL EngSM_Main(void)
 {
 	TEngSystemManager *pstSystemManager = &s_stSystemManager;
-	// TMsgQCB *pstSystemMgrMsgQCB = &pstSystemManager->stMsgQCB;	/* Message Handler for Engine System Manager */
-	// TMsgQ stRcvMsgQ = {0};
-	// TEngState enNextState = ENG_ST_UNSPECIFIED;
-	// while(EngLib_TaskToISRReceiveEvent(&stRcvMsgQ))
-	// {
-	// 	DBG_ENGSM(ENG_DBG_STRING"SendMsg:%x,%d,%d", ENG_TICK, "SM", stRcvMsgQ.ulMsgID, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-	// 	EngSM_SendEvent(stRcvMsgQ.ulMsgID, NULL, stRcvMsgQ.ulLParam, stRcvMsgQ.ulRParam);
-	// }
-
-	/* Message Handler for Engine System Manager */
-	// while(EngLib_ReceiveMsgQ(pstSystemMgrMsgQCB, &stRcvMsgQ))
-	// {
-	// 	;//EngSM_DispatchMessage(&stRcvMsgQ);
-	// }
-
-	/* Execute the state activity of Engine System Manager */
-	// enNextState = EngLib_StateActivity(&pstSystemManager->stStateMachine, pstSystemManager);
-	// enNextState = EngLib_StateGuardConditionActivity(&pstSystemManager->stStateMachine, pstSystemManager);
 
 	/* Update the Status DB of Engine System Manager */
 	// EngSM_SetStatus(ENGSM_STS_PARENT_ENGINE_STATE, enNextState);
@@ -613,22 +595,6 @@ BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue)
     if((*pfnStatusInternalFunc)(STATUS_SET, ulChangedStatusID, ulNewValue))
 	{
 	    /* If callback is registered on specific status id, then it would be called */
-	    //EngSM_FollowDeviceStatus(ulStatusID, ulOldValue, ulNewValue);
-
-		// if((ulStatusID == ENGSM_STS_PARENT_ENGINE_STATE) 
-		// 	&& ((ulNewValue == ENG_ST_WARMUP) || (ulNewValue == ENG_ST_ERROR))
-		// )
-		{
-			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
-			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_PH, ulStatusID, ulOldValue, ulNewValue);
-			//EngSM_HndIF_FollowDeviceStatus(ENG_HND_IH, ulStatusID, ulOldValue, ulNewValue);	
-		}
-		// else
-		// {
-		// 	EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_1MS|ENGVM_ARG_INFINITE, 1*T1MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_MH, ulStatusID, ulOldValue, ulNewValue);
-		//     EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_2MS|ENGVM_ARG_INFINITE, 3*T2MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_PH, ulStatusID, ulOldValue, ulNewValue);
-		//     EngVM_Add(ENGVM_ARG_NUM4|ENGVM_ARG_2MS|ENGVM_ARG_INFINITE, 5*T2MS, 0, EngSM_HndIF_FollowDeviceStatus, ENG_HND_IH, ulStatusID, ulOldValue, ulNewValue);
-		// }
 	}
 
     return TRUE;

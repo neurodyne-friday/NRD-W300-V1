@@ -81,19 +81,6 @@ void EngTimerSvc_IF_Main(void)
 
 #if defined(ENGINE_DBG)
 #ifdef USE_SYSTICK
-	// {
-	// 	g_ulEngTimer = uwTick; // get from sysTick of stm32
-	// 	g_ulEngTickCnt = ((g_ulEngTimer - g_ulEngTick) << 0);
-	// 	if(sprintf != NULL)
-	// 	{
-	// 		sprintf(g_aubEngTick, "%u", ENG_TICK_CNT);
-	// 	}
-	// 	else 
-	// 	{
-	// 		g_aubEngTick[0] = '0'; g_aubEngTick[1] = '\0';
-	// 	}
-	// }
-	// --> should change as a function in EngTimerSvc_Main
 	EngTimerSvc_CountBySysTick();
 #else
 	ENG_COUNT();
