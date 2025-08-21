@@ -659,6 +659,8 @@ void EngSM_PowerOn(void)
 	/* Data restore sequence */
 	if(EngHAL_SRAM_Load(pstEmergencyBackupData->ulErrorData, sizeof(pstEmergencyBackupData->ulErrorData), &len, &seq))
 	{
+		DBG_SWO(ENG_DBG_STRING"Power On: Restore Emergency Backup Data", ENG_TICK, "SM");
+		DBG_SWO(ENG_DBG_STRING"ulErrorData[0]: 0x%x", ENG_TICK, "SM", pstEmergencyBackupData->ulErrorData[0]);
 	}
 	else
 	{
@@ -695,6 +697,9 @@ void EngSM_PowerOff(void)
 	pstRTCSnapshot->ubSecond		= stRTCData.ubSecond;
 	pstRTCSnapshot->uwSubSecond		= stRTCData.uwSubSecond;
 	pstRTCSnapshot->uwSecondFraction= stRTCData.uwSecondFraction;
+
+	// for test
+	pstEmergencyBackupData->ulErrorData[0] = 0x12345678;
 	
 	EngHAL_SRAM_Save(pstEmergencyBackupData->ulErrorData, sizeof(pstEmergencyBackupData->ulErrorData));
 }

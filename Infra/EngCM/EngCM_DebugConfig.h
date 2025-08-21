@@ -53,10 +53,6 @@
 #endif
 #endif
 
-EXTERN void (*ENGSprintf)();
-#if !defined(WIN32)
-#define sprintf (ENGSprintf)
-#endif
 
 //#undef  ASSERT
 //#define ASSERT(exp)     			((void)0)
