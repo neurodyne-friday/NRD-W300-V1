@@ -1,0 +1,542 @@
+{
+	"version": "1.0",
+	"parameters": [
+		{
+			"id": 0,
+			"byte": "0x00",
+			"type": "int32",
+			"meaning": "CAN ID",
+			"unit": "None"
+		},
+		{
+			"id": 1,
+			"byte": "0x01",
+			"type": "int32",
+			"meaning": "CAN Baud Rate",
+			"unit": "None"
+		},
+		{
+			"id": 2,
+			"byte": "0x02",
+			"type": "fp32",
+			"meaning": "Output shaft Zero Position",
+			"unit": "rad"
+		},
+
+		{
+			"id": 16,
+			"byte": "0x10",
+			"type": "fp32",
+			"meaning": "KP Value of Current Control",
+			"unit": "None"
+		},
+		{
+			"id": 17,
+			"byte": "0x11",
+			"type": "fp32",
+			"meaning": "KI Value of Current Control",
+			"unit": "None"
+		},
+		{
+			"id": 18,
+			"byte": "0x12",
+			"type": "fp32",
+			"meaning": "KP Value of Speed Control",
+			"unit": "None"
+		},
+		{
+			"id": 19,
+			"byte": "0x13",
+			"type": "fp32",
+			"meaning": "KI Value of Speed Control",
+			"unit": "None"
+		},
+		{
+			"id": 20,
+			"byte": "0x14",
+			"type": "fp32",
+			"meaning": "KP Value of Position Control",
+			"unit": "None"
+		},
+		{
+			"id": 21,
+			"byte": "0x15",
+			"type": "fp32",
+			"meaning": "KI Value of Position Control",
+			"unit": "None"
+		},
+		{
+			"id": 22,
+			"byte": "0x16",
+			"type": "fp32",
+			"meaning": "KD Value of Position Control",
+			"unit": "None"
+		},
+		{
+			"id": 32,
+			"byte": "0x20",
+			"type": "fp32",
+			"meaning": "Learning Rate of Speed Control",
+			"unit": "None"
+		},
+		{
+			"id": 33,
+			"byte": "0x21",
+			"type": "fp32",
+			"meaning": "Learning Rate of Position Control",
+			"unit": "None"
+		}
+	],
+	"commands": [
+		{
+			"Name" : "Start Motor",
+			"CommandId" : 129,
+			"CommandByte" : "0x81",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Stop Motor",
+			"CommandId" : 130,
+			"CommandByte" : "0x82",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Torque Control",
+			"CommandId" : 131,
+			"CommandByte" : "0x83",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1, 2, 3, 4],
+					"Format" : "float",
+					"Meaning" : "Torque Value",
+					"Coefficient" : 1,
+					"Unit" : "Nm"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [5, 6, 7],
+					"Format" : "uint32",
+					"Meaning" : "Time",
+					"Coefficient" : 1,
+					"Unit" : "ms"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},		
+		{
+			"Name" : "Speed Control",
+			"CommandId" : 132,
+			"CommandByte" : "0x84",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1, 2, 3, 4],
+					"Format" : "float",
+					"Meaning" : "Speed Value",
+					"Coefficient" : 1,
+					"Unit" : "rad/s"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [5, 6, 7],
+					"Format" : "uint32",
+					"Meaning" : "Time",
+					"Coefficient" : 1,
+					"Unit" : "ms"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Position Control",
+			"CommandId" : 133,
+			"CommandByte" : "0x85",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1, 2, 3, 4],
+					"Format" : "float",
+					"Meaning" : "Position Value",
+					"Coefficient" : 1,
+					"Unit" : "rad"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [5, 6, 7],
+					"Format" : "uint32",
+					"Meaning" : "Time",
+					"Coefficient" : 1,
+					"Unit" : "ms"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Stop Control",
+			"CommandId" : 134,
+			"CommandByte" : "0x86",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Set Parameter",
+			"CommandId" : 145,
+			"CommandByte" : "0x91",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "paramtype",
+					"Meaning" : "Parameter Value",
+					"Coefficient" : 1,
+					"Unit" : "paramunit"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [3],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Get Parameter",
+			"CommandId" : 146,
+			"CommandByte" : "0x92",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [3],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "paramtype",
+					"Meaning" : "Parameter Value",
+					"Coefficient" : 1.0,
+					"Unit" : "paramunit"
+				}
+			]
+		},
+		{
+			"Name" : "Reset Parameter",
+			"CommandId" : 147,
+			"CommandByte" : "0x93",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [3],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "paramtype",
+					"Meaning" : "Parameter Value",
+					"Coefficient" : 1.0,
+					"Unit" : "paramunit"
+				}
+			]
+		},
+		{
+			"Name" : "Set Parameter as Default",
+			"CommandId" : 148,
+			"CommandByte" : "0x94",
+			"Params": [
+				{
+					"Direction" : "Request",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Request",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "paramtype",
+					"Meaning" : "Parameter Value",
+					"Coefficient" : 1,
+					"Unit" : "paramunit"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Parameter ID",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [2],
+					"Format" : "uint8",
+					"Meaning" : "Parameter Type",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [3],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				}
+			]
+		},
+		{
+			"Name" : "Request Torque Value",
+			"CommandId" : 161,
+			"CommandByte" : "0xA1",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "float",
+					"Meaning" : "Torque Value",
+					"Coefficient" : 1,
+					"Unit" : "Nm"
+				}
+			]
+		},
+		{
+			"Name" : "Request Speed Value",
+			"CommandId" : 162,
+			"CommandByte" : "0xA2",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "float",
+					"Meaning" : "Speed Value",
+					"Coefficient" : 1,
+					"Unit" : "rad/s"
+				}
+			]
+		},
+		{
+			"Name" : "Request Position Value",
+			"CommandId" : 163,
+			"CommandByte" : "0xA3",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5, 6, 7],
+					"Format" : "float",
+					"Meaning" : "Position Value",
+					"Coefficient" : 1,
+					"Unit" : "rad"
+				}
+			]
+		},
+		{
+			"Name" : "Request PST(Pos/Spd/Tor) Value",
+			"CommandId" : 164,
+			"CommandByte" : "0xA4",
+			"Params": [
+				{
+					"Direction" : "Response",
+					"Index" : [1],
+					"Format" : "uint8",
+					"Meaning" : "Result",
+					"Coefficient" : 1,
+					"Unit" : "None"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [2, 3],
+					"Format" : "fp16",
+					"Meaning" : "Position Value",
+					"Coefficient" : 1,
+					"Unit" : "rad"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [4, 5],
+					"Format" : "fp16",
+					"Meaning" : "Speed Value",
+					"Coefficient" : 1,
+					"Unit" : "rad/s"
+				},
+				{
+					"Direction" : "Response",
+					"Index" : [6, 7],
+					"Format" : "fp16",
+					"Meaning" : "Torque Value",
+					"Coefficient" : 1,
+					"Unit" : "Mn"
+				}
+			]
+		}
+	]
+}
