@@ -270,22 +270,46 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
   /* USER CODE END CAN1_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_CAN1_CLK_ENABLE();
-
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
     /**CAN1 GPIO Configuration
-    PB8     ------> CAN1_RX
-    PB9     ------> CAN1_TX
+    PA11     ------> CAN1_RX
+    PA12     ------> CAN1_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN CAN1_MspInit 1 */
-
+    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
   /* USER CODE END CAN1_MspInit 1 */
+  }
+  else if (hcan->Instance == CAN2)
+  {
+    /* 1) 클록 (CAN2는 CAN1 클록도 필요) */
+    __HAL_RCC_CAN1_CLK_ENABLE();
+    __HAL_RCC_CAN2_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    /* 2) 핀: PB12=CAN2_RX, PB13=CAN2_TX (AF9) */
+    GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;                  // 필요시 PULLUP
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN2;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* 3) NVIC: FIFO1 사용 */
+    HAL_NVIC_SetPriority(CAN2_RX1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(CAN2_RX1_IRQn);
+
+    /* 필요 시 다른 IRQ */
+    // HAL_NVIC_SetPriority(CAN2_TX_IRQn,5,0);   HAL_NVIC_EnableIRQ(CAN2_TX_IRQn);
+    // HAL_NVIC_SetPriority(CAN2_SCE_IRQn,5,0);  HAL_NVIC_EnableIRQ(CAN2_SCE_IRQn);
+    // HAL_NVIC_SetPriority(CAN2_RX0_IRQn,5,0);  HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
   }
 
 }
@@ -298,25 +322,28 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
 */
 void HAL_CAN_MspDeInit(CAN_HandleTypeDef* hcan)
 {
-  if(hcan->Instance==CAN1)
+  if(hcan->Instance == CAN1)
   {
-  /* USER CODE BEGIN CAN1_MspDeInit 0 */
-
-  /* USER CODE END CAN1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_CAN1_CLK_DISABLE();
-
     /**CAN1 GPIO Configuration
-    PB8     ------> CAN1_RX
-    PB9     ------> CAN1_TX
+    PA11     ------> CAN1_RX
+    PA12     ------> CAN1_TX
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
+    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
+    __HAL_RCC_CAN1_CLK_DISABLE();
 
   /* USER CODE BEGIN CAN1_MspDeInit 1 */
 
   /* USER CODE END CAN1_MspDeInit 1 */
   }
-
+  else if (hcan->Instance == CAN2)
+  {
+    HAL_NVIC_DisableIRQ(CAN2_RX1_IRQn);
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
+    __HAL_RCC_CAN2_CLK_DISABLE();
+    /* 필요시 CAN1 클록도 조건부로 끄기(다른 장치가 CAN1 안 쓰면) */
+    // __HAL_RCC_CAN1_CLK_DISABLE();
+  }
 }
 
 /**

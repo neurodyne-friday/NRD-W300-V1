@@ -70,10 +70,10 @@ void EngHAL_Core_SystemClock_Config_F4xx()
 
     /** Activate the Over-Drive mode
      */
-    //if (HAL_PWREx_EnableOverDrive() != HAL_OK)
-    //{
-    //    Error_Handler();
-    //}
+    if (HAL_PWREx_EnableOverDrive() != HAL_OK)
+    {
+        Error_Handler();
+    }
 
     /** Initializes the CPU, AHB and APB buses clocks
      */

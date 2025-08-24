@@ -79,15 +79,15 @@ BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
         return FALSE;
     }
 
-    pstCANHandle->Init.Prescaler = 18;//16;
+    pstCANHandle->Init.Prescaler = 3;
     pstCANHandle->Init.Mode = CAN_MODE_NORMAL;
     pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
-    pstCANHandle->Init.TimeSeg1 = CAN_BS1_1TQ;
-    pstCANHandle->Init.TimeSeg2 = CAN_BS2_1TQ;
+    pstCANHandle->Init.TimeSeg1 = CAN_BS1_11TQ;
+    pstCANHandle->Init.TimeSeg2 = CAN_BS2_3TQ;
     pstCANHandle->Init.TimeTriggeredMode = DISABLE;
-    pstCANHandle->Init.AutoBusOff = DISABLE;
+    pstCANHandle->Init.AutoBusOff = ENABLE;
     pstCANHandle->Init.AutoWakeUp = DISABLE;
-    pstCANHandle->Init.AutoRetransmission = DISABLE;
+    pstCANHandle->Init.AutoRetransmission = ENABLE;
     pstCANHandle->Init.ReceiveFifoLocked = DISABLE;
     pstCANHandle->Init.TransmitFifoPriority = DISABLE;
 
@@ -97,16 +97,29 @@ BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
     }
 
     // CAN filter configuration
-    sFilterConfig.FilterBank = 0;
     sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
     sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     sFilterConfig.FilterIdHigh = 0x0000;
     sFilterConfig.FilterIdLow = 0x0000;
     sFilterConfig.FilterMaskIdHigh = 0x0000;
     sFilterConfig.FilterMaskIdLow = 0x0000;
-    sFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
     sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.SlaveStartFilterBank = 14;
+    if(pstHalPorting->ulChannel == 1)
+    {
+        sFilterConfig.FilterBank = 0;
+        sFilterConfig.SlaveStartFilterBank = 14;
+        sFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    }
+    else if(pstHalPorting->ulChannel == 2)
+    {
+        sFilterConfig.FilterBank = 14;
+        //sFilterConfig.SlaveStartFilterBank = 14;
+        sFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO1;
+    }
+    else
+    {
+        return FALSE; // Invalid channel
+    }
 
     // Set filter
     if (HAL_CAN_ConfigFilter(pstCANHandle, &sFilterConfig) != HAL_OK)
@@ -120,12 +133,12 @@ void EngHAL_CAN_EnableInterrupt_F4xx(THalCANPorting *pstHalPorting)
     CAN_HandleTypeDef* pHndCAN = NULL;
     uint32_t ulCAN_IT_RX_FIFO_MSG_PENDING = 0;
 
-    if(pstHalPorting->ulChannel == 0)
+    if(pstHalPorting->ulChannel == 1)
     {
         pHndCAN = &hcan1;
         ulCAN_IT_RX_FIFO_MSG_PENDING = CAN_IT_RX_FIFO0_MSG_PENDING;
     }
-    else if(pstHalPorting->ulChannel == 1)
+    else if(pstHalPorting->ulChannel == 2)
     {
         pHndCAN = &hcan2;
         ulCAN_IT_RX_FIFO_MSG_PENDING = CAN_IT_RX_FIFO1_MSG_PENDING;
@@ -153,12 +166,12 @@ void EngHAL_CAN_DisableInterrupt_F4xx(THalCANPorting *pstHalPorting)
     CAN_HandleTypeDef* pHndCAN = NULL;
     uint32_t ulCAN_IT_RX_FIFO_MSG_PENDING = 0;
 
-    if(pstHalPorting->ulChannel == 0)
+    if(pstHalPorting->ulChannel == 1)
     {
         pHndCAN = &hcan1;
         ulCAN_IT_RX_FIFO_MSG_PENDING = CAN_IT_RX_FIFO0_MSG_PENDING;
     }
-    else if(pstHalPorting->ulChannel == 1)
+    else if(pstHalPorting->ulChannel == 2)
     {
         pHndCAN = &hcan2;
         ulCAN_IT_RX_FIFO_MSG_PENDING = CAN_IT_RX_FIFO1_MSG_PENDING;
@@ -234,9 +247,9 @@ U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting)
 {
     THalCANRxBuffer* pRxBuffer = NULL;
 
-    if(pstHalPorting->ulChannel < CAN_CHANNEL_COUNT)
+    if(pstHalPorting->ulChannel <= CAN_CHANNEL_COUNT)
     {
-        pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel];
+        pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel - 1];
         if(pRxBuffer->ubLength > 0)
         {
             return pRxBuffer->pubData[pRxBuffer->ubLength-1];
@@ -258,11 +271,11 @@ void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ub
     CAN_TxHeaderTypeDef TxHeader;
     uint32_t TxMailbox;
 
-    if(pstHalPorting->ulChannel == 0)
+    if(pstHalPorting->ulChannel == 1)
     {
         pHndCAN = &hcan1;
     }
-    else if(pstHalPorting->ulChannel == 1)
+    else if(pstHalPorting->ulChannel == 2)
     {
         pHndCAN = &hcan2;
     }
@@ -312,11 +325,11 @@ void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting)
     CAN_RxHeaderTypeDef RxHeader;
     uint8_t RxData[8];
 
-    if(pstHalPorting->ulChannel == 0)
+    if(pstHalPorting->ulChannel == 1)
     {
         pHndCAN = &hcan1;
     }
-    else if(pstHalPorting->ulChannel == 1)
+    else if(pstHalPorting->ulChannel == 2)
     {
         pHndCAN = &hcan2;
     }
@@ -325,7 +338,7 @@ void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting)
         return;
     }
 
-    pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel];
+    pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel - 1];
 
     if (HAL_CAN_GetRxMessage(pHndCAN, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) 
     {
