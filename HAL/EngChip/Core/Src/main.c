@@ -282,7 +282,7 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
 
-  EngHAL_CAN_Init_F4xx(NULL);
+  //EngHAL_CAN_Init_F4xx(NULL);
 
   // hcan1.Instance = CAN1;
   // hcan1.Init.Prescaler = 5;

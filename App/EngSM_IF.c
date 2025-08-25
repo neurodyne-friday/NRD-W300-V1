@@ -45,7 +45,7 @@ BOOL EngSM_IF_Initialize(void)
 	EngLib_IF_Entry(INIT_STEP_1ST);
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
-    /* Initialize the Hardware */
+    /* Initialize the Hardware */   
     EngHAL_LibraryEntry();
 
     /* Do power on sequence: backup data restore */
@@ -307,11 +307,14 @@ void EngSM_IF_Main(void)
 	{
 		DBG_ENGSM(ENG_DBG_STRING"Error!! Task Property is NULL", ENG_TICK, "SM");
 		return;
-	}
 
+	}
 	for(;;) 
 	{
 		EngSM_Main();
+
+		EngHAL_CAN_GetRxFifoFillLevel(HAL_CAN_NAME_MOTOR_CTRL);
+
 		EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
 	}
 }
@@ -341,7 +344,7 @@ void EngSM_IF_NotifyEventByPowerOff(void)
 
 void EngSM_IF_NotifyEventByCAN1(void)
 {
-
+	DBG_SWO(ENG_DBG_STRING"EngSM_IF_NotifyEventByCAN1", ENG_TICK, "SM");
 }
 
 /**

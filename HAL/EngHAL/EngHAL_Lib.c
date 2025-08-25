@@ -72,6 +72,7 @@ BOOL EngHAL_LibraryEntry(void)
             while(pstCANHal->ulName != HAL_CAN_NAME_UNSPECIFIED)
             {
                 pstHalFunction->stCAN.pfnInit(pstCANHal);
+				pstHalFunction->stCAN.pfnEnableInterrupt(pstCANHal);
                 pstCANHal++;
             }
         }
@@ -329,6 +330,21 @@ U8 EngHAL_CAN_GetByte(U32 ulHalName)
 	}
 }
 
+U32 EngHAL_CAN_GetRxFifoFillLevel(U32 ulHalName)
+{
+	THalCANPorting *pstHalCANPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalCANPorting = EngHAL_FindHalCAN(ulHalName);
+    
+	if(pstHalCANPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	return EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx(pstHalCANPorting);
+}
 
 
 /**

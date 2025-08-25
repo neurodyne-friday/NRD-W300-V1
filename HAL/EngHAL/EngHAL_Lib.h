@@ -48,6 +48,7 @@ EXTERN void EngHAL_CAN_RxFIFOMsgPendingCallback(U32 ulHalName);
 EXTERN void EngHAL_CAN_PutByte(U32 ulHalName, U8 ubData);
 EXTERN void EngHAL_CAN_SendBytes(U32 ulHalName);
 EXTERN U8 EngHAL_CAN_GetByte(U32 ulHalName);
+EXTERN U32 EngHAL_CAN_GetRxFifoFillLevel(U32 ulHalName);
 
 /* EngChip - UART Interface */
 EXTERN void EngHAL_UART_Init(U32 ulHalName);

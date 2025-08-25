@@ -394,7 +394,16 @@ void EngFOC_Task_PositionControl(void *argument)
         // (속도 제어 태스크의 omega_ref에 반영하거나 전역 변수로 공유)
         //omega_ref = omega_cmd;
         pstFOCManager->fRefOmega = omega_cmd;
-        
+
+ 		// Temporary Test
+		TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
+		U8 pubData[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+
+		if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+		{
+			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
+		}
+
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
     }

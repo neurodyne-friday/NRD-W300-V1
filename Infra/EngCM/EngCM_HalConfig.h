@@ -78,7 +78,7 @@ EXTERN THalGPIOPorting astHalGPITbl[HAL_GPI_NAME_MAX];
 EXTERN THalADCPorting astHalADCTbl[] =
 {
     /*	Input Name						ChipType			        Channel         		*/
-    {   HAL_ADC_NAME_DUMMY1,            HAL_CHIP_STM32F7xx,         0,                      },
+    {   HAL_ADC_NAME_DUMMY1,            HAL_CHIP_STM32F4xx,         0,                      },
 
 	{	HAL_ADC_NAME_UNSPECIFIED	}
 };
@@ -91,7 +91,7 @@ EXTERN THalADCPorting astHalADCTbl[HAL_ADC_NAME_MAX];
 EXTERN THalCANPorting astHalCANTbl[] =
 {
     /*	Input Name						ChipType			        Channel         ID Type                 ID			DLC		*/
-    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F7xx,         0,              HAL_CAN_ID_TYPE_STD,    0x280,      8       },
+    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F4xx,         1,              HAL_CAN_ID_TYPE_STD,    0x280,      8       },
 
 	{	HAL_CAN_NAME_UNSPECIFIED	}
 };
@@ -104,8 +104,8 @@ EXTERN THalCANPorting astHalCANTbl[HAL_CAN_NAME_MAX];
 EXTERN THalUARTPorting astHalUARTTbl[] =
 {
     /*	Input Name						ChipType			        Channel		Baudrate			*/
-    {   HAL_UART_NAME_USART3,			HAL_CHIP_STM32F7xx,         3,			115200				},
-    {   HAL_UART_NAME_UART4,			HAL_CHIP_STM32F7xx,         4,			115200				},
+    {   HAL_UART_NAME_USART3,			HAL_CHIP_STM32F4xx,         3,			115200				},
+    {   HAL_UART_NAME_UART4,			HAL_CHIP_STM32F4xx,         4,			115200				},
 
 	{	HAL_UART_NAME_UNSPECIFIED	}
 };

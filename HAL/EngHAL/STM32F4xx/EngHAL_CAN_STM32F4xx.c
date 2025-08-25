@@ -51,6 +51,9 @@ THalCANTxBuffer astHalCANTxBuffer[CAN_CHANNEL_COUNT];
 
 HAL_EVENT_CALLBACK g_pfnHalCanEventCallback[HAL_EVENT_CAN_MAX] = {0}; // CAN-RX Callback pointer
 
+void CAN1_RX0_IRQHandler(void) { HAL_CAN_IRQHandler(&hcan1); }
+void CAN2_RX1_IRQHandler(void) { HAL_CAN_IRQHandler(&hcan2); }
+
 /**
   * @brief CAN Interface Functions
   * @param None
@@ -149,7 +152,13 @@ void EngHAL_CAN_EnableInterrupt_F4xx(THalCANPorting *pstHalPorting)
     }
 
     // CAN 인터럽트 활성화 (수신 인터럽트)
-    if (HAL_CAN_ActivateNotification(pHndCAN, ulCAN_IT_RX_FIFO_MSG_PENDING) != HAL_OK)
+    uint32_t ulInterruptFlags = (ulCAN_IT_RX_FIFO_MSG_PENDING 
+        | CAN_IT_TX_MAILBOX_EMPTY
+        | CAN_IT_ERROR_WARNING 
+        | CAN_IT_ERROR_PASSIVE 
+        | CAN_IT_BUSOFF 
+        | CAN_IT_LAST_ERROR_CODE);
+    if (HAL_CAN_ActivateNotification(pHndCAN, ulInterruptFlags) != HAL_OK)
     {
         Error_Handler();
     }
@@ -201,46 +210,15 @@ void EngHAL_CAN_RegisterCallback_F4xx(U32 ulEventId, void (*pfnCallback)(void))
 
 BOOL EngHAL_CAN_IsRxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting)
 {
-    THalCANRxBuffer* pRxBuffer = NULL;
-
-    if(pstHalPorting->ulChannel < CAN_CHANNEL_COUNT)
-    {
-        pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel];
-        if(pRxBuffer->ubLength == 0)
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-    else
-    {
-        Error_Handler();
-    }
+    CAN_HandleTypeDef* h = (pstHalPorting->ulChannel==1) ? &hcan1 : &hcan2;
+    uint32_t fifo = (pstHalPorting->ulChannel==1) ? CAN_RX_FIFO0 : CAN_RX_FIFO1;
+    return (HAL_CAN_GetRxFifoFillLevel(h, fifo) == 0);
 }
 
 BOOL EngHAL_CAN_IsTxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting)
 {
-    THalCANTxBuffer* pTxBuffer = NULL;
-
-    if(pstHalPorting->ulChannel < CAN_CHANNEL_COUNT)
-    {
-        pTxBuffer = &astHalCANTxBuffer[pstHalPorting->ulChannel];
-        if(pTxBuffer->ubLength == 0)
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-    else
-    {
-        Error_Handler();
-    }
+    CAN_HandleTypeDef* h = (pstHalPorting->ulChannel==1) ? &hcan1 : &hcan2;
+    return (HAL_CAN_GetTxMailboxesFreeLevel(h) > 0);
 }
 
 U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting)
@@ -252,7 +230,7 @@ U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting)
         pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel - 1];
         if(pRxBuffer->ubLength > 0)
         {
-            return pRxBuffer->pubData[pRxBuffer->ubLength-1];
+            return pRxBuffer->pubData[pRxBuffer->ubLength - 1];
         }
         else
         {
@@ -303,13 +281,27 @@ void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ub
     TxHeader.TransmitGlobalTime = DISABLE;
 
     // Transmit CAN Message
-    if (HAL_CAN_AddTxMessage(pHndCAN, &TxHeader, pubData, &TxMailbox) != HAL_OK) 
-    {
-        Error_Handler();
-    }
+    // if (HAL_CAN_AddTxMessage(pHndCAN, &TxHeader, pubData, &TxMailbox) != HAL_OK) 
+    // {
+    //     Error_Handler();
+    // }
 
     // Waiting for complete to transmit
-    while (HAL_CAN_IsTxMessagePending(pHndCAN, TxMailbox));
+    // while (HAL_CAN_IsTxMessagePending(pHndCAN, TxMailbox));
+
+    HAL_StatusTypeDef st = HAL_CAN_AddTxMessage(pHndCAN, &TxHeader, pubData, &TxMailbox);
+    if (st == HAL_OK) 
+    {
+        return; // 큐에 정상 등록 → 하드웨어가 알아서 전송
+    }
+    
+    if (st == HAL_BUSY) 
+    {
+        // 상위(Drv)에서 소프트 큐에 적재하거나, 다음 주기에 재시도
+        return;
+    }
+    
+    Error_Handler();// HAL_ERROR 등만 치명 처리
 }
 
 
@@ -362,17 +354,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         Error_Handler();
     }
 
-    taskENTER_CRITICAL();
+    //taskENTER_CRITICAL();
     pRxBuffer = &astHalCANRxBuffer[0];
 
     //printf("Received CAN message with ID: 0x%03X, Data: ", RxHeader.StdId);
     for (int i = 0; i < RxHeader.DLC; i++)
     {
-        //printf("%02X ", RxData[i]);
+        DBG_SWO(ENG_DBG_STRING"[%d] = 0x%x", ENG_TICK, "EngHAL_CAN", i, RxData[i]);
         pRxBuffer->pubData[i] = RxData[i];
     }
     pRxBuffer->ubLength = RxHeader.DLC;
-    taskEXIT_CRITICAL();
+    //taskEXIT_CRITICAL();
 
     if(g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX] != NULL)
     {
@@ -409,3 +401,26 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
 }
 
+U32 EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx(THalCANPorting *pstHalPorting)
+{
+    if(pstHalPorting->ulChannel == 1)
+    {
+        uint32_t fill = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0 /* 또는 FIFO1, 설정에 맞춤 */);
+        if (fill > 0) 
+        {
+            CAN_RxHeaderTypeDef rxh; uint8_t data[8];
+            HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0 /* 또는 1 */, &rxh, data);
+            DBG_SWO(ENG_DBG_STRING"EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx", ENG_TICK, "HAL_CAN");
+        }
+    }
+    else if(pstHalPorting->ulChannel == 2)
+    {
+        uint32_t fill = HAL_CAN_GetRxFifoFillLevel(&hcan2, CAN_RX_FIFO1 /* 또는 FIFO0, 설정에 맞춤 */);
+        if (fill > 0) 
+        {
+            CAN_RxHeaderTypeDef rxh; uint8_t data[8];
+            HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO1 /* 또는 0 */, &rxh, data);
+            // 여기에 LED 토글/카운터 증가/간단 로그 등 넣어 실제 수신 확인
+        }
+    }
+}
