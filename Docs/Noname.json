@@ -1,89 +1,88 @@
 {
-	"version": "1.0",
+	"version": "1.0.0",
 	"parameters": [
 		{
 			"id": 0,
 			"byte": "0x00",
+			"name": "CAN ID",
 			"type": "int32",
-			"meaning": "CAN ID",
 			"unit": "None"
 		},
 		{
 			"id": 1,
 			"byte": "0x01",
+			"name": "CAN Baud Rate",
 			"type": "int32",
-			"meaning": "CAN Baud Rate",
 			"unit": "None"
 		},
 		{
 			"id": 2,
 			"byte": "0x02",
+			"name": "Output shaft Zero Position",
 			"type": "fp32",
-			"meaning": "Output shaft Zero Position",
 			"unit": "rad"
 		},
-
 		{
 			"id": 16,
 			"byte": "0x10",
+			"name": "KP Value of Current Control",
 			"type": "fp32",
-			"meaning": "KP Value of Current Control",
 			"unit": "None"
 		},
 		{
 			"id": 17,
 			"byte": "0x11",
+			"name": "KI Value of Current Control",
 			"type": "fp32",
-			"meaning": "KI Value of Current Control",
 			"unit": "None"
 		},
 		{
 			"id": 18,
 			"byte": "0x12",
+			"name": "KP Value of Speed Control",
 			"type": "fp32",
-			"meaning": "KP Value of Speed Control",
 			"unit": "None"
 		},
 		{
 			"id": 19,
 			"byte": "0x13",
+			"name": "KI Value of Speed Control",
 			"type": "fp32",
-			"meaning": "KI Value of Speed Control",
 			"unit": "None"
 		},
 		{
 			"id": 20,
 			"byte": "0x14",
 			"type": "fp32",
-			"meaning": "KP Value of Position Control",
+			"name": "KP Value of Position Control",
 			"unit": "None"
 		},
 		{
 			"id": 21,
 			"byte": "0x15",
+			"name": "KI Value of Position Control",
 			"type": "fp32",
-			"meaning": "KI Value of Position Control",
 			"unit": "None"
 		},
 		{
 			"id": 22,
 			"byte": "0x16",
+			"name": "KD Value of Position Control",
 			"type": "fp32",
-			"meaning": "KD Value of Position Control",
 			"unit": "None"
 		},
 		{
 			"id": 32,
 			"byte": "0x20",
+			"name": "Learning Rate of Speed Control",
 			"type": "fp32",
-			"meaning": "Learning Rate of Speed Control",
 			"unit": "None"
 		},
 		{
 			"id": 33,
 			"byte": "0x21",
+			"name": "Learning Rate of Position Control",
 			"type": "fp32",
-			"meaning": "Learning Rate of Position Control",
 			"unit": "None"
 		}
 	],
@@ -250,10 +249,10 @@
 				{
 					"Direction" : "Request",
 					"Index" : [4, 5, 6, 7],
-					"Format" : "paramtype",
+					"Format" : "param_type",
 					"Meaning" : "Parameter Value",
 					"Coefficient" : 1,
-					"Unit" : "paramunit"
+					"Unit" : "param_unit"
 				},
 				{
 					"Direction" : "Response",
@@ -321,10 +320,10 @@
 				{
 					"Direction" : "Response",
 					"Index" : [4, 5, 6, 7],
-					"Format" : "paramtype",
+					"Format" : "param_type",
 					"Meaning" : "Parameter Value",
 					"Coefficient" : 1.0,
-					"Unit" : "paramunit"
+					"Unit" : "param_unit"
 				}
 			]
 		},
@@ -368,10 +367,10 @@
 				{
 					"Direction" : "Response",
 					"Index" : [4, 5, 6, 7],
-					"Format" : "paramtype",
+					"Format" : "param_type",
 					"Meaning" : "Parameter Value",
 					"Coefficient" : 1.0,
-					"Unit" : "paramunit"
+					"Unit" : "param_unit"
 				}
 			]
 		},
@@ -399,10 +398,10 @@
 				{
 					"Direction" : "Request",
 					"Index" : [4, 5, 6, 7],
-					"Format" : "paramtype",
+					"Format" : "param_type",
 					"Meaning" : "Parameter Value",
 					"Coefficient" : 1,
-					"Unit" : "paramunit"
+					"Unit" : "param_unit"
 				},
 				{
 					"Direction" : "Response",
