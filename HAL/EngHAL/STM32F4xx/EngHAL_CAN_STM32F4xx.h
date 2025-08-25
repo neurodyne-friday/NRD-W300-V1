@@ -34,8 +34,6 @@ EXTERN void EngHAL_CAN_DisableInterrupt_F4xx(THalCANPorting *pstHalPorting);
 EXTERN void EngHAL_CAN_RegisterCallback_F4xx(U32 ulEventId, void (*pfnCallback)(void));
 EXTERN void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ubLength);
 EXTERN void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting);
-EXTERN void EngHAL_CAN_SendByte_F4xx(THalCANPorting *pstHalPorting, U8 ubData);
-EXTERN U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting);
 EXTERN BOOL EngHAL_CAN_IsRxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
 EXTERN BOOL EngHAL_CAN_IsTxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
 EXTERN U32 EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx(THalCANPorting *pstHalPorting);

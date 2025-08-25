@@ -221,28 +221,6 @@ BOOL EngHAL_CAN_IsTxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting)
     return (HAL_CAN_GetTxMailboxesFreeLevel(h) > 0);
 }
 
-U8 EngHAL_CAN_GetByte_F4xx(THalCANPorting *pstHalPorting)
-{
-    THalCANRxBuffer* pRxBuffer = NULL;
-
-    if(pstHalPorting->ulChannel <= CAN_CHANNEL_COUNT)
-    {
-        pRxBuffer = &astHalCANRxBuffer[pstHalPorting->ulChannel - 1];
-        if(pRxBuffer->ubLength > 0)
-        {
-            return pRxBuffer->pubData[pRxBuffer->ubLength - 1];
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
-        Error_Handler();
-    }
-}
-
 void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ubLength)
 {
     CAN_HandleTypeDef* pHndCAN = NULL;
@@ -280,19 +258,10 @@ void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ub
     TxHeader.RTR = CAN_RTR_DATA;
     TxHeader.TransmitGlobalTime = DISABLE;
 
-    // Transmit CAN Message
-    // if (HAL_CAN_AddTxMessage(pHndCAN, &TxHeader, pubData, &TxMailbox) != HAL_OK) 
-    // {
-    //     Error_Handler();
-    // }
-
-    // Waiting for complete to transmit
-    // while (HAL_CAN_IsTxMessagePending(pHndCAN, TxMailbox));
-
     HAL_StatusTypeDef st = HAL_CAN_AddTxMessage(pHndCAN, &TxHeader, pubData, &TxMailbox);
     if (st == HAL_OK) 
     {
-        return; // 큐에 정상 등록 → 하드웨어가 알아서 전송
+        return;
     }
     
     if (st == HAL_BUSY) 
@@ -358,7 +327,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     pstHalPorting = EngHAL_FindHalCAN(HAL_CAN_NAME_MOTOR_CTRL);
     if(pstHalPorting != NULL && pstHalPorting->ulId == RxHeader.StdId)
     {
-        //taskENTER_CRITICAL();
         pRxBuffer = &astHalCANRxBuffer[0];
 
         DBG_SWO(ENG_DBG_STRING"Id = 0x%x", ENG_TICK, "EngHAL_CAN", RxHeader.StdId);
@@ -370,7 +338,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         }
         pRxBuffer->ubLength = RxHeader.DLC;
         pstHalPorting->ulDLC = RxHeader.DLC;
-        //taskEXIT_CRITICAL();
 
         if(g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX] != NULL)
         {
