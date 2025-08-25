@@ -91,7 +91,7 @@ EXTERN THalADCPorting astHalADCTbl[HAL_ADC_NAME_MAX];
 EXTERN THalCANPorting astHalCANTbl[] =
 {
     /*	Input Name						ChipType			        Channel         ID Type                 ID			DLC		*/
-    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F4xx,         1,              HAL_CAN_ID_TYPE_STD,    0x280,      8       },
+    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F4xx,         1,              HAL_CAN_ID_TYPE_STD,    0x118,     	8       },
 
 	{	HAL_CAN_NAME_UNSPECIFIED	}
 };

@@ -345,6 +345,7 @@ void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting)
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
+    THalCANPorting* pstHalPorting = NULL;
     THalCANRxBuffer* pRxBuffer = NULL;
     CAN_RxHeaderTypeDef RxHeader;
     uint8_t RxData[8];
@@ -354,21 +355,27 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         Error_Handler();
     }
 
-    //taskENTER_CRITICAL();
-    pRxBuffer = &astHalCANRxBuffer[0];
-
-    //printf("Received CAN message with ID: 0x%03X, Data: ", RxHeader.StdId);
-    for (int i = 0; i < RxHeader.DLC; i++)
+    pstHalPorting = EngHAL_FindHalCAN(HAL_CAN_NAME_MOTOR_CTRL);
+    if(pstHalPorting != NULL && pstHalPorting->ulId == RxHeader.StdId)
     {
-        DBG_SWO(ENG_DBG_STRING"[%d] = 0x%x", ENG_TICK, "EngHAL_CAN", i, RxData[i]);
-        pRxBuffer->pubData[i] = RxData[i];
-    }
-    pRxBuffer->ubLength = RxHeader.DLC;
-    //taskEXIT_CRITICAL();
+        //taskENTER_CRITICAL();
+        pRxBuffer = &astHalCANRxBuffer[0];
 
-    if(g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX] != NULL)
-    {
-        g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX](); // Call the registered callback for CAN1 RX
+        DBG_SWO(ENG_DBG_STRING"Id = 0x%x", ENG_TICK, "EngHAL_CAN", RxHeader.StdId);
+        for (int i = 0; i < RxHeader.DLC; i++)
+        {
+            DBG_SWO(ENG_DBG_STRING"[%d] = 0x%x", ENG_TICK, "EngHAL_CAN", i, RxData[i]);
+            pRxBuffer->pubData[i] = RxData[i];
+            pstHalPorting->pubData[i] = RxData[i];
+        }
+        pRxBuffer->ubLength = RxHeader.DLC;
+        pstHalPorting->ulDLC = RxHeader.DLC;
+        //taskEXIT_CRITICAL();
+
+        if(g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX] != NULL)
+        {
+            g_pfnHalCanEventCallback[HAL_EVENT_CAN1_RX](); // Call the registered callback for CAN1 RX
+        }
     }
 }
 
@@ -383,17 +390,16 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
         Error_Handler();
     }
 
-    taskENTER_CRITICAL();
+    //taskENTER_CRITICAL();
     pRxBuffer = &astHalCANRxBuffer[1];
 
     //printf("Received CAN message with ID: 0x%03X, Data: ", RxHeader.StdId);
     for (int i = 0; i < RxHeader.DLC; i++)
     {
-        //printf("%02X ", RxData[i]);
         pRxBuffer->pubData[i] = RxData[i];
     }
     pRxBuffer->ubLength = RxHeader.DLC;
-    taskEXIT_CRITICAL();
+    //taskEXIT_CRITICAL();
 
     if(g_pfnHalCanEventCallback[HAL_EVENT_CAN2_RX] != NULL)
     {

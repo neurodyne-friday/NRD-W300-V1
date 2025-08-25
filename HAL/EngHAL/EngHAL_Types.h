@@ -192,6 +192,7 @@ typedef struct
 	THalCANIdType ulIdType;
 	U32 ulId;
 	U32 ulDLC;
+	U8 pubData[8];
 } THalCANPorting;
 
 /**
