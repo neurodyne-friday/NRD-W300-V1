@@ -19,6 +19,7 @@ target_include_directories(stm32cubemx INTERFACE
     ../../App/EngFOC
     ../../App/EngIFSvc
     ../../App/EngTimer
+    
     ../../Drv
 
     ../../Include

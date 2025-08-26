@@ -451,6 +451,7 @@ typedef enum
 #include "EngOS_Lib.h"
 
 #include "EngFOC_Types.h"
+#include "EngIFSvc_Types.h"
 //#include "EngEH_Types.h"
 
 #include "EngDrv_IF.h"

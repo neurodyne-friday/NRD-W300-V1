@@ -20,5 +20,24 @@
 #ifndef __ENGIFSVC_MAIN_H__
 #define __ENGIFSVC_MAIN_H__
 
+#include "Eng_Macro.h"
+
+#undef EXTERN
+
+#ifdef __ENGIFSVC_MAIN_C__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+
+
+EXTERN BOOL EngIFSvc_Initialize(void);
+EXTERN void EngIFSvc_ProcessCommand(TRecvCommand* pstCommand);
+
+/* Interface service handling */
+EXTERN void EngIFSvc_ReceiveCommand(U8 *pubData, U16 uwLength);
+
+
+
 #endif /* __ENGIFSVC_MAIN_H__ */
 
