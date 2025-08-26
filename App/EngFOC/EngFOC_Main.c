@@ -340,6 +340,14 @@ void EngFOC_Task_SpeedControl(void *argument)
         //i_q_ref = torque_cmd;
         pstFOCManager->fRefIq = torque_cmd;
         // (i_d_ref는 여전히 0으로 유지)
+
+   		// Temporary Test
+		TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
+		U8 pubData[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+		if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+		{
+			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
+		}
         
         //vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);

@@ -90,9 +90,6 @@ BOOL EngSM_Initialize(void)
 	// Create Tasks for FOC Handler
 	EngFOC_Initialize();
 
-	// Start OS-Tasks
-	EngOS_Task_StartAll();
-
 	pstSystemManager->fPowerOn = TRUE;
 	pstSystemManager->fEnterSleepMode = FALSE;
 

@@ -69,9 +69,7 @@ BOOL EngSM_IF_Initialize(void)
     EngOS_Task_Register(pstTaskProperty);
 
 	/* Initialize the Engine System Manager */
-	EngSM_Initialize();
-
-    return TRUE;
+    return EngSM_Initialize();
 }
 
 

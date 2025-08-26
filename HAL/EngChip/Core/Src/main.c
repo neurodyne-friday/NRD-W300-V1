@@ -142,7 +142,11 @@ int main(void)
   /* creation of defaultTask */
   //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  EngSM_IF_Initialize();
+  if(EngSM_IF_Initialize() == TRUE)
+  {
+    // Start OS-Tasks
+  	EngOS_Task_StartAll();
+  }
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
