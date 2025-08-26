@@ -243,7 +243,7 @@ void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ub
     // Tx Message Header Config
     if(pstHalPorting->ulIdType == HAL_CAN_ID_TYPE_STD)
     {
-        TxHeader.StdId = pstHalPorting->ulId;
+        TxHeader.StdId = HOST_CAN_ID;//pstHalPorting->ulId;
         TxHeader.ExtId = 0x01;
         TxHeader.IDE = CAN_ID_STD;
         TxHeader.DLC = ubLength;

@@ -169,6 +169,10 @@ typedef struct
 /**
  * The CAN HAL 
  */
+
+#define HOST_CAN_ID		0x118
+
+
 typedef enum
 {
 	HAL_CAN_NAME_MOTOR_CTRL,
