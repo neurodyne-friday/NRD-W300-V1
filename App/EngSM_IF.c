@@ -20,11 +20,9 @@
 #define	__ENGSM_IF_C__
 
 #include "Eng_CommonType.h"
-
-//#include "EngSM_Page.h"
-#include "EngSM_Main.h"
-
 #include "EngSM_IF.h"
+#include "EngSM_Main.h"
+#include "EngIFSvc_IF.h"
 
 
 /**
@@ -39,7 +37,7 @@
 BOOL EngSM_IF_Initialize(void)
 {
 	TTaskProperty* pstTaskProperty = NULL;
-	DBG_ENGSM(ENG_DBG_STRING"EngSM_IF_Initialize", ENG_TICK, "SM");
+	DBG_ENGSM(ENG_DBG_STRING"EngSM_IF_Initialize", ENG_TICK, "EngSM");
 	
 	/* Initialize the Engine Library */
 	EngLib_IF_Entry(INIT_STEP_1ST);
@@ -52,7 +50,7 @@ BOOL EngSM_IF_Initialize(void)
 	EngSM_PowerOn();
 
     /* Register the Hardware Interrupts */
-	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN1_RX, EngSM_IF_NotifyEventByCAN1);
+	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyEventByCAN1);
 	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_IF_NotifyEventByPowerOff);
 
 	/* Create & Initialize Device Driver */
@@ -76,115 +74,6 @@ BOOL EngSM_IF_Initialize(void)
     return TRUE;
 }
 
- 
-/**
-* @brief       	
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-// void EngSM_IF_StartPrint(TEngPage *pstObjPage)
-// {
-// 	DBG_ENGSM_PAGE(ENG_DBG_STRING"SM_IF_StartPrint", ENG_TICK, "SM");	
-
-//     EngSM_StartPrint(pstObjPage, ENG_PAGE_CURR_ID);
-// }
-
- 
-/**
-* @brief       	
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-void EngSM_IF_StopPrint(void* pvObjPage)
-{
-	DBG_ENGSM_PAGE(ENG_DBG_STRING"SM_IF_StopPrint", ENG_TICK, "SM");	
-
-   EngSM_StopPrint(pvObjPage);
-}
-
-#ifdef ALT_IFSVC_NEWIF_SIMPLEFIED
-
-/**
-* @brief       	
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-void EngSM_IF_StartDuplexReversePrint(TEngPage *pstObjPage)
-{
-	DBG_ENGSM_PAGE(ENG_DBG_STRING"SM_IF_StartDuplexReversePrint", ENG_TICK, "SM");	
-
-	EngSM_StartDuplexReversePrint(pstObjPage);
-}
-
-/**
-* @brief       	
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-void EngSM_IF_StopDuplexReversePrint(TEngPage *pstObjPage)
-{
-	DBG_ENGSM_PAGE(ENG_DBG_STRING"SM_IF_StopDuplexReversePrint", ENG_TICK, "SM");	
-
-	EngSM_StopDuplexReversePrint(pstObjPage);
-}
-
-TEngPage *EngSM_IF_GetDuplexReversePage(void)
-{
-	return EngSM_GetDuplexReversePage();
-}
-
-#endif
-
-
-/**
-* @brief       		I/F to get information about system manager
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-//TEngSystemManager *EngSM_IF_GetManager(void)
-//{
-//	return EngSM_GetManager();
-//}
-
-//void *EngSM_IF_GetHandler(TEngHandlerID enComponentID, U32 ulClassifyID)
-//{
-//    return EngSM_HndIF_GetHandler(enComponentID, ulClassifyID);
-//}
-
-//void *EngSM_IF_GetHandlerFunc(TEngHandlerID enComponentID, U8* pubFuncName, U32 ulArgCnt)
-//{
-//	return EngSM_HndIF_GetHandlerFunc(enComponentID, pubFuncName, ulArgCnt);
-//}
-
-//void *EngSM_IF_GetSystemFunc(U8* pubFuncName, U32 ulArgCnt)
-//{
-//	return EngSM_GetSystemFunc(pubFuncName, ulArgCnt);
-//}
-	
-// TEngPage *EngSM_IF_GetPage(TEngPageID enPageID)
-// {
-// 	return EngSM_GetPage(enPageID);
-// }
 
 /**
 * @brief       	
@@ -229,21 +118,6 @@ U32 EngSM_IF_SendEvent(U32 ulEventID, TStateMachine *pstStateMachine, U32 ulLPar
 {
 	return EngSM_SendEvent(ulEventID, pstStateMachine, ulLParam, ulRParam);
 }
-
- 
-/**
-* @brief       	
-* 
-* @param[in]		None
-* @range			
-* @retval			None
-* @global			
-* @remarks     	
-*/
-//void EngSM_IF_StartTimingChart(void *pvTimingObj, U32 ulTimingID)
-//{
-//    EngSM_StartTimingChart(pvTimingObj, ulTimingID);
-//}
 
 
 /**
@@ -331,34 +205,4 @@ void EngSM_IF_Main(void)
 void EngSM_IF_NotifyEventByPowerOff(void)
 {
 	EngSM_PowerOff();
-}
-
-/**
- * @brief 	  	Event handler for CAN1
- * @param[in]	None
- * @range
- * @retval		None
- * @global
- * @remarks		This function is called when a CAN1 event occurs.
- */
-
-void EngSM_IF_NotifyEventByCAN1(void)
-{
-	DBG_SWO(ENG_DBG_STRING"EngSM_IF_NotifyEventByCAN1", ENG_TICK, "SM");
-
-	// EngIFSvc를 만들어서 CAN으로 부터 받은 데이터를 Protocol로 해석하여 EngSM으로 Event를 보낸다.
-	// 아니면 EngIFSvc의 Callback 함수를 직접 CAN 이벤트에서 호출하도록 수정한다.
-}
-
-/**
- * @brief 	  	Event handler for CAN2
- * @param[in]	None
- * @range
- * @retval		None
- * @global
- * @remarks		This function is called when a CAN2 event occurs.
- */
-void EngSM_IF_NotifyEventByCAN2(void)
-{
-
 }

@@ -33,6 +33,7 @@
 
 EXTERN BOOL EngIFSvc_Initialize(void);
 EXTERN void EngIFSvc_ProcessCommand(TRecvCommand* pstCommand);
+EXTERN void EngIFSvc_ResponseCommand(TRecvCommand* pstCommand);
 
 /* Interface service handling */
 EXTERN void EngIFSvc_ReceiveCommand(U8 *pubData, U16 uwLength);

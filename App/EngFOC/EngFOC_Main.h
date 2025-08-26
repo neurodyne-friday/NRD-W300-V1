@@ -1,6 +1,6 @@
 /**
- * @file        EngAPP_FOC.h
- * @brief       This main code for State Manager Component.
+ * @file        EngFOC_Main.h
+ * @brief       This main code for FOC(Field Oriented Control) Component.
  *
  * <b> Copyright 2024 by Neurodyne Inc. All rights reserved.</b>
  *

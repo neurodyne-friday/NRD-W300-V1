@@ -24,3 +24,33 @@
 #include "EngIFSvc_Main.h"
 
 
+
+/**
+ * @brief 	  	Event handler for CAN1
+ * @param[in]	None
+ * @range
+ * @retval		None
+ * @global
+ * @remarks		This function is called when a CAN1 event occurs.
+ */
+
+void EngIFSvc_IF_NotifyEventByCAN1(void)
+{
+	DBG_SWO(ENG_DBG_STRING"EngSM_IF_NotifyEventByCAN1", ENG_TICK, "SM");
+
+	// EngIFSvc를 만들어서 CAN으로 부터 받은 데이터를 Protocol로 해석하여 EngSM으로 Event를 보낸다.
+	// 아니면 EngIFSvc의 Callback 함수를 직접 CAN 이벤트에서 호출하도록 수정한다.
+}
+
+/**
+ * @brief 	  	Event handler for CAN2
+ * @param[in]	None
+ * @range
+ * @retval		None
+ * @global
+ * @remarks		This function is called when a CAN2 event occurs.
+ */
+void EngIFSvc_IF_NotifyEventByCAN2(void)
+{
+
+}

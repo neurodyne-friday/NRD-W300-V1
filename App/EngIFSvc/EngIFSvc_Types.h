@@ -82,6 +82,7 @@ typedef struct _TRecvCommand
     U8* pubName;		// Command Name
 	U8 ubId;			// Command ID
     U8 pubParam[7];     // Command Parameter
+    U8 pubResponse[8];  // Command Response
 } TRecvCommand;
 
 

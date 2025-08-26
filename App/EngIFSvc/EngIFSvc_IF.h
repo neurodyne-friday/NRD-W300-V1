@@ -20,5 +20,11 @@
 #ifndef __ENGIFSVC_IF_H__
 #define __ENGIFSVC_IF_H__
 
+
+
+EXTERN void EngIFSvc_IF_NotifyEventByCAN1(void);
+EXTERN void EngIFSvc_IF_NotifyEventByCAN2(void);
+
+
 #endif /* __ENGIFSVC_IF_H__ */
 

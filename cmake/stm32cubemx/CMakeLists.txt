@@ -19,7 +19,7 @@ target_include_directories(stm32cubemx INTERFACE
     ../../App/EngFOC
     ../../App/EngIFSvc
     ../../App/EngTimer
-    
+
     ../../Drv
 
     ../../Include
@@ -47,6 +47,7 @@ target_include_directories(stm32cubemx INTERFACE
 target_sources(stm32cubemx INTERFACE
     ../../App/EngSM_IF.c
     ../../App/EngSM_Main.c
+    ../../App/EngFOC/EngFOC_IF.c
     ../../App/EngFOC/EngFOC_Main.c
     ../../App/EngIFSvc/EngIFSvc_IF.c
     ../../App/EngIFSvc/EngIFSvc_Main.c

@@ -46,7 +46,5 @@ EXTERN void EngSM_IF_Main(void);
 
 /* Interface with hardware events */
 EXTERN void EngSM_IF_NotifyEventByPowerOff(void);
-EXTERN void EngSM_IF_NotifyEventByCAN1(void);
-EXTERN void EngSM_IF_NotifyEventByCAN2(void);
 
 #endif /* __ENGSM_IF_H__ */
