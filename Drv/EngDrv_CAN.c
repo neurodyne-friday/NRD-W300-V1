@@ -30,16 +30,17 @@
 static void EngDrv_CAN_ReceiveISR(void);
 static void EngDrv_CAN_TransmitISR(void);
 
+TCANRxBuffer s_astCanRxBuffer;
+
 void EngDrv_CAN_Create(void)
 {
 	TCAN *pstInstance = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
-
-	pstInstance->astCanCommand = s_astCanCommand;
+	pstInstance->pstRxBuffer = &s_astCanRxBuffer;
 
     pstInstance->pfnInitialize = EngDrv_CAN_Initialize;
     pstInstance->pfnAppendObserver = EngDrv_CAN_AppendObserver;
     pstInstance->pfnNotifyToObservers = EngDrv_CAN_NotifyToObservers;
-	pstInstance->pfnHALRxCallback = EngDrv_CAN_HALRxCallback;
+	pstInstance->pfnUpdateRxBuffer = EngDrv_CAN_UpdateRxBuffer;
 	pstInstance->pfnSendData = EngDrv_CAN_SendData;
 
 	pstInstance->pfnInitialize(pstInstance);
@@ -101,11 +102,18 @@ void EngDrv_CAN_NotifyToObservers(TCAN* pstCAN, U8* pubData, U16 uwLength)
 	}
 }
 
-void EngDrv_CAN_HALRxCallback(U32 ulHalName, U8 pubData[], U16 uwLength)
+void EngDrv_CAN_UpdateRxBuffer(U32 ulDeviceKay)
 {
 	TCAN* pstCAN = NULL;
 
-	pstCAN = EngDrv_IF_FindCANByHalName(ulHalName);
+	pstCAN = EngDrv_IF_GetCAN(ulDeviceKay);
+	THalCANPorting* pstHalCANPorting = EngHAL_FindHalCAN(pstCAN->ulHalID);
+
+	if(pstCAN != NULL && pstHalCANPorting != NULL && pstCAN->pstRxBuffer != NULL)
+	{
+		pstCAN->pstRxBuffer->uwLength = pstHalCANPorting->ulDLC;
+		memcpy(pstCAN->pstRxBuffer->pubData, pstHalCANPorting->pubData, pstHalCANPorting->ulDLC);
+	}
 }
 
 /* CAN Task Functions
@@ -174,11 +182,8 @@ void EngDrv_CAN_SendByte(TCAN* pstCAN, U8 ubData)
 
 void EngDrv_CAN_ReceiveCommand(TCAN* pstCAN)
 {
-	TCanCommand* pstCanCommand = &pstCAN->astCanCommand;
 
-	pstCanCommand->ubState = CAN_STATE_Ready;
 }
-
 
 /* CAN Utility functions
 */

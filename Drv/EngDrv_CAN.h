@@ -34,7 +34,7 @@ EXTERN void EngDrv_CAN_Create(void);
 EXTERN void EngDrv_CAN_Initialize(TCAN* pstCAN);
 EXTERN BOOL EngDrv_CAN_AppendObserver(TCAN* pstCAN, TCANObserver* pstObserver);
 EXTERN void EngDrv_CAN_NotifyToObservers(TCAN* pstCAN, U8* pubData, U16 uwLength);
-EXTERN void EngDrv_CAN_HALRxCallback(U32 ulHalName, U8 pubData[], U16 uwLength);
+EXTERN void EngDrv_CAN_UpdateRxBuffer(U32 ulDeviceKay);
 
 EXTERN void EngDrv_CAN_SendData(TCAN* pstCAN, U8 pubData[], U16 uwLength);
 EXTERN void EngDrv_CAN_SendByte(TCAN* pstCAN, U8 ubData);

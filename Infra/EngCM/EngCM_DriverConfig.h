@@ -46,12 +46,6 @@
  * CAN Driver Instance
  */
 #ifdef __ENGDRV_IF_C__
-
-TCANRxBuffer s_astCanRxBuffer;
-TCANTxBuffer s_astCanTxBuffer;
-
-TCanCommand s_astCanCommand;
-
 EXTERN TCAN s_astDeviceCanTbl[] =		
 {
 	/*	DeviceKey				Name		Status					*/
@@ -60,11 +54,6 @@ EXTERN TCAN s_astDeviceCanTbl[] =
 	{	CAN_NAME_UNSPECIFIED	}
 };
 #else // __ENGDRV_IF_C__
-extern TCANRxBuffer s_astCanRxBuffer;
-extern TCANTxBuffer s_astCanTxBuffer;
-
-extern TCanCommand s_astCanCommand;
-
 EXTERN TCAN s_astDeviceCanTbl[DEVICE_CAN_MAX_NUMS];
 #endif // __ENGDRV_IF_C__
 

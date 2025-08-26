@@ -70,10 +70,8 @@ typedef enum
     CAN_NAME_UNSPECIFIED        = CAN_NAME_MAX
 } TCANName;
 
-#define CAN_RX_MAX_COUNT    20//50//20
-#define CAN_TX_MAX_COUNT	100//150//100
-#define CAN_RX_MAX_SIZE		640//1280//640
-#define CAN_TX_MAX_SIZE		500//3000
+#define CAN_RX_MAX_SIZE		8//320
+#define CAN_TX_MAX_SIZE		8//320
 
 #define CAN_MAX_OBSERVER_COUNT	20
 
@@ -85,9 +83,9 @@ typedef struct _TCANObserver
 
 typedef struct _TCANRxBuffer
 {
-	U16 uwIndex;
+	//U16 uwIndex;
 	U16 uwLength;
-	U8 ubState;
+	//U8 ubState;
 	U8 pubData[CAN_RX_MAX_SIZE];
 } TCANRxBuffer;
 
@@ -97,30 +95,6 @@ typedef struct _TCANTxBuffer
 	U8 pubData[CAN_TX_MAX_SIZE];
 } TCANTxBuffer;
 
-typedef struct _TCANRxMessage
-{
-	U16 uwIndex;
-	U16 uwLength;
-	U8 ubState;
-	U8 pubData[CAN_RX_MAX_SIZE];
-} TCANRxMessage;
-
-typedef struct _TCANTxMessage
-{
-	U16 uwLength;
-	U8 pubData[CAN_TX_MAX_SIZE];
-} TCANTxMessage;
-
-typedef struct _TCanCommand
-{
-    U16 uwCommand;
-    U8 ubCmdByte1;
-    U8 ubCmdByte2;
-    U8 ubState;
-    U8 ubModuleIndex;
-	U16 uwLength;
-	U8 *pubData;
-} TCanCommand;
 
 typedef enum _TCANState
 {
@@ -135,35 +109,21 @@ typedef struct _TCAN
     U32 ulDeviceKey;
 	U8 *pubName;
     TCANState eStatus;
-
     U32 ulHalID;
-
-    //EngOS_Queue osqCanRxQ;
-    //EngOS_Queue osqCanTxQ;
-    //EngOS_Queue osqCanCommandQ;
-    //EngOS_Semaphore osmCanTxQSemapore;
-    //EngOS_Mutex osmCanMutex;
-
-    //TCANRxBuffer astCanRxBuffer;
-    //TCANTxBuffer astCanTxBuffer;
-
-    //TCANRxMessage astCanRxMsg[CAN_RX_MAX_COUNT];
-    //TCANTxMessage astCanTxMsg[CAN_TX_MAX_COUNT];
-
-    TCanCommand astCanCommand;
 
     VU16 vuwCanTimer;
 
     U32 aulCANTransmitCount[2];
     U16 uwMaxPendingTransmitCount;
 
-    U8 ubCanTaskCommand;
+    // Rx Buffer
+    TCANRxBuffer* pstRxBuffer;
 
     // Inner functions
     void (*pfnInitialize)(struct _TCAN* pstCAN);
     BOOL (*pfnAppendObserver)(struct _TCAN* pstCAN, TCANObserver *pstObserver);
     void (*pfnNotifyToObservers)(struct _TCAN* pstCAN, U8* pubData, U16 uwLength);
-    void (*pfnHALRxCallback)(U32 ulHalName, U8* pubData, U16 uwLength);
+    void (*pfnUpdateRxBuffer)(U32 ulDeviceKey);
     void (*pfnSendData)(struct _TCAN* pstCAN, U8* pubData, U16 uwLength);
 
     // List array of Callback functions
