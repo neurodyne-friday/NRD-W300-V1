@@ -120,6 +120,17 @@ BOOL EngHAL_LibraryEntry(void)
             }
         }
 
+		/* I2C Initialize */
+        if((void *)pstHalFunction->stI2C.pfnInit != NULL)
+        {
+            THalI2CPorting *pstI2CHal = &astHalI2CTbl[0];
+            while(pstI2CHal->ulName != HAL_I2C_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stI2C.pfnInit(pstI2CHal);
+                pstI2CHal++;
+            }
+        }
+
     //     }
     }
 
@@ -545,6 +556,7 @@ void EngHAL_TIM_Init(void)
     EngHAL_TIM_Init_F4xx();
 }
 
+
 /**
   * @brief SPI Interface Functions
   * @param None
@@ -569,8 +581,123 @@ void EngHAL_SPI_Init(U32 ulHalName)
 	{
 		pstHalFunction->stSPI.pfnInit(pstHalSPIPorting);
 	}
-
 }
+
+
+/**
+  * @brief I2C Interface Functions
+  * @param None
+  * @retval None
+  */
+
+void EngHAL_I2C_Init(U32 ulHalName)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+
+    if(pstHalI2C == NULL)
+	{ 
+		ASSERT(0); 
+		return; 
+	}
+
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+	if((void*)pstHalFunction->stI2C.pfnInit != NULL)
+    {
+        pstHalFunction->stI2C.pfnInit(pstHalI2C);
+    }
+}
+
+BOOL EngHAL_I2C_MemRead(U32 ulHalName, U16 devAddr7b, U16 memAddr, U16 memAddrSize, U8 *pData, U16 len, U32 timeout)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+    if(pstHalI2C == NULL) { ASSERT(0); return FALSE; }
+
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+    if((void*)pstHalFunction->stI2C.pfnMemRead != NULL)
+    {
+        return pstHalFunction->stI2C.pfnMemRead(pstHalI2C, devAddr7b, memAddr, memAddrSize, pData, len, timeout);
+    }
+    return FALSE;
+}
+
+BOOL EngHAL_I2C_MemWrite(U32 ulHalName, U16 devAddr7b, U16 memAddr, U16 memAddrSize, const U8 *pData, U16 len, U32 timeout)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+    if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE;
+	}
+
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+    if((void*)pstHalFunction->stI2C.pfnMemWrite != NULL)
+    {
+        return pstHalFunction->stI2C.pfnMemWrite(pstHalI2C, devAddr7b, memAddr, memAddrSize, pData, len, timeout);
+    }
+    return FALSE;
+}
+
+BOOL EngHAL_I2C_Read(U32 ulHalName, U16 devAddr7b, U8 *pData, U16 len, U32 timeout)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+    if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE; 
+	}
+
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+    if((void*)pstHalFunction->stI2C.pfnRead != NULL)
+    {
+        return pstHalFunction->stI2C.pfnRead(pstHalI2C, devAddr7b, pData, len, timeout);
+    }
+    return FALSE;
+}
+
+BOOL EngHAL_I2C_Write(U32 ulHalName, U16 devAddr7b, const U8 *pData, U16 len, U32 timeout)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+    if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE; 
+	}
+
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+    if((void*)pstHalFunction->stI2C.pfnWrite != NULL)
+    {
+        return pstHalFunction->stI2C.pfnWrite(pstHalI2C, devAddr7b, pData, len, timeout);
+    }
+    return FALSE;
+}
+
+/* AS5600 helpers (using I2C HAL) */
+BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulI2CHalName, U16 *pRaw)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulI2CHalName);
+    
+	if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE; 
+	}
+    
+	return EngHAL_AS5600_ReadRawAngle_F4xx(pstHalI2C, pRaw);
+}
+
+BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulI2CHalName, U16 *pAngle12)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulI2CHalName);
+    
+	if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE; 
+	}
+
+    return EngHAL_AS5600_ReadAngle12_F4xx(pstHalI2C, pAngle12);
+}
+
 
 /**
   * @brief PWR Interface Functions
@@ -672,4 +799,19 @@ THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName)
 	}
 
 	return pstHalSPIPorting;
+}
+
+THalI2CPorting* EngHAL_FindHalI2C(U32 ulHalName)
+{
+    THalI2CPorting *pstHalI2C = NULL;
+
+    for(U8 ubIndex = 0; ubIndex < HAL_I2C_NAME_MAX; ubIndex++)
+    {
+        if(ulHalName == astHalI2CTbl[ubIndex].ulName)
+        {
+            pstHalI2C = &astHalI2CTbl[ubIndex];
+            break;
+        }
+    }
+    return pstHalI2C;
 }

@@ -80,6 +80,7 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngHAL/STM32F4xx/EngHAL_ADC_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_CAN_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_GPIO_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_I2C_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_TIM_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_UART_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_PWR_STM32F4xx.c
@@ -89,6 +90,8 @@ target_sources(stm32cubemx INTERFACE
 
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c
+    ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c
+    ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
     ../../HAL/EngChip/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c

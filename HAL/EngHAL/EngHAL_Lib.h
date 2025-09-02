@@ -80,6 +80,16 @@ EXTERN void EngHAL_TIM_Init(void);
 /* EngChip - SPI Interface */
 EXTERN void EngHAL_SPI_Init(U32 ulHalName);
 
+/* EngChip - I2C Interface */
+EXTERN void EngHAL_I2C_Init(U32 ulHalName);
+EXTERN BOOL EngHAL_I2C_MemRead(U32 ulHalName, U16 devAddr7b, U16 memAddr, U16 memAddrSize, U8 *pData, U16 len, U32 timeout);
+EXTERN BOOL EngHAL_I2C_MemWrite(U32 ulHalName, U16 devAddr7b, U16 memAddr, U16 memAddrSize, const U8 *pData, U16 len, U32 timeout);
+EXTERN BOOL EngHAL_I2C_Read(U32 ulHalName, U16 devAddr7b, U8 *pData, U16 len, U32 timeout);
+EXTERN BOOL EngHAL_I2C_Write(U32 ulHalName, U16 devAddr7b, const U8 *pData, U16 len, U32 timeout);
+/* Optional helpers for AS5600 */
+EXTERN BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulI2CHalName, U16 *pRaw);
+EXTERN BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulI2CHalName, U16 *pAngle12);
+
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);
 EXTERN void EngHAL_PWR_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
@@ -99,5 +109,6 @@ EXTERN void EngHAL_OS_Delay(uint32_t ticks);
 EXTERN THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName);
 EXTERN THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName);
 EXTERN THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName);
+EXTERN THalI2CPorting* EngHAL_FindHalI2C(U32 ulHalName);
 
 #endif //__ENGHAL_LIB_H__

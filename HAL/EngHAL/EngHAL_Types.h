@@ -337,6 +337,33 @@ typedef struct
 
 
 /**
+ * The I2C HAL 
+ */
+
+typedef enum
+{
+	HAL_I2C_NAME_AS5600,		/* Magnetic encoder AS5600 */
+    HAL_I2C_NAME_MAX,
+    HAL_I2C_NAME_UNSPECIFIED = HAL_I2C_NAME_MAX
+} THalI2CName;
+
+typedef enum
+{
+    HAL_I2C_CHANNEL_1 = 1,
+    HAL_I2C_CHANNEL_2 = 2,
+    HAL_I2C_CHANNEL_3 = 3,
+} THalI2CChannel;
+
+typedef struct
+{
+    U32 ulName;
+    THalChipType enChipType;
+    U32 ulChannel;
+    U32 ulClockSpeed;
+} THalI2CPorting;
+
+
+/**
  * The RTC HAL 
  */
 typedef struct _THalRTCData
@@ -422,6 +449,18 @@ typedef struct
 } THalSPIFunction;
 
 
+/**
+ * @brief .
+ */
+typedef struct
+{
+    void (*pfnInit)(THalI2CPorting *);                                                     			/* 0 */
+    BOOL (*pfnMemRead)(THalI2CPorting *, U16 dev7b, U16 mem, U16 memSize, U8*, U16, U32);			/* 1 */
+    BOOL (*pfnMemWrite)(THalI2CPorting *, U16 dev7b, U16 mem, U16 memSize, const U8*, U16, U32);	/* 2 */
+    BOOL (*pfnRead)(THalI2CPorting *, U16 dev7b, U8*, U16, U32);									/* 3 */
+    BOOL (*pfnWrite)(THalI2CPorting *, U16 dev7b, const U8*, U16, U32);								/* 4 */
+} THalI2CFunction;
+
 
 /**
  * @brief The structure of HAL Function
@@ -435,10 +474,10 @@ typedef struct
 	// THalGPIOFunction stGPIO;									// 4
 	// THalPWMFunction stPWM;									// 4
 	THalSPIFunction stSPI;										// 1
+	THalI2CFunction stI2C;										// 5
 	THalADCFunction stADC;										// 2
 	// THalMotorFunction stMotor;								// 9
 	// THalDMUFunction stDMU;									// 2
-	// THalIICFunction stIIC;									// 10
 	// THalEngTimerFunction stEngTimer;							// 23
 	// THalEINTFunction stEINT;									// 5
 } THalFunction;

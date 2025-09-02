@@ -40,6 +40,7 @@
 	#include "EngHAL_RTC_STM32F4xx.h"
 	#include "EngHAL_SRAM_STM32F4xx.h"
 	#include "EngHAL_SPI_STM32F4xx.h"
+	#include "EngHAL_I2C_STM32F4xx.h"
 #elif defined(STM32F7XX_SUPPORT)
 	#include "EngHAL_GPIO_STM32F7xx.h"
 	#include "EngHAL_ADC_STM32F7xx.h"
@@ -127,6 +128,18 @@ EXTERN THalSPIPorting astHalSPITbl[HAL_SPI_NAME_MAX];
 #endif
 
 
+#ifdef __ENGHAL_LIB_C__
+EXTERN THalI2CPorting astHalI2CTbl[] =
+{
+    /*   HAL Name				ChipType				Channel					Clock(Hz) */
+    {   HAL_I2C_NAME_AS5600,	HAL_CHIP_STM32F4xx,		HAL_I2C_CHANNEL_2,		400000     },
+
+    {   HAL_I2C_NAME_UNSPECIFIED  }
+};
+#else
+EXTERN THalI2CPorting astHalI2CTbl[HAL_I2C_NAME_MAX];
+#endif
+
 
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalETHPorting astHalETHTbl[] =
@@ -164,6 +177,7 @@ static THalFunction astHalFunctionTbl[] =
 		EngHAL_CAN_Receive_F4xx,
 		NULL,
 		NULL,
+		NULL,
 		
 		/* THalETHFunction */
 		NULL,//EngHAL_ETH_Init_F4xx,
@@ -183,14 +197,24 @@ static THalFunction astHalFunctionTbl[] =
 		NULL,
 		NULL,
 
+		/* THalGPIOFunction */
+		//NULL,											/* 5 */		
+
 		/* THalSPIFunction */
 		EngHAL_SPI_Init_F4xx,
 
-		/* THalGPIOFunction */
-		NULL,											/* 5 */		
-		
-		/* THalPWMFunction */
+		/* THalI2CFunction */
+		EngHAL_I2C_Init_F4xx,
+		EngHAL_I2C_MemRead_F4xx,
+		EngHAL_I2C_MemWrite_F4xx,
+		EngHAL_I2C_Read_F4xx,
+		EngHAL_I2C_Write_F4xx,
+
 		/* THalADCFunction */
+		EngHAL_ADC_Init_F4xx,
+		NULL,
+
+		/* THalPWMFunction */
 		/* THalMotorFunction */
 		
 
