@@ -120,8 +120,8 @@ EXTERN TADC s_astDeviceADCTbl[DEVICE_ADC_MAX_NUMS];
 #ifdef __ENGDRV_IF_C__
 EXTERN TEncoder s_astDeviceEncoderTbl[] =
 {
-	/*	DeviceKey						Name					Type						HalID	Encoder CAN ID	CAN_DeviceKey			*/
-	{	ENCODER_NAME_MAIN,				"Main Encoder",			ENCODER_TYPE_MAGNETIC,	0,		0,				CAN_NAME_MAIN		},	
+	/*	DeviceKey						Name				Type					CommType				HalID					*/
+	{	ENCODER_NAME_MAIN,				"AS5600",			ENCODER_TYPE_MAGNETIC,	Encoder_CommType_I2C,	HAL_I2C_NAME_AS5600		},	
 
 	{	ENCODER_NAME_UNSPECIFIED	}
 };

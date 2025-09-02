@@ -561,7 +561,6 @@ typedef struct _TADC
 typedef enum
 {
 	ENCODER_NAME_MAIN               = DEVICE_ENCODER_KEY_BASE,
-	
     ENCODER_NAME_MAX,
     ENCODER_NAME_UNSPECIFIED        = ENCODER_NAME_MAX
 } TEncoderName;
@@ -572,6 +571,13 @@ typedef enum
 	ENCODER_TYPE_UNSPECIFIED
 } TEncoderType;
 
+typedef enum
+{
+	Encoder_CommType_SPI,
+    Encoder_CommType_I2C,
+    Encoder_CommType_UNSPECIFIED
+} TEncoderCommType;
+
 
 typedef struct _TEncoder
 {
@@ -580,24 +586,18 @@ typedef struct _TEncoder
 
 	U8 *pubName;
     TEncoderType enType;
+    TEncoderCommType enCommType;
     U32 ulHalID;
-
-    /* Servo-RMDX Parameters */
-    U8 ubEncoderCANID;
-    U32 ulCANDeviceKey;
-    TCANObserver stCANObserver;
 
     /******************************************************************/
 
     S32 slCounter;
+    F32 fAngle; // 0 ~ 360 deg
  
     void (*pfnInitialize)(struct _TEncoder *pstEncoder);
     void (*pfnSet)(struct _TEncoder *pstEncoder, S32 slCount);
-    S32 (*pfnGet)(struct _TEncoder *pstEncoder);
+    F32 (*pfnReadAngle)(struct _TEncoder *pstEncoder);
     void  (*pfnReset)(struct _TEncoder *pstEncoder);
-    /* Servo-RMDX Interfaces */
-    void (*pfnNotifiedByCAN)(U32 ulDeviceKey, U8* pubData, U16 uwLength);
-
 } TEncoder;
 
 

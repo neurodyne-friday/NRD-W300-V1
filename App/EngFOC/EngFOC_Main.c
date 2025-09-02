@@ -276,13 +276,14 @@ void EngFOC_Task_SpeedControl(void *argument)
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
     TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("SpeedControlTask");
+    TEncoder* pstEncoder = EngDrv_IF_GetEncoder(ENCODER_NAME_MAIN);
     
     const float Ts = 0.001f;          // 1kHz 주기 (초)
     const float Kp_speed = 0.1, Ki_speed = 0.02;
     static float int_w = 0.0f;
     float omega_ref = 0.0f;           // 속도 참조 (rad/s)
     float omega_meas;                 // 측정 속도
-    float pos, prev_pos = 0.0f;
+    F32 pos, prev_pos = 0.0f;
     
     //TickType_t lastWakeTime = xTaskGetTickCount();
     U32 lastWakeTime = EngOS_GetSysTick();
@@ -290,8 +291,9 @@ void EngFOC_Task_SpeedControl(void *argument)
     for(;;) 
     {
         // 현재 위치 읽기 (엔코더 카운터 -> 기계 각도 [rad])
-        uint32_t count = TIM_ENCODER->CNT; // TIM_ENCODER is specific register pointer when set encoder interface mode
-        pos = (float)count * (2 * M_PI / ENC_CPR); // (2*M_PI/ENC_CPR) => can make define
+        //uint32_t count = TIM_ENCODER->CNT; // TIM_ENCODER is specific register pointer when set encoder interface mode
+        //pos = (float)count * (2 * M_PI / ENC_CPR); // (2*M_PI/ENC_CPR) => can make define
+        pos = pstEncoder->pfnReadAngle(pstEncoder) * (M_PI / 180.0f); // [deg] -> [rad]
         // 속도 계산 (pos 단위 [rad], prev_pos 이용)
         float diff = pos - prev_pos;
 

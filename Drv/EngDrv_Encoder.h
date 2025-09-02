@@ -33,10 +33,8 @@
 EXTERN void EngDrv_Encoder_Create(void);
 EXTERN void EngDrv_Encoder_Initialize(TEncoder* pstEncoder);
 EXTERN void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount);
-EXTERN S32 EngDrv_Encoder_Get(TEncoder* pstEncoder);
+EXTERN F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder);
 EXTERN void EngDrv_Encoder_Reset(TEncoder* pstEncoder);
-
-EXTERN void EngDrv_Encoder_SERVO_RMDX_NotifiedByCAN(U32 ulDeviceKey, U8* pubData, U16 uwLength);
 
 
 

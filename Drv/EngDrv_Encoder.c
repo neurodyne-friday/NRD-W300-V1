@@ -34,10 +34,8 @@ void EngDrv_Encoder_Create(void)
 
         pstInstance->pfnInitialize = EngDrv_Encoder_Initialize;
         pstInstance->pfnSet = EngDrv_Encoder_Set;
-        pstInstance->pfnGet = EngDrv_Encoder_Get;
+        pstInstance->pfnReadAngle = EngDrv_Encoder_ReadAngle;
         pstInstance->pfnReset = EngDrv_Encoder_Reset;
-
-        pstInstance->pfnNotifiedByCAN = EngDrv_Encoder_SERVO_RMDX_NotifiedByCAN;
     } 
 }
 
@@ -47,14 +45,7 @@ void EngDrv_Encoder_Initialize(TEncoder* pstEncoder)
 
     if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
-        pstCAN = EngDrv_IF_GetCAN(pstEncoder->ulCANDeviceKey);
-        if(pstCAN)
-        {
-            pstEncoder->stCANObserver.ulDeviceKey = pstEncoder->ulDeviceKey;
-            pstEncoder->stCANObserver.pfnNotify = EngDrv_Encoder_SERVO_RMDX_NotifiedByCAN;
 
-            pstCAN->pfnAppendObserver(pstCAN, &pstEncoder->stCANObserver);
-        }
     }
 
 }
@@ -78,19 +69,22 @@ void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
     }
 }
 
-S32 EngDrv_Encoder_Get(TEncoder* pstEncoder)
+F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
 {
-    if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
+    U16 angle12 = 0;
+
+    if(pstEncoder->enCommType == Encoder_CommType_I2C)
     {
-        TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
-        U8 pubCommand[8] = {0, };
-
-        pubCommand[0] = 0x60;
-
-        pstCAN->pfnSendData(pstCAN, pubCommand, 8);
+        if (EngHAL_I2C_AS5600_ReadAngle12(pstEncoder->ulHalID, &angle12))
+        {
+            /* angle12를 0~360도로 변환(선택) */
+            float deg = (angle12 * 360.0f) / 4096.0f;
+            /* TODO: FOC 관측기나 속도 추정기에 연결 */
+            pstEncoder->fAngle = deg;
+        }
     }
 
-    return pstEncoder->slCounter;
+    return pstEncoder->fAngle;
 }
 
 void EngDrv_Encoder_Reset(TEncoder* pstEncoder)
@@ -103,44 +97,5 @@ void EngDrv_Encoder_Reset(TEncoder* pstEncoder)
         pubCommand[0] = 0x64; // Write the current multi-turn position of the encoder(ROM) as the motor zero offset
 
         pstCAN->pfnSendData(pstCAN, pubCommand, 8);
-    }
-}
-
-void EngDrv_Encoder_SERVO_RMDX_NotifiedByCAN(U32 ulDeviceKey, U8* pubData, U16 uwLength)
-{
-    TEncoder* pstEncoder = NULL;
-    pstEncoder = EngDrv_IF_GetEncoder(ulDeviceKey);
-
-    if(pstEncoder && uwLength > 0)
-    {
-        S32 slCount = 0;
-        U32 ulEncoderOffset = 0;
-        
-        // parsing can rx data
-        if(pubData[0] == 0x60) // Read multi-turn encoder position
-        {
-            slCount = pubData[4] << 24;
-            slCount += pubData[5] << 16;
-            slCount += pubData[6] << 8;
-            slCount += pubData[7];
-        }
-        else if(pubData[0] == 0x61) // Read multi-turn encoder original position
-        {
-            slCount = pubData[4] << 24;
-            slCount += pubData[5] << 16;
-            slCount += pubData[6] << 8;
-            slCount += pubData[7];
-        }
-        else if(pubData[0] == 0x62) // Read multi-turn zero offset data
-        {
-            ulEncoderOffset = pubData[4] << 24;
-            ulEncoderOffset += pubData[5] << 16;
-            ulEncoderOffset += pubData[6] << 8;
-            ulEncoderOffset += pubData[7];
-        }
-        else if(pubData[0] == 0x90) // Read single-turn zero offset data
-        {
-
-        }
     }
 }
