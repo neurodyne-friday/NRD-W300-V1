@@ -285,6 +285,10 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
   /* USER CODE BEGIN CAN1_MspInit 1 */
     HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
+    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 5, 0);  
+    HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
+    HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 5, 0);  
+    HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
   /* USER CODE END CAN1_MspInit 1 */
   }
   else if (hcan->Instance == CAN2)

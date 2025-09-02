@@ -37,6 +37,6 @@ EXTERN void EngHAL_CAN_Receive_F4xx(THalCANPorting *pstHalPorting);
 EXTERN BOOL EngHAL_CAN_IsRxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
 EXTERN BOOL EngHAL_CAN_IsTxFIFOEmpty_F4xx(THalCANPorting *pstHalPorting);
 EXTERN U32 EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx(THalCANPorting *pstHalPorting);
-
+void EngHAL_CAN_LogErrors(CAN_HandleTypeDef *hcan);
 
 #endif //__ENGHAL_CAN_H__
