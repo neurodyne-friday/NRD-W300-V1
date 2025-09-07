@@ -522,7 +522,9 @@ typedef struct
  */
 typedef struct
 {
-	void (*pfnInit)(THalSPIPorting *);						/* 0 */
+	void (*pfnInit)(THalSPIPorting *);											/* 0 */
+	void (*pfnWrite)(THalSPIPorting *, uint8_t *, uint16_t);					/* 1 */
+	void (*pfnWriteRead)(THalSPIPorting *, uint8_t *, uint8_t * , uint16_t);	/* 2 */
 } THalSPIFunction;
 
 

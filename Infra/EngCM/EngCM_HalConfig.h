@@ -201,6 +201,8 @@ static THalFunction astHalFunctionTbl[] =
 
 		/* THalSPIFunction */
 		EngHAL_SPI_Init_F4xx,
+		EngHAL_SPI_Write_F4xx,
+		EngHAL_SPI_WriteRead_F4xx,
 
 		/* THalI2CFunction */
 		EngHAL_I2C_Init_F4xx,
