@@ -216,9 +216,6 @@ static THalFunction astHalFunctionTbl[] =
 		NULL,
 
 		/* THalPWMFunction */
-		/* THalMotorFunction */
-		
-
 	},
 	{	HAL_CHIP_UNSPECIFIED	}
 };

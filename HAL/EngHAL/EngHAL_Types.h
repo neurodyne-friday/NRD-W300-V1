@@ -552,10 +552,9 @@ typedef struct
 	THalUARTFunction stUART;									// 8
 	// THalGPIOFunction stGPIO;									// 4
 	// THalPWMFunction stPWM;									// 4
-	THalSPIFunction stSPI;										// 1
+	THalSPIFunction stSPI;										// 3
 	THalI2CFunction stI2C;										// 5
 	THalADCFunction stADC;										// 2
-	// THalMotorFunction stMotor;								// 9
 	// THalDMUFunction stDMU;									// 2
 	// THalEngTimerFunction stEngTimer;							// 23
 	// THalEINTFunction stEINT;									// 5
