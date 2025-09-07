@@ -86,9 +86,9 @@ BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
 
     pstCANHandle->Init.Prescaler = 3;
     pstCANHandle->Init.Mode = CAN_MODE_NORMAL;
-    //pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
-    //pstCANHandle->Init.TimeSeg1 = CAN_BS1_11TQ;
-    //pstCANHandle->Init.TimeSeg2 = CAN_BS2_3TQ;
+    // pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
+    // pstCANHandle->Init.TimeSeg1 = CAN_BS1_11TQ;
+    // pstCANHandle->Init.TimeSeg2 = CAN_BS2_3TQ;
     pstCANHandle->Init.SyncJumpWidth = CAN_SJW_2TQ;//CAN_SJW_1TQ;
     pstCANHandle->Init.TimeSeg1 = CAN_BS1_12TQ;//CAN_BS1_11TQ;
     pstCANHandle->Init.TimeSeg2 = CAN_BS2_2TQ;//CAN_BS2_3TQ;

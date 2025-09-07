@@ -79,6 +79,11 @@ EXTERN void EngHAL_TIM_Init(void);
 
 /* EngChip - SPI Interface */
 EXTERN void EngHAL_SPI_Init(U32 ulHalName);
+EXTERN BOOL  EngHAL_SPI_MA702_ReadRaw12(U32 ulHalName, uint16_t *puwAngle12);
+EXTERN float EngHAL_SPI_MA702_ReadDeg(U32 ulHalName);
+EXTERN float EngHAL_SPI_MA702_ReadRad(U32 ulHalName);
+EXTERN BOOL  EngHAL_SPI_MA702_ReadReg(U32 ulHalName, uint8_t ubAddr5, uint8_t *pubVal);
+EXTERN BOOL  EngHAL_SPI_MA702_WriteReg(U32 ulHalName, uint8_t ubAddr5, uint8_t ubVal, uint8_t *pubEcho);
 
 /* EngChip - I2C Interface */
 EXTERN void EngHAL_I2C_Init(U32 ulHalName);

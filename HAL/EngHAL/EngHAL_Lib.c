@@ -583,6 +583,41 @@ void EngHAL_SPI_Init(U32 ulHalName)
 	}
 }
 
+BOOL EngHAL_SPI_MA702_ReadRaw12(U32 ulHalName, uint16_t *ang12)
+{
+    THalSPIPorting *p = EngHAL_FindHalSPI(ulHalName);
+    if (!p || !ang12) return FALSE;
+    return (EngHAL_SPI_MA702_ReadAngle12_F4xx(p, ang12) == HAL_OK);
+}
+
+float EngHAL_SPI_MA702_ReadDeg(U32 ulHalName)
+{
+    THalSPIPorting *p = EngHAL_FindHalSPI(ulHalName);
+    if (!p) return -1.0f;
+    return EngHAL_SPI_MA702_ReadAngleDeg_F4xx(p);
+}
+
+float EngHAL_SPI_MA702_ReadRad(U32 ulHalName)
+{
+    THalSPIPorting *p = EngHAL_FindHalSPI(ulHalName);
+    if (!p) return -1.0f;
+    return EngHAL_SPI_MA702_ReadAngleRad_F4xx(p);
+}
+
+BOOL EngHAL_SPI_MA702_ReadReg(U32 ulHalName, uint8_t addr5, uint8_t *val)
+{
+    THalSPIPorting *p = EngHAL_FindHalSPI(ulHalName);
+    if (!p || !val) return FALSE;
+    return (EngHAL_SPI_MA702_ReadReg_F4xx(p, addr5, val) == HAL_OK);
+}
+
+BOOL EngHAL_SPI_MA702_WriteReg(U32 ulHalName, uint8_t addr5, uint8_t v, uint8_t *echo)
+{
+    THalSPIPorting *p = EngHAL_FindHalSPI(ulHalName);
+    if (!p) return FALSE;
+    return (EngHAL_SPI_MA702_WriteReg_F4xx(p, addr5, v, echo) == HAL_OK);
+}
+
 
 /**
   * @brief I2C Interface Functions

@@ -117,9 +117,8 @@ EXTERN THalUARTPorting astHalUARTTbl[HAL_UART_NAME_MAX];
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalSPIPorting astHalSPITbl[] =
 {
-    /*	Input Name						ChipType			       	Channel 				*/
-    {   HAL_SPI_NAME_MOTOR_DRV,			HAL_CHIP_STM32F4xx,			HAL_SPI_CHANNEL_1		},
-	{   HAL_SPI_NAME_ENCODER,			HAL_CHIP_STM32F4xx,         HAL_SPI_CHANNEL_3		},
+    /*	Input Name				ChipType				Channel 			Mode					Direction					DataSize				ClkPolarity			ClkPhase				NSS					BaudRatePrescaler				FirstBit				*/
+	{   HAL_SPI_NAME_MA702,		HAL_CHIP_STM32F4xx,		HAL_SPI_CHANNEL_3, 	HAL_SPI_MODE_MASTER, 	HAL_SPI_DIRECTION_2LINES, 	HAL_SPI_DATASIZE_16BIT,	HAL_SPI_CLKPOL_LOW,	HAL_SPI_CLKPHASE_1EDGE,	HAL_SPI_NSS_SOFT,	HAL_SPI_BAUDRATEPRESCALER_8,	HAL_SPI_FIRSTBIT_MSB	},
 
 	{	HAL_SPI_NAME_UNSPECIFIED	}
 };
@@ -131,8 +130,8 @@ EXTERN THalSPIPorting astHalSPITbl[HAL_SPI_NAME_MAX];
 #ifdef __ENGHAL_LIB_C__
 EXTERN THalI2CPorting astHalI2CTbl[] =
 {
-    /*   HAL Name				ChipType				Channel					Clock(Hz) */
-    {   HAL_I2C_NAME_AS5600,	HAL_CHIP_STM32F4xx,		HAL_I2C_CHANNEL_2,		400000     },
+    /*   HAL Name				ChipType				Channel				Clock(Hz) */
+    {   HAL_I2C_NAME_AS5600,	HAL_CHIP_STM32F4xx,		HAL_I2C_CHANNEL_2,	400000     },
 
     {   HAL_I2C_NAME_UNSPECIFIED  }
 };

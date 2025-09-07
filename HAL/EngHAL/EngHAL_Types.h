@@ -36,6 +36,17 @@ typedef enum
 	HAL_CHIP_UNSPECIFIED = HAL_CHIP_MAX
 } THalChipType;
 
+/**
+ * @brief HAL Status Type define for HAL settings
+ */
+typedef enum
+{
+	HAL_STATUS_OK		= 0x00u,
+	HAL_STATUS_ERROR	= 0x01u,
+	HAL_STATUS_BUSY		= 0x02u,
+	HAL_STATUS_TIMEOUT	= 0x03u
+} THalStatusType;
+
 
 /**
  * @brief Declare of The HAL Event CALLBACK & ID
@@ -312,8 +323,7 @@ typedef struct
  */
 typedef enum
 {
-	HAL_SPI_NAME_MOTOR_DRV,
-	HAL_SPI_NAME_ENCODER,
+	HAL_SPI_NAME_MA702,	/* Magnetic encoder MA702 */
 	HAL_SPI_NAME_MAX,
 	HAL_SPI_NAME_UNSPECIFIED = HAL_SPI_NAME_MAX
 } THalSPIName;
@@ -328,11 +338,78 @@ typedef enum
 } THalSPIChannel;
 
 
+typedef enum
+{
+	HAL_SPI_MODE_MASTER,
+	HAL_SPI_MODE_SLAVE
+} THalSPIMode;
+
+typedef enum
+{
+	HAL_SPI_DIRECTION_2LINES,		// Full-Duplex
+	HAL_SPI_DIRECTION_2LINES_RXONLY,// Half-Duplex
+	HAL_SPI_DIRECTION_1LINE			// Simplex
+} THalSPIDirection;
+
+typedef enum 
+{
+	HAL_SPI_DATASIZE_8BIT,
+	HAL_SPI_DATASIZE_16BIT
+} THalSPIDataSize;
+
+typedef enum
+{
+	HAL_SPI_CLKPOL_LOW,
+	HAL_SPI_CLKPOL_HIGH
+} THalSPIClkPolarity;
+
+typedef enum
+{
+	HAL_SPI_CLKPHASE_1EDGE,
+	HAL_SPI_CLKPHASE_2EDGE
+} THalSPIClkPhase;
+
+typedef enum
+{
+	HAL_SPI_NSS_SOFT,
+	HAL_SPI_NSS_HARD_INPUT,
+	HAL_SPI_NSS_HARD_OUTPUT
+} THalSPINSS;
+
+typedef enum
+{
+	HAL_SPI_BAUDRATEPRESCALER_2		= 2,
+	HAL_SPI_BAUDRATEPRESCALER_4		= 4,
+	HAL_SPI_BAUDRATEPRESCALER_8		= 8,
+	HAL_SPI_BAUDRATEPRESCALER_16	= 16,
+	HAL_SPI_BAUDRATEPRESCALER_32	= 32,
+	HAL_SPI_BAUDRATEPRESCALER_64	= 64,
+	HAL_SPI_BAUDRATEPRESCALER_128	= 128,
+	HAL_SPI_BAUDRATEPRESCALER_256	= 256
+} THalSPIBaudRatePrescaler;
+
+typedef enum
+{
+	HAL_SPI_FIRSTBIT_MSB,
+	HAL_SPI_FIRSTBIT_LSB
+} THalSPIFirstBit;
+
+
 typedef struct
 {
    	U32 ulName;
 	THalChipType enChipType;
 	U32 ulChannel;
+
+	THalSPIMode enMode;					// Master, Slave
+	THalSPIDirection enDirection;		// Full-Duplex, Half-Duplex
+	THalSPIDataSize enDataSize;			// 8bit, 16bit
+	THalSPIClkPolarity enClkPolarity;	// Low, High
+	THalSPIClkPhase enClkPhase;			// 1Edge, 2Edge
+	THalSPINSS enNSS;					// Soft, Hard
+	THalSPIBaudRatePrescaler enBaudRatePrescaler; // 2, 4, 8, 16, 32, 64, 128, 256
+	THalSPIFirstBit enFirstBit;			// MSB, LSB
+	
 } THalSPIPorting;
 
 

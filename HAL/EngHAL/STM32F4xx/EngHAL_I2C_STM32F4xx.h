@@ -36,7 +36,7 @@ EXTERN BOOL EngHAL_I2C_MemWrite_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7
 EXTERN BOOL EngHAL_I2C_Read_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7b, U8 *pData, U16 len, U32 timeout);
 EXTERN BOOL EngHAL_I2C_Write_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7b, const U8 *pData, U16 len, U32 timeout);
 
-/* === Optional helper for AS5600 (commonly used with this project) === */
+/* === Optional helper for AS5600 (commonly used with this project) (Temporary) === */
 #define AS5600_I2C_ADDR7          (0x36u)
 #define AS5600_REG_RAW_ANGLE_MSB  (0x0Cu)
 #define AS5600_REG_RAW_ANGLE_LSB  (0x0Du)

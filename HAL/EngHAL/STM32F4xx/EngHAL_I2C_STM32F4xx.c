@@ -129,7 +129,7 @@ BOOL EngHAL_I2C_Write_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7b, const U
     return (st == HAL_OK) ? TRUE : FALSE;
 }
 
-/* --- AS5600 helpers ------------------------------------------------------- */
+/* --- AS5600 helpers (Temporary) ------------------------------------------------------- */
 BOOL EngHAL_AS5600_ReadRawAngle_F4xx(THalI2CPorting *pstHalPorting, U16 *pRaw)
 {
     if(pstHalPorting == NULL || pRaw == NULL) return FALSE;

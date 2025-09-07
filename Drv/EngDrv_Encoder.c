@@ -83,6 +83,14 @@ F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
             pstEncoder->fAngle = deg;
         }
     }
+    else if(pstEncoder->enCommType == Encoder_CommType_SPI)
+    {
+        if(EngHAL_SPI_MA702_ReadRaw12(pstEncoder->ulHalID, &angle12))
+        {
+            float deg = (angle12 * 360.0f) / 4096.0f;
+            pstEncoder->fAngle = deg;
+        }
+    }
 
     return pstEncoder->fAngle;
 }
