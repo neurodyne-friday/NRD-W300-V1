@@ -105,8 +105,9 @@ EXTERN THalCANPorting astHalCANTbl[HAL_CAN_NAME_MAX];
 EXTERN THalUARTPorting astHalUARTTbl[] =
 {
     /*	Input Name						ChipType			        Channel		Baudrate			*/
-    {   HAL_UART_NAME_USART3,			HAL_CHIP_STM32F4xx,         3,			115200				},
-    {   HAL_UART_NAME_UART4,			HAL_CHIP_STM32F4xx,         4,			115200				},
+    {   HAL_UART_NAME_USART2,			HAL_CHIP_STM32F4xx,         2,			115200				},
+//	{   HAL_UART_NAME_USART3,			HAL_CHIP_STM32F4xx,         3,			115200				},
+//	{   HAL_UART_NAME_UART4,			HAL_CHIP_STM32F4xx,         4,			115200				},
 
 	{	HAL_UART_NAME_UNSPECIFIED	}
 };
@@ -187,14 +188,14 @@ static THalFunction astHalFunctionTbl[] =
 
 		/* THalUARTFunction */
 		EngHAL_UART_Init_F4xx,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
+		EngHAL_UART_EnableInterrupt_F4xx,
+		EngHAL_UART_DisableInterrupt_F4xx,
+		EngHAL_UART_IsRxFIFOEmpty_F4xx,
+		EngHAL_UART_IsTxFIFOEmpty_F4xx,
 		EngHAL_UART_Transmit_F4xx,
 		EngHAL_UART_Receive_F4xx,
-		NULL,
-		NULL,
+		EngHAL_UART_SendByte_F4xx,
+		EngHAL_UART_GetByte_F4xx,
 
 		/* THalGPIOFunction */
 		//NULL,											/* 5 */		

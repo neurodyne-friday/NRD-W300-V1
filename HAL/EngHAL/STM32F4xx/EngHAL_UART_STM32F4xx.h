@@ -37,6 +37,7 @@ EXTERN void EngHAL_UART_SendByte_F4xx(THalUARTPorting *pstHalPorting, U8 ubData)
 EXTERN U8 EngHAL_UART_GetByte_F4xx(THalUARTPorting *pstHalPorting);
 EXTERN BOOL EngHAL_UART_IsRxFIFOEmpty_F4xx(THalUARTPorting *pstHalPorting);
 EXTERN BOOL EngHAL_UART_IsTxFIFOEmpty_F4xx(THalUARTPorting *pstHalPorting);
+EXTERN void EngHAL_UART_RegisterCallback_F4xx(U32 ulEventId, void (*pfnCallback)(void));
 
 
 #endif //__ENGHAL_UART_STM32F7XX_H__

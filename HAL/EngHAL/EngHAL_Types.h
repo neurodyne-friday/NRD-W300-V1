@@ -65,6 +65,12 @@ typedef void (*HAL_EVENT_CALLBACK)(void);
 #define HAL_EVENT_CAN2_RX	1	// CAN1 Receive Event
 #define HAL_EVENT_CAN_MAX	2	// Maximum Event ID
 
+/* UART Event */
+#define HAL_EVENT_UART1_RX	0	// UART1 Receive Event
+#define HAL_EVENT_UART2_RX	1	// UART1 Receive Event
+#define HAL_EVENT_UART3_RX	2	// UART3 Receive Event
+#define HAL_EVENT_UART4_RX	3	// UART4 Receive Event
+#define HAL_EVENT_UART_MAX	4	// Maximum Event ID
 
 
 /**
@@ -102,11 +108,8 @@ typedef enum
 	/* Input */
     HAL_GPIO_NAME_CURRENT_A,	// PC0
 	HAL_GPIO_NAME_CURRENT_B,	// PC1
-
 	HAL_GPIO_NAME_SPI1_MISO,	// PC6
-
 	HAL_GPIO_NAME_SPI3_MISO,	// PC11
-    
 	HAL_GPI_NAME_MAX,
 	HAL_GPI_NAME_UNSPECIFIED = HAL_GPI_NAME_MAX
 } THalGPIName;
@@ -304,6 +307,8 @@ typedef struct
  */
 typedef enum
 {
+	HAL_UART_NAME_UART1,
+	HAL_UART_NAME_USART2,      /* ST-LINK VCP (PA2/PA3) */
 	HAL_UART_NAME_USART3,
 	HAL_UART_NAME_UART4,
 	HAL_UART_NAME_MAX,
@@ -317,6 +322,7 @@ typedef struct
 	U32 ulChannel;
 	U32 ulBaudRate;
 } THalUARTPorting;
+
 
 /**
  * The SPI HAL 

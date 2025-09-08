@@ -411,6 +411,109 @@ void EngHAL_UART_Receive(U32 ulHalName)
 
 }
 
+/* UART: Enable Interrupt */
+void EngHAL_UART_EnableInterrupt(U32 ulHalName)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL)
+	{ 
+		ASSERT(0); 
+		return; 
+	}
+    
+	if((void*)pstHalFunction->stUART.pfnEnableInterrupt != NULL)
+        pstHalFunction->stUART.pfnEnableInterrupt(pstHalUARTPorting);
+}
+
+/* UART: Disable Interrupt */
+void EngHAL_UART_DisableInterrupt(U32 ulHalName)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL) 
+	{ 
+		ASSERT(0); 
+		return; 
+	}
+    
+	if((void*)pstHalFunction->stUART.pfnDisableInterrupt != NULL)
+        pstHalFunction->stUART.pfnDisableInterrupt(pstHalUARTPorting);
+}
+
+BOOL EngHAL_UART_IsRxFIFOEmpty(U32 ulHalName)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL) 
+	{ 
+		ASSERT(0); 
+		return TRUE; 
+	}
+    
+	if((void*)pstHalFunction->stUART.pfnIsRxFIFOEmpty != NULL)
+        return pstHalFunction->stUART.pfnIsRxFIFOEmpty(pstHalUARTPorting);
+    
+	return FALSE;
+}
+
+BOOL EngHAL_UART_IsTxFIFOEmpty(U32 ulHalName)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL) 
+	{ 
+		ASSERT(0); 
+		return TRUE; 
+	}
+    
+	if((void*)pstHalFunction->stUART.pfnIsTxFIFOEmpty != NULL)
+        return pstHalFunction->stUART.pfnIsTxFIFOEmpty(pstHalUARTPorting);
+    
+	return FALSE;
+}
+
+void EngHAL_UART_SendByte(U32 ulHalName, U8 ubData)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL) 
+	{ 
+		ASSERT(0); 
+		return; 
+	}
+    
+	if((void*)pstHalFunction->stUART.pfnPutByte != NULL)
+        pstHalFunction->stUART.pfnPutByte(pstHalUARTPorting, ubData);
+}
+
+U8 EngHAL_UART_GetByte(U32 ulHalName)
+{
+    THalUARTPorting *pstHalUARTPorting = EngHAL_FindHalUART(ulHalName);
+    THalFunction *pstHalFunction = &astHalFunctionTbl[0];
+
+    if(pstHalUARTPorting == NULL) 
+	{ 
+		ASSERT(0); 
+		return 0; 
+	}
+
+    if((void*)pstHalFunction->stUART.pfnGetByte != NULL)
+        return pstHalFunction->stUART.pfnGetByte(pstHalUARTPorting);
+    
+	return 0;
+}
+
+void EngHAL_UART_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))
+{
+	EngHAL_UART_RegisterCallback_F4xx(ulEventId, pfnCallback);
+}
+
 
 /**
   * @brief Ethernet Interface Functions

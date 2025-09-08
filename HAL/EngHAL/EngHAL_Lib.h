@@ -54,6 +54,13 @@ EXTERN U32 EngHAL_CAN_GetRxFifoFillLevel(U32 ulHalName);
 EXTERN void EngHAL_UART_Init(U32 ulHalName);
 EXTERN void EngHAL_UART_Transmit(U32 ulHalName, U8 pubData[], U16 uwLength);
 EXTERN void EngHAL_UART_Receive(U32 ulHalName);
+EXTERN void EngHAL_UART_EnableInterrupt(U32 ulHalName);
+EXTERN void EngHAL_UART_DisableInterrupt(U32 ulHalName);
+EXTERN BOOL EngHAL_UART_IsRxFIFOEmpty(U32 ulHalName);
+EXTERN BOOL EngHAL_UART_IsTxFIFOEmpty(U32 ulHalName);
+EXTERN void EngHAL_UART_SendByte(U32 ulHalName, U8 ubData);
+EXTERN U8 EngHAL_UART_GetByte(U32 ulHalName);
+EXTERN void EngHAL_UART_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
 
 /* EngChip - Ethernet Interface */
 EXTERN BOOL EngHAL_ETH_Init(U32 ulHalName);
