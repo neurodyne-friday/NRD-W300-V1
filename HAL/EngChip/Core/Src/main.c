@@ -62,11 +62,8 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_ADC3_Init(void);
-static void MX_CAN1_Init(void);
-static void MX_SPI1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_SPI3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -110,11 +107,8 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
-  MX_CAN1_Init();
-  MX_SPI1_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
-  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -268,122 +262,6 @@ static void MX_ADC3_Init(void)
   pstHalADCPorting->ulChannel = 3;
 
   EngHAL_ADC_Init_F4xx(pstHalADCPorting);
-}
-
-/**
-  * @brief CAN1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN1_Init(void)
-{
-
-  /* USER CODE BEGIN CAN1_Init 0 */
-
-  /* USER CODE END CAN1_Init 0 */
-
-  /* USER CODE BEGIN CAN1_Init 1 */
-
-  /* USER CODE END CAN1_Init 1 */
-
-  //EngHAL_CAN_Init_F4xx(NULL);
-
-  // hcan1.Instance = CAN1;
-  // hcan1.Init.Prescaler = 5;
-  // hcan1.Init.Mode = CAN_MODE_NORMAL;
-  // hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  // hcan1.Init.TimeSeg1 = CAN_BS1_6TQ;
-  // hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
-  // hcan1.Init.TimeTriggeredMode = DISABLE;
-  // hcan1.Init.AutoBusOff = DISABLE;
-  // hcan1.Init.AutoWakeUp = DISABLE;
-  // hcan1.Init.AutoRetransmission = DISABLE;
-  // hcan1.Init.ReceiveFifoLocked = DISABLE;
-  // hcan1.Init.TransmitFifoPriority = DISABLE;
-  // if (HAL_CAN_Init(&hcan1) != HAL_OK)
-  // {
-  //   Error_Handler();
-  // }
-  /* USER CODE BEGIN CAN1_Init 2 */
-
-  /* USER CODE END CAN1_Init 2 */
-
-}
-
-/**
-  * @brief SPI1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI1_Init(void)
-{
-
-  /* USER CODE BEGIN SPI1_Init 0 */
-
-  /* USER CODE END SPI1_Init 0 */
-
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
-  // hspi1.Instance = SPI1;
-  // hspi1.Init.Mode = SPI_MODE_MASTER;
-  // hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  // hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  // hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  // hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  // hspi1.Init.NSS = SPI_NSS_SOFT;
-  // hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
-  // hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  // hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  // hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  // hspi1.Init.CRCPolynomial = 10;
-  // if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  // {
-  //   Error_Handler();
-  // }
-  /* USER CODE BEGIN SPI1_Init 2 */
-
-  /* USER CODE END SPI1_Init 2 */
-
-}
-
-/**
-  * @brief SPI3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI3_Init(void)
-{
-
-  /* USER CODE BEGIN SPI3_Init 0 */
-
-  /* USER CODE END SPI3_Init 0 */
-
-  /* USER CODE BEGIN SPI3_Init 1 */
-
-  /* USER CODE END SPI3_Init 1 */
-  /* SPI3 parameter configuration*/
-  // hspi3.Instance = SPI3;
-  // hspi3.Init.Mode = SPI_MODE_MASTER;
-  // hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-  // hspi3.Init.DataSize = SPI_DATASIZE_16BIT;
-  // hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
-  // hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
-  // hspi3.Init.NSS = SPI_NSS_SOFT;
-  // hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  // hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  // hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
-  // hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  // hspi3.Init.CRCPolynomial = 10;
-  // if (HAL_SPI_Init(&hspi3) != HAL_OK)
-  // {
-  //   Error_Handler();
-  // }
-  /* USER CODE BEGIN SPI3_Init 2 */
-
-  /* USER CODE END SPI3_Init 2 */
-
 }
 
 /**
