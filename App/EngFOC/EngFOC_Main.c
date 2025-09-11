@@ -361,11 +361,14 @@ void EngFOC_Task_PositionControl(void *argument)
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
     TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("PositionControlTask");
+    TEncoder* pstEncoder = EngDrv_IF_GetEncoder(ENCODER_NAME_MAIN);
 
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = 0.5, Ki_pos = 0.05;
     static float int_pos = 0.0f;
     float target_position = 0.0f;     // 목표 위치 [rad]
+    F32 pos, prev_pos = 0.0f;
+    static int pos_cnt = 0;
     
     //TickType_t lastWakeTime = xTaskGetTickCount();
     U32 lastWakeTime = EngOS_GetSysTick();
@@ -375,6 +378,7 @@ void EngFOC_Task_PositionControl(void *argument)
         // 현재 각도 계산 (엔코더 카운터 -> 각도 [rad], 위 SpeedControlTask의 pos 재활용 가능)
         uint32_t count = TIM_ENCODER->CNT; // TIM_ENCODER is specific register pointer when set encoder interface mode
         float pos_curr = (float)count * (2*M_PI/ENC_CPR); // (2*M_PI/ENC_CPR) => can make define
+        pos_curr = pstEncoder->pfnReadAngle(pstEncoder) * (M_PI / 180.0f); // [deg] -> [rad]
         
         // 위치 PI 제어
         float err_pos = target_position - pos_curr;
@@ -413,6 +417,11 @@ void EngFOC_Task_PositionControl(void *argument)
 		{
 			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
 		}
+
+        if((pos_cnt++ % 100) == 0)
+        {
+            DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
+        }
 
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);

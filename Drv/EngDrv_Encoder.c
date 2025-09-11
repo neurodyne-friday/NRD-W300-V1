@@ -45,9 +45,32 @@ void EngDrv_Encoder_Initialize(TEncoder* pstEncoder)
 
     if(pstEncoder->enType == ENCODER_TYPE_MAGNETIC)
     {
+        if(pstEncoder->enCommType == Encoder_CommType_I2C)
+        {
+            // Set DIR(PC7) to LOW
+            /* === AS5600 DIR pin (PC7) configuration ==================================
+            * DIR=0 (GND)  : 각도가 시계방향(CW)으로 증가
+            * DIR=1 (VDD)  : 각도가 반시계방향(CCW)으로 증가
+            * 기본값을 CW 증가로 두기 위해 LOW로 내립니다.
+            * (NUCLEO?F446RE: PC7 = CN10-19, X-NUCLEO-IHM07M1과 충돌 없음)
+            * ======================================================================== */
+            __HAL_RCC_GPIOC_CLK_ENABLE();
 
+            GPIO_InitTypeDef GPIO_InitStruct = {0};
+            GPIO_InitStruct.Pin   = GPIO_PIN_7;
+            GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;   /* Push-Pull */
+            GPIO_InitStruct.Pull  = GPIO_NOPULL;           /* 외부 풀업/풀다운 불필요 */
+            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;   /* 토글 주파수 낮음 -> LOW면 충분 */
+            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+            /* 기본 방향: DIR=0 -> 시계방향 증가 */
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+        }
+        else if(pstEncoder->enCommType == Encoder_CommType_SPI)
+        {
+            
+        }
     }
-
 }
 
 void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
@@ -82,6 +105,10 @@ F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
             /* TODO: FOC 관측기나 속도 추정기에 연결 */
             pstEncoder->fAngle = deg;
         }
+        else
+        {
+            pstEncoder->fAngle = -1.0f; // 오류 처리
+        }
     }
     else if(pstEncoder->enCommType == Encoder_CommType_SPI)
     {
@@ -89,6 +116,10 @@ F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
         {
             float deg = (angle12 * 360.0f) / 4096.0f;
             pstEncoder->fAngle = deg;
+        }
+        else
+        {
+            pstEncoder->fAngle = -1.0f; // 오류 처리
         }
     }
 
