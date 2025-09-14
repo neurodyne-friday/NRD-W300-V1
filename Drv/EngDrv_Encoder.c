@@ -58,9 +58,9 @@ void EngDrv_Encoder_Initialize(TEncoder* pstEncoder)
 
             GPIO_InitTypeDef GPIO_InitStruct = {0};
             GPIO_InitStruct.Pin   = GPIO_PIN_7;
-            GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;   /* Push-Pull */
-            GPIO_InitStruct.Pull  = GPIO_NOPULL;           /* 외부 풀업/풀다운 불필요 */
-            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;   /* 토글 주파수 낮음 -> LOW면 충분 */
+            GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;   
+            GPIO_InitStruct.Pull  = GPIO_NOPULL;           
+            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
             HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
             /* 기본 방향: DIR=0 -> 시계방향 증가 */

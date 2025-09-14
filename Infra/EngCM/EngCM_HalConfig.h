@@ -132,7 +132,7 @@ EXTERN THalSPIPorting astHalSPITbl[HAL_SPI_NAME_MAX];
 EXTERN THalI2CPorting astHalI2CTbl[] =
 {
     /*   HAL Name				ChipType				Channel				Clock(Hz) */
-    {   HAL_I2C_NAME_AS5600,	HAL_CHIP_STM32F4xx,		HAL_I2C_CHANNEL_1,	400000     },
+    {   HAL_I2C_NAME_AS5600,	HAL_CHIP_STM32F4xx,		HAL_I2C_CHANNEL_1,	100000		},
 
     {   HAL_I2C_NAME_UNSPECIFIED  }
 };
@@ -175,7 +175,6 @@ static THalFunction astHalFunctionTbl[] =
 		EngHAL_CAN_IsTxFIFOEmpty_F4xx,
 		EngHAL_CAN_Transmit_F4xx,
 		EngHAL_CAN_Receive_F4xx,
-		NULL,
 		NULL,
 		NULL,
 		

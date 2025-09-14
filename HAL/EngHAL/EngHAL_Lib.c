@@ -810,9 +810,9 @@ BOOL EngHAL_I2C_Write(U32 ulHalName, U16 devAddr7b, const U8 *pData, U16 len, U3
 }
 
 /* AS5600 helpers (using I2C HAL) */
-BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulI2CHalName, U16 *pRaw)
+BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulHalName, U16 *pRaw)
 {
-    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulI2CHalName);
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
     
 	if(pstHalI2C == NULL) 
 	{ 
@@ -823,9 +823,9 @@ BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulI2CHalName, U16 *pRaw)
 	return EngHAL_AS5600_ReadRawAngle_F4xx(pstHalI2C, pRaw);
 }
 
-BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulI2CHalName, U16 *pAngle12)
+BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulHalName, U16 *pAngle12)
 {
-    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulI2CHalName);
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
     
 	if(pstHalI2C == NULL) 
 	{ 
@@ -834,6 +834,19 @@ BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulI2CHalName, U16 *pAngle12)
 	}
 
     return EngHAL_AS5600_ReadAngle12_F4xx(pstHalI2C, pAngle12);
+}
+
+void EngHAL_I2C_AS5600_Scan(U32 ulHalName)
+{
+    THalI2CPorting *pstHalI2C = EngHAL_FindHalI2C(ulHalName);
+    
+	if(pstHalI2C == NULL) 
+	{ 
+		ASSERT(0); 
+		return FALSE; 
+	}
+
+    EngHAL_I2C_Scan(pstHalI2C);
 }
 
 

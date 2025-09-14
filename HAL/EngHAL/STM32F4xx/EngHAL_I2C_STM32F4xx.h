@@ -45,5 +45,19 @@ EXTERN BOOL EngHAL_I2C_Write_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7b, 
 
 EXTERN BOOL EngHAL_AS5600_ReadRawAngle_F4xx(THalI2CPorting *pstHalPorting, U16 *pRaw);
 EXTERN BOOL EngHAL_AS5600_ReadAngle12_F4xx(THalI2CPorting *pstHalPorting, U16 *pAngle12);
+EXTERN void EngHAL_I2C_Scan(THalI2CPorting *pstHalPorting);
+/* === Recovery / Re-init helpers (channel-aware) =========================== */
+/**
+ * @brief  If the I2C bus is stuck (BUSY or SDA held low), perform:
+ *         - Peripheral disable & reset
+ *         - 9-clk bus clear with GPIO OD
+ *         - Pins restore to AF4-OD
+ *         - Clock enable (APB1ENR bit)
+ *         - Re-initialize via MX_I2Cx_Init()
+ */
+EXTERN void EngHAL_I2C_RecoverAndReinit_F4xx(THalI2CPorting *pstHalPorting);
+
+/* Optional: just clear bus lines (GPIO based), no HAL reinit */
+EXTERN void EngHAL_I2C_BusClearOnly_F4xx(THalI2CPorting *pstHalPorting);
 
 #endif /* __ENGHAL_I2C_STM32F4xx_H__ */

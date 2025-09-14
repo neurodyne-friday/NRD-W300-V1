@@ -462,6 +462,49 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 }
 
 /**
+* @brief I2C MSP Initialization
+* This function configures the hardware resources used in this example
+* @param hi2c: I2C handle pointer
+* @retval None
+*/
+void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
+{
+    if (hi2c->Instance == I2C1)
+    {
+        /* Peripheral clock enable */
+        __HAL_RCC_I2C1_CLK_ENABLE();
+
+        /**I2C GPIO Configuration
+          PB6     ------> I2C1_SCL
+          PB7     ------> I2C1_SDA
+        */
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+        GPIO_InitTypeDef x = {0};
+        x.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+        x.Mode = GPIO_MODE_AF_OD;
+        x.Pull = GPIO_PULLUP;
+        x.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+        x.Alternate = GPIO_AF4_I2C1;
+        HAL_GPIO_Init(GPIOB, &x);
+    }
+}
+
+/**
+* @brief I2C MSP De-Initialization
+* This function freeze the hardware resources used in this example
+* @param hi2c: I2C handle pointer
+* @retval None
+*/
+void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
+{
+    if (hi2c->Instance == I2C1)
+    {
+        HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6 | GPIO_PIN_7);
+        __HAL_RCC_I2C1_CLK_DISABLE();        // 필요 시 전력 절감. 디버깅 중엔 주석 권장
+    }
+}
+
+/**
 * @brief TIM_Base MSP Initialization
 * This function configures the hardware resources used in this example
 * @param htim_base: TIM_Base handle pointer

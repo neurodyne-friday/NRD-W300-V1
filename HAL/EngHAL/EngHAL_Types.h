@@ -423,6 +423,8 @@ typedef struct
  * The I2C HAL 
  */
 
+#define AS5600_I2C_TIMEOUT			50	// ms
+
 typedef enum
 {
 	HAL_I2C_NAME_AS5600,		/* Magnetic encoder AS5600 */

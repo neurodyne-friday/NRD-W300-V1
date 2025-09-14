@@ -99,8 +99,9 @@ EXTERN BOOL EngHAL_I2C_MemWrite(U32 ulHalName, U16 devAddr7b, U16 memAddr, U16 m
 EXTERN BOOL EngHAL_I2C_Read(U32 ulHalName, U16 devAddr7b, U8 *pData, U16 len, U32 timeout);
 EXTERN BOOL EngHAL_I2C_Write(U32 ulHalName, U16 devAddr7b, const U8 *pData, U16 len, U32 timeout);
 /* Optional helpers for AS5600 */
-EXTERN BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulI2CHalName, U16 *pRaw);
-EXTERN BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulI2CHalName, U16 *pAngle12);
+EXTERN BOOL EngHAL_I2C_AS5600_ReadRawAngle(U32 ulHalName, U16 *pRaw);
+EXTERN BOOL EngHAL_I2C_AS5600_ReadAngle12(U32 ulHalName, U16 *pAngle12);
+EXTERN void EngHAL_I2C_AS5600_Scan(U32 ulHalName);
 
 /* EngChip - Power Interface */
 EXTERN void EngHAL_PWR_Init(void);

@@ -77,7 +77,7 @@
             // OpenOCD에 SWO/ITM 설정 전달 (버전에 따라 둘 중 하나만으로도 OK)
             "preLaunchCommands": [
               //"monitor tpiu config internal swo 180000000 2000000",
-              "monitor itm port 0 on"
+              //"monitor itm port 0 on"
             ],
       
             // ★ Cortex-Debug의 SWO 수집 설정

@@ -421,6 +421,7 @@ void EngFOC_Task_PositionControl(void *argument)
         if((pos_cnt++ % 100) == 0)
         {
             DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
+            //EngHAL_I2C_AS5600_Scan(HAL_I2C_NAME_AS5600);
         }
 
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
