@@ -43,7 +43,8 @@
 			"stm32f4xx_hal_pwr.h": "c",
 			"stm32f4xx_hal_conf.h": "c",
 			"stdbool.h": "c",
-			"engcm_featureconfig.h": "c"
+			"engcm_featureconfig.h": "c",
+			"type_traits": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}

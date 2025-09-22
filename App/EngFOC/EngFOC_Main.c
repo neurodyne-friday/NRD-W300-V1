@@ -32,7 +32,14 @@ static TEngFOCManager s_stFOCManager;
 #include "stm32f4xx.h"
 #define TIM_ENCODER TIM2
 
-
+static inline void float_to_bytes_le(float v, uint8_t out[4]) {
+    uint32_t u;
+    memcpy(&u, &v, 4);
+    out[0] = (uint8_t)(u      );
+    out[1] = (uint8_t)(u >>  8);
+    out[2] = (uint8_t)(u >> 16);
+    out[3] = (uint8_t)(u >> 24);
+}
 /**
 * @brief
 *
@@ -363,11 +370,13 @@ void EngFOC_Task_PositionControl(void *argument)
     TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("PositionControlTask");
     TEncoder* pstEncoder = EngDrv_IF_GetEncoder(ENCODER_NAME_MAIN);
 
+    const float Ts = 0.01f;          // 0.1kHz 주기 (초)
     const float Tp = 0.01f;           // 100Hz 주기 (10ms)
     const float Kp_pos = 0.5, Ki_pos = 0.05;
     static float int_pos = 0.0f;
     float target_position = 0.0f;     // 목표 위치 [rad]
     F32 pos, prev_pos = 0.0f;
+    float omega_meas;                 // 측정 속도
     static int pos_cnt = 0;
     
     //TickType_t lastWakeTime = xTaskGetTickCount();
@@ -379,7 +388,10 @@ void EngFOC_Task_PositionControl(void *argument)
         uint32_t count = TIM_ENCODER->CNT; // TIM_ENCODER is specific register pointer when set encoder interface mode
         float pos_curr = (float)count * (2*M_PI/ENC_CPR); // (2*M_PI/ENC_CPR) => can make define
         pos_curr = pstEncoder->pfnReadAngle(pstEncoder) * (M_PI / 180.0f); // [deg] -> [rad]
-        
+        float diff = pos_curr - prev_pos;
+        omega_meas = diff / Ts;              // [rad/s]
+        prev_pos = pos_curr;
+
         // 위치 PI 제어
         float err_pos = target_position - pos_curr;
         int_pos += err_pos * Tp;
@@ -409,20 +421,46 @@ void EngFOC_Task_PositionControl(void *argument)
         //omega_ref = omega_cmd;
         pstFOCManager->fRefOmega = omega_cmd;
 
- 		// Temporary Test
+ 		// Position sending...
 		TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
-		U8 pubData[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+		U8 pubDataPos[8] = {0xA3, 1, 0, 0, 0, 0, 0, 0};
+        U8 pubDataSpd[8] = {0xA4, 1, 0, 0, 0, 0, 0, 0};
+        uint8_t data[4] = {0};
 
-		if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
-		{
-			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
-		}
+        float_to_bytes_le(pos_curr, data);
+        pubDataPos[4] = data[0];
+        pubDataPos[5] = data[1];
+        pubDataPos[6] = data[2]; 
+        pubDataPos[7] = data[3]; 
 
-        if((pos_cnt++ % 100) == 0)
+        float_to_bytes_le(omega_meas, data);
+        pubDataSpd[4] = data[0];
+        pubDataSpd[5] = data[1];
+        pubDataSpd[6] = data[2]; 
+        pubDataSpd[7] = data[3]; 
+
+        if((pos_cnt % 10) == 0)
         {
+            if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+            {
+                pstCAN->pfnSendData(pstCAN, pubDataPos, 8);
+            }
+
             DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
             //EngHAL_I2C_AS5600_Scan(HAL_I2C_NAME_AS5600);
         }
+
+        if((pos_cnt % 10) == 5)
+        {
+            if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+            {
+                pstCAN->pfnSendData(pstCAN, pubDataSpd, 8);
+            }
+
+            DBG_SWO(ENG_DBG_STRING"vel. = %f", ENG_TICK, "EngFOC", omega_meas);
+        }
+
+        pos_cnt++;
 
         //vTaskDelayUntil(&lastWakeTime, (TickType_t)(Tp*1000));  // 10ms 주기 대기
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);

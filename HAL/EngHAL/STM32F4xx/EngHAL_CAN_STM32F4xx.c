@@ -86,12 +86,9 @@ BOOL EngHAL_CAN_Init_F4xx(THalCANPorting *pstHalPorting)
 
     pstCANHandle->Init.Prescaler = 3;
     pstCANHandle->Init.Mode = CAN_MODE_NORMAL;
-    // pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
-    // pstCANHandle->Init.TimeSeg1 = CAN_BS1_11TQ;
-    // pstCANHandle->Init.TimeSeg2 = CAN_BS2_3TQ;
-    pstCANHandle->Init.SyncJumpWidth = CAN_SJW_2TQ;//CAN_SJW_1TQ;
-    pstCANHandle->Init.TimeSeg1 = CAN_BS1_12TQ;//CAN_BS1_11TQ;
-    pstCANHandle->Init.TimeSeg2 = CAN_BS2_2TQ;//CAN_BS2_3TQ;
+    pstCANHandle->Init.SyncJumpWidth = CAN_SJW_1TQ;
+    pstCANHandle->Init.TimeSeg1 = CAN_BS1_12TQ;
+    pstCANHandle->Init.TimeSeg2 = CAN_BS2_2TQ;
     pstCANHandle->Init.TimeTriggeredMode = DISABLE;
     pstCANHandle->Init.AutoBusOff = ENABLE;
     pstCANHandle->Init.AutoWakeUp = DISABLE;
@@ -232,15 +229,6 @@ void EngHAL_CAN_Transmit_F4xx(THalCANPorting *pstHalPorting, U8 pubData[], U8 ub
     CAN_TxHeaderTypeDef TxHeader;
     uint32_t TxMailbox;
 
-    uint32_t pclk1 = HAL_RCC_GetPCLK1Freq();     // 예: 45000000 또는 42000000
-    uint32_t btr   = hcan1.Instance->BTR;        // (CAN2면 hcan2)
-    uint32_t brp   = (btr & 0x3FF) + 1;
-    uint32_t ts1   = ((btr >> 16) & 0xF) + 1;
-    uint32_t ts2   = ((btr >> 20) & 0x7) + 1;
-    uint32_t tq    = 1 + ts1 + ts2;              // SyncSeg = 1TQ
-    uint32_t bitrate = pclk1 / (brp * tq);
-    //DBG_SWO(ENG_DBG_STRING"pclk1=%lu, brp=%lu, ts1=%lu, ts2=%lu, tq=%lu, bitrate=%lu", ENG_TICK, "EngHAL_CAN", pclk1, brp, ts1, ts2, tq, bitrate);
-
     if(pstHalPorting->ulChannel == 1)
     {
         pHndCAN = &hcan1;
@@ -350,7 +338,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
             pstHalPorting->pubData[i] = RxData[i];
         }
 
-        DBG_SWO(ENG_DBG_STRING"Id = 0x%x, DLC=%d, Data = 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x"
+        DBG_ENGHAL_CAN_TO_SWO(ENG_DBG_STRING"Id = 0x%x, DLC=%d, Data = 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x"
         , ENG_TICK, "EngHAL_CAN", RxHeader.StdId, RxHeader.DLC
         , RxData[0], RxData[1], RxData[2], RxData[3], RxData[4], RxData[5], RxData[6], RxData[7]);
 
@@ -401,7 +389,7 @@ U32 EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx(THalCANPorting *pstHalPorting)
         {
             CAN_RxHeaderTypeDef rxh; uint8_t data[8];
             HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0 /* 또는 1 */, &rxh, data);
-            DBG_SWO(ENG_DBG_STRING"EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx", ENG_TICK, "EngHAL_CAN");
+            DBG_ENGHAL_CAN_TO_SWO(ENG_DBG_STRING"EngHAL_CAN_GetRxFifoFillLevel_STM32F4xx", ENG_TICK, "EngHAL_CAN");
         }
     }
     else if(pstHalPorting->ulChannel == 2)
@@ -423,7 +411,7 @@ void EngHAL_CAN_LogErrors(CAN_HandleTypeDef *hcan)
     uint32_t tec = (esr >> 16) & 0xFF;   // Transmit Error Counter
     uint32_t lec = (esr >> 4)  & 0x07;   // Last Error Code: 1=Stuff,2=Form,3=ACK,4=BitRecessive,5=BitDominant,6=CRC
 
-    DBG_SWO(ENG_DBG_STRING"ESR=0x%08lX REC=%lu TEC=%lu LEC=%lu", ENG_TICK, "EngHAL_CAN", esr, rec, tec, lec);
+    DBG_ENGHAL_CAN_TO_SWO(ENG_DBG_STRING"ESR=0x%08lX REC=%lu TEC=%lu LEC=%lu", ENG_TICK, "EngHAL_CAN", esr, rec, tec, lec);
 }
 
 void HAL_CAN_ErrorCallback(CAN_HandleTypeDef* hcan)
@@ -434,7 +422,7 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef* hcan)
     uint32_t tec = (esr >> 16) & 0xFF;
     uint32_t lec = (esr >>  4) & 0x07;
 
-    DBG_SWO(ENG_DBG_STRING"[CAN ERR] HE=0x%08lX%s%s%s%s%s%s  ESR=0x%08lX REC=%lu TEC=%lu LEC=%lu\n",
+    DBG_ENGHAL_CAN_TO_SWO(ENG_DBG_STRING"[CAN ERR] HE=0x%08lX%s%s%s%s%s%s  ESR=0x%08lX REC=%lu TEC=%lu LEC=%lu\n",
         ENG_TICK, "EngHAL_CAN",
         he,
         (he & HAL_CAN_ERROR_ACK)       ? " ACK" : "",
