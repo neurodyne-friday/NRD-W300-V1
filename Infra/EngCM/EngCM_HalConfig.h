@@ -51,35 +51,34 @@
 
 
 #ifdef	__ENGHAL_LIB_C__
-EXTERN THalGPIOPorting astHalGPOTbl[] =
+EXTERN THalGPIOPorting astHalGPIOTbl[] =
 {
-    /*	Input Name						AsicType			        Channel					Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    /*	Output Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
+    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         CH_B,		2,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+	{   HAL_GPIO_NAME_L6230_CH1_EN,		HAL_CHIP_STM32F4xx,         CH_C,		10,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_L6230_CH2_EN,		HAL_CHIP_STM32F4xx,         CH_C,		11,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_L6230_CH3_EN,		HAL_CHIP_STM32F4xx,         CH_C,		12,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
 	
-	{	HAL_GPO_NAME_UNSPECIFIED	}
+    /*	Input Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
+    {   HAL_GPIO_NAME_DIAG,				HAL_CHIP_STM32F4xx,         CH_A,		6,				HAL_GPIO_INPUT,		HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+
+	{	HAL_GPIO_NAME_UNSPECIFIED	}
 };
 #else
-EXTERN THalGPIOPorting astHalGPOTbl[HAL_GPO_NAME_MAX];
+EXTERN THalGPIOPorting astHalGPIOTbl[HAL_GPIO_NAME_MAX];
 #endif
 
-#ifdef	__ENGHAL_LIB_C__
-EXTERN THalGPIOPorting astHalGPITbl[] =
-{
-    /*	Input Name						AsicType			        Channel					Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_CURRENT_A,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-    {   HAL_GPIO_NAME_CURRENT_B,		HAL_CHIP_STM32F4xx,         0,                      HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-
-	{	HAL_GPI_NAME_UNSPECIFIED	}
-};
-#else
-EXTERN THalGPIOPorting astHalGPITbl[HAL_GPI_NAME_MAX];
-#endif
 
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalADCPorting astHalADCTbl[] =
 {
-    /*	Input Name						ChipType			        Channel         		*/
-    {   HAL_ADC_NAME_DUMMY1,            HAL_CHIP_STM32F4xx,         0,                      },
+    /*	Input Name						ChipType			        Channel        	*/
+    {   HAL_ADC_NAME_CURRENT_PHA,		HAL_CHIP_STM32F4xx,			0,				},
+    {   HAL_ADC_NAME_CURRENT_PHB,		HAL_CHIP_STM32F4xx,			11,				},
+    {   HAL_ADC_NAME_CURRENT_PHC,		HAL_CHIP_STM32F4xx,			10,				},
+
+    {   HAL_ADC_NAME_VBUS,				HAL_CHIP_STM32F4xx,			1,				},
+    {   HAL_ADC_NAME_TEMP,				HAL_CHIP_STM32F4xx,			12,				},
 
 	{	HAL_ADC_NAME_UNSPECIFIED	}
 };
