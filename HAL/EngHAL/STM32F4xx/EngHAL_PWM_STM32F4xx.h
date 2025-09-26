@@ -1,6 +1,6 @@
 /**
- * @file        EngHAL_TIM.h
- * @brief       This is type definition file for GPIO HAL
+ * @file        EngHAL_PWM.h
+ * @brief       This is type definition file for PWM HAL
  *
  * <b> Copyright 2024 by Neurodyne, Inc. All rights reserved.</b>
  *
@@ -17,8 +17,8 @@
  * @version		V0.1
  */
 
-#ifndef __ENGHAL_TIM_H__
-#define __ENGHAL_TIM_H__
+#ifndef __ENGHAL_PWM_H__
+#define __ENGHAL_PWM_H__
 
 #undef EXTERN
 #ifdef __ENGHAL_TIM_C__
@@ -31,6 +31,6 @@
 
 
 
-EXTERN void EngHAL_TIM_Init_F4xx();
+EXTERN void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting);
 
-#endif //__ENGHAL_GPIO_H__
+#endif //__ENGHAL_PWM_H__

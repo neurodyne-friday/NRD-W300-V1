@@ -65,6 +65,42 @@ BOOL EngHAL_LibraryEntry(void)
     pstHalFunction = &astHalFunctionTbl[0];
     if(pstHalFunction != NULL)
     {
+        /* GPIO Initialize */
+        if((void *)pstHalFunction->stGPIO.pfnInit != NULL)
+        {
+            THalGPIOPorting *pstGPIOHal = &astHalGPIOTbl[0];
+            while(pstGPIOHal->ulName != HAL_GPIO_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stGPIO.pfnInit(pstGPIOHal);
+                pstGPIOHal++;
+            }
+		}
+		DBG_SWO(ENG_DBG_STRING"GPIO Initialized", ENG_TICK, "EngHAL");
+
+        /* ADC Initialize */
+        if((void *)pstHalFunction->stADC.pfnInit != NULL)
+        {
+            THalADCPorting *pstADCHal = &astHalADCTbl[0];
+            while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stADC.pfnInit(pstADCHal);
+                pstADCHal++;
+            }
+		}
+		DBG_SWO(ENG_DBG_STRING"ADC Initialized", ENG_TICK, "EngHAL");
+
+        /* PWM Initialize */
+        if((void *)pstHalFunction->stPWM.pfnInit != NULL)
+        {
+            THalPWMPorting *pstPWMHal = &astHalPWMTbl[0];
+            while(pstPWMHal->ulName != HAL_PWM_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stPWM.pfnInit(pstPWMHal);
+                pstPWMHal++;
+            }
+        }
+		DBG_SWO(ENG_DBG_STRING"PWM Initialized", ENG_TICK, "EngHAL");
+
         /* CAN Initialize */
         if((void *)pstHalFunction->stCAN.pfnInit != NULL)
         {
@@ -76,6 +112,7 @@ BOOL EngHAL_LibraryEntry(void)
                 pstCANHal++;
             }
         }
+		DBG_SWO(ENG_DBG_STRING"CAN Initialized", ENG_TICK, "EngHAL");
 
     //     /* Ethernet Initialize */
     //     if((void *)pstHalFunction->stETH.pfnInit != NULL)
@@ -99,16 +136,6 @@ BOOL EngHAL_LibraryEntry(void)
     //         }
     //     }
 
-    //     /* ADC Initialize */
-    //     if((void *)pstHalFunction->stADC.pfnInit != NULL)
-    //     {
-    //         THalADCPorting *pstADCHal = &astHalADCTbl[0];
-    //         while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
-    //         {
-    //             pstHalFunction->stADC.pfnInit(pstADCHal);
-    //             pstADCHal++;
-    //         }
-
         /* SPI Initialize */
         if((void *)pstHalFunction->stUART.pfnInit != NULL)
         {
@@ -119,6 +146,7 @@ BOOL EngHAL_LibraryEntry(void)
                 pstSPIHal++;
             }
         }
+		DBG_SWO(ENG_DBG_STRING"SPI Initialized", ENG_TICK, "EngHAL");
 
 		/* I2C Initialize */
         if((void *)pstHalFunction->stI2C.pfnInit != NULL)
@@ -130,12 +158,10 @@ BOOL EngHAL_LibraryEntry(void)
                 pstI2CHal++;
             }
         }
-
-    //     }
+		DBG_SWO(ENG_DBG_STRING"I2C Initialized", ENG_TICK, "EngHAL");
     }
 
     EngHAL_RTC_Init();
-    EngHAL_TIM_Init();
     EngHAL_PWR_Init();
 	EngHAL_SRAM_Init();
     //EngHAL_USB_OTG_FS_PCD_Init(); // make it later
@@ -654,9 +680,25 @@ BOOL EngHAL_SRAM_IsValid(void)
   * @param None
   * @retval None
   */
-void EngHAL_TIM_Init(void)
+void EngHAL_PWM_Init(U32 ulHalName)
 {
-    EngHAL_TIM_Init_F4xx();
+	THalPWMPorting *pstHalPWMPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalPWMPorting = EngHAL_FindHalPWM(ulHalName);
+    
+	if(pstHalPWMPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stPWM.pfnInit != NULL)
+	{
+		pstHalFunction->stPWM.pfnInit(pstHalPWMPorting);
+	}
 }
 
 
@@ -904,6 +946,22 @@ void EngHAL_OS_Delay(uint32_t ticks)
   * @param None
   * @retval None
   */
+THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName)
+{
+	THalPWMPorting *pstHalPWMPorting = NULL;
+
+    for(U8 ubIndex = 0; ubIndex < HAL_CAN_NAME_MAX; ubIndex++)
+    {
+        if(ulHalName == astHalCANTbl[ubIndex].ulName)
+        {
+            pstHalPWMPorting = &astHalPWMTbl[ubIndex];
+            return pstHalPWMPorting;
+        }
+    }
+
+    return pstHalPWMPorting;
+}
+
 THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName)
 {
 	THalCANPorting *pstHalCANPorting = NULL;

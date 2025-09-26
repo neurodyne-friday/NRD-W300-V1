@@ -55,6 +55,16 @@ typedef enum
 typedef void (*HAL_EVENT_CALLBACK)(void);
 
 
+/* Module No - TIM, ADC, etc..  */
+#define HAL_MODULE_0		0
+#define HAL_MODULE_1		1
+#define HAL_MODULE_2		2
+#define HAL_MODULE_3		3
+#define HAL_MODULE_4		4
+#define HAL_MODULE_5		5
+#define HAL_MODULE_6		6
+#define HAL_MODULE_7		7
+
 /* Power Event */
 #define HAL_EVENT_PWR_ON	0	// Power On Event
 #define HAL_EVENT_PWR_OFF	1	// Power Off Event
@@ -172,6 +182,33 @@ typedef struct
 	THalChipType enChipType;
 	U32 ulChannel;
 } THalADCPorting;
+
+
+
+/**
+ * The PWM HAL 
+ */
+typedef enum
+{
+	HAL_PWM_NAME_UH,	// TIM1 CH1
+	HAL_PWM_NAME_VH,	// TIM1 CH2
+	HAL_PWM_NAME_WH,	// TIM1 CH3
+	HAL_PWM_NAME_MAX,
+	HAL_PWM_NAME_UNSPECIFIED = HAL_PWM_NAME_MAX
+} THalPWMName;
+
+
+typedef struct _THalPWMPorting
+{
+   	U32 ulName;
+	THalChipType enChipType;
+	U32 ulModuleNo;
+	U32 ulChannel;
+	U8 ubGPIOPort;
+	U8 ubGPIOPin;
+	U32 ulPeriod;
+
+} THalPWMPorting;
 
 
 /**
@@ -444,30 +481,6 @@ typedef struct
 
 
 /**
- * The TIM HAL 
- */
-typedef enum
-{
-	HAL_TIM_NAME_UH_PWM,	// TIM1 CH1
-	HAL_TIM_NAME_VH_PWM,	// TIM1 CH2
-	HAL_TIM_NAME_WH_PWM,	// TIM1 CH3
-	HAL_TIM_NAME_MAX,
-	HAL_TIM_NAME_UNSPECIFIED = HAL_TIM_NAME_MAX
-} THalTIMName;
-
-
-typedef struct _THalTIM
-{
-   	U32 ulName;
-	THalChipType enChipType;
-	U32 ulChannel;
-
-} THalTIM;
-
-
-
-
-/**
  * The RTC HAL 
  */
 typedef struct _THalRTCData
@@ -491,9 +504,30 @@ typedef struct _THalRTCData
  */
 typedef struct
 {
+	void (*pfnInit)(THalGPIOPorting *);						/* 0 */
+	U8 (*pfnGet)(THalGPIOPorting *); 						/* 1 */
+	void (*pfnSet)(THalGPIOPorting *, U8); 					/* 2 */
+} THalGPIOFunction;
+
+
+/**
+ * @brief .
+ */
+typedef struct
+{
 	void (*pfnInit)(THalADCPorting *);						/* 0 */
 	void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
 } THalADCFunction;
+
+
+/**
+ * @brief .
+ */
+typedef struct
+{
+	void (*pfnInit)(THalPWMPorting *);						/* 0 */
+	//void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
+} THalPWMFunction;
 
 
 /**
@@ -574,17 +608,15 @@ typedef struct
 typedef struct
 {
 	THalChipType enChipType;									// 0
+	THalGPIOFunction stGPIO;									// 3
+	THalADCFunction stADC;										// 2
+	THalPWMFunction stPWM;										// 2
 	THalCANFunction stCAN;										// 8
 	THalETHFunction stETH;										// 5
 	THalUARTFunction stUART;									// 8
-	// THalGPIOFunction stGPIO;									// 4
-	// THalPWMFunction stPWM;									// 4
 	THalSPIFunction stSPI;										// 3
 	THalI2CFunction stI2C;										// 5
-	THalADCFunction stADC;										// 2
 	// THalDMUFunction stDMU;									// 2
-	// THalEngTimerFunction stEngTimer;							// 23
-	// THalEINTFunction stEINT;									// 5
 } THalFunction;
 
 

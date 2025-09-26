@@ -161,15 +161,31 @@ typedef volatile unsigned long          REG32;
                                       
 /*******************************  Device and OS dependency  *******************************/
 
-#define CH_A      0
-#define CH_B      1
-#define CH_C      2
-#define CH_D      3
-#define CH_E      4
-#define CH_F      5
-#define CH_G      6
-#define CH_H      7
-#define CH_I      8
+#define PORT_A    0
+#define PORT_B    1
+#define PORT_C    2
+#define PORT_D    3
+#define PORT_E    4
+#define PORT_F    5
+#define PORT_G    6
+#define PORT_H    7
+
+#define CH_0      0
+#define CH_1      1
+#define CH_2      2
+#define CH_3      3
+#define CH_4      4
+#define CH_5      5
+#define CH_6      6
+#define CH_7      7
+#define CH_8      8
+#define CH_9      9
+#define CH_10     10
+#define CH_11     11
+#define CH_12     12
+#define CH_13     13
+#define CH_14     14
+#define CH_15     15
 
 #define STM32F4XX_SUPPORT
 //#define STM32F7XX_SUPPORT

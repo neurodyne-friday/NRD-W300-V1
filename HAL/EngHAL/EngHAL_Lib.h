@@ -70,6 +70,11 @@ EXTERN void EngHAL_ETH_Connect_Exit(U32 ulHalName);
 EXTERN void EngHAL_ETH_Transmit(U32 ulHalName, U8 pubData[], U16 uwLength);
 
 /* EngChip - ADC Interface */
+EXTERN void EngHAL_ADC_Init(U32 ulHalName);
+EXTERN U32 EngHAL_ADC_GetValue(U32 ulHalName);
+
+/* EngChip - PWM Interface */
+EXTERN void EngHAL_PWM_Init(U32 ulHalName);
 
 /* EngChip - RTC Interface */
 EXTERN void EngHAL_RTC_Init(void);
@@ -80,9 +85,6 @@ EXTERN void EngHAL_SRAM_Init(void);
 EXTERN BOOL EngHAL_SRAM_Save(const void *data, uint32_t len);
 EXTERN BOOL EngHAL_SRAM_Load(void *out, uint32_t bufsize, uint32_t *out_len, uint32_t *out_seq);
 EXTERN BOOL EngHAL_SRAM_IsValid(void);
-
-/* EngChip - TIM Interface */
-EXTERN void EngHAL_TIM_Init(void);
 
 /* EngChip - SPI Interface */
 EXTERN void EngHAL_SPI_Init(U32 ulHalName);
@@ -119,6 +121,7 @@ EXTERN void EngHAL_OS_Delay(uint32_t ticks);
 *	Common Function
 */
 
+EXTERN THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName);
 EXTERN THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName);
 EXTERN THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName);
 EXTERN THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName);

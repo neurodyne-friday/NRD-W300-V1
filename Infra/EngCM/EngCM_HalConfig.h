@@ -33,8 +33,8 @@
 	#include "EngHAL_Core_STM32F4xx.h"
 	#include "EngHAL_GPIO_STM32F4xx.h"
 	#include "EngHAL_ADC_STM32F4xx.h"
+	#include "EngHAL_PWM_STM32F4xx.h"
 	#include "EngHAL_CAN_STM32F4xx.h"
-	#include "EngHAL_TIM_STM32F4xx.h"
 	#include "EngHAL_UART_STM32F4xx.h"
 	#include "EngHAL_PWR_STM32F4xx.h"
 	#include "EngHAL_RTC_STM32F4xx.h"
@@ -53,14 +53,14 @@
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalGPIOPorting astHalGPIOTbl[] =
 {
-    /*	Output Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         CH_B,		2,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-	{   HAL_GPIO_NAME_L6230_CH1_EN,		HAL_CHIP_STM32F4xx,         CH_C,		10,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-    {   HAL_GPIO_NAME_L6230_CH2_EN,		HAL_CHIP_STM32F4xx,         CH_C,		11,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-    {   HAL_GPIO_NAME_L6230_CH3_EN,		HAL_CHIP_STM32F4xx,         CH_C,		12,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    /*	Output Name						ChipType			        Port		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
+    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         PORT_B,		2,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+	{   HAL_GPIO_NAME_L6230_CH1_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		10,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_L6230_CH2_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		11,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_L6230_CH3_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		12,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
 	
     /*	Input Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_DIAG,				HAL_CHIP_STM32F4xx,         CH_A,		6,				HAL_GPIO_INPUT,		HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    {   HAL_GPIO_NAME_DIAG,				HAL_CHIP_STM32F4xx,         PORT_A,		6,				HAL_GPIO_INPUT,		HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
 
 	{	HAL_GPIO_NAME_UNSPECIFIED	}
 };
@@ -84,6 +84,21 @@ EXTERN THalADCPorting astHalADCTbl[] =
 };
 #else
 EXTERN THalADCPorting astHalADCTbl[HAL_ADC_NAME_MAX];
+#endif
+
+
+#ifdef	__ENGHAL_LIB_C__
+EXTERN THalPWMPorting astHalPWMTbl[] =
+{
+    /*	Input Name					ChipType			        ModuleNo		Channel		GPIOPort	GPIOPin		Period	*/
+    {   HAL_PWM_NAME_UH,        	HAL_CHIP_STM32F4xx,         HAL_MODULE_1,	1,			PORT_A,		8,			4499,		},	// 4499 = 20kHz @ fTIM1=180MHz
+	{   HAL_PWM_NAME_VH,        	HAL_CHIP_STM32F4xx,         HAL_MODULE_1,	2,			PORT_A,		9,			4499,		},
+	{   HAL_PWM_NAME_WH,        	HAL_CHIP_STM32F4xx,         HAL_MODULE_1,	3,			PORT_A,		10,			4499,		},
+
+	{	HAL_PWM_NAME_UNSPECIFIED	}
+};
+#else
+EXTERN THalPWMPorting astHalPWMTbl[HAL_PWM_NAME_MAX];
 #endif
 
 
@@ -166,6 +181,19 @@ static THalFunction astHalFunctionTbl[] =
 	{
 		HAL_CHIP_STM32F4xx,									/* 0 */
 		
+		/* THalGPIOFunction */
+		NULL,
+		NULL,
+		NULL,
+
+		/* THalADCFunction */
+		EngHAL_ADC_Init_F4xx,
+		NULL,
+
+		/* THalPWMFunction */
+		EngHAL_PWM_Init_F4xx,
+		NULL,
+
         /* THalCANFunction */
 		EngHAL_CAN_Init_F4xx,
 		EngHAL_CAN_EnableInterrupt_F4xx,
@@ -195,9 +223,6 @@ static THalFunction astHalFunctionTbl[] =
 		EngHAL_UART_SendByte_F4xx,
 		EngHAL_UART_GetByte_F4xx,
 
-		/* THalGPIOFunction */
-		//NULL,											/* 5 */		
-
 		/* THalSPIFunction */
 		EngHAL_SPI_Init_F4xx,
 		EngHAL_SPI_Write_F4xx,
@@ -210,11 +235,6 @@ static THalFunction astHalFunctionTbl[] =
 		EngHAL_I2C_Read_F4xx,
 		EngHAL_I2C_Write_F4xx,
 
-		/* THalADCFunction */
-		EngHAL_ADC_Init_F4xx,
-		NULL,
-
-		/* THalPWMFunction */
 	},
 	{	HAL_CHIP_UNSPECIFIED	}
 };

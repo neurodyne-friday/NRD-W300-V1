@@ -78,10 +78,10 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngHAL/EngHal_Lib.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_Core_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_ADC_STM32F4xx.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_PWM_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_CAN_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_GPIO_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_I2C_STM32F4xx.c
-    ../../HAL/EngHAL/STM32F4xx/EngHAL_TIM_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_UART_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_PWR_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_RTC_STM32F4xx.c
