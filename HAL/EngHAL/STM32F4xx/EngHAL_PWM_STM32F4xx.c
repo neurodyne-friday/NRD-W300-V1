@@ -24,6 +24,24 @@
 
 TIM_HandleTypeDef htim1;
 
+
+static inline uint32_t TIM1_GetTimerClock(void)
+{
+    uint32_t pclk2 = HAL_RCC_GetPCLK2Freq(); // APB2
+    // APB2 분주기가 1이 아니면 타이머 클럭은 2*PCLK2
+    if ((RCC->CFGR & RCC_CFGR_PPRE2) != RCC_CFGR_PPRE2_DIV1) pclk2 *= 2U;
+    return pclk2;
+}
+
+// === 유틸: 듀티 보정(0.0~1.0) ===
+static inline uint32_t duty_to_ccr(float d, uint32_t arr_plus1)
+{
+    if (d < 0.0f) d = 0.0f;
+    if (d > 1.0f) d = 1.0f;
+    return (uint32_t)(d * (float)arr_plus1);
+}
+
+
 /**
   * @brief TIM Interface Functions
   * @param None
@@ -135,3 +153,25 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
     //HAL_TIM_MspPostInit(&htim1);
 }
 
+void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty)
+{
+    if(!pstHalPorting)
+        return;
+
+    if(pstHalPorting->ModuleNo != HAL_MODULE_1)
+        return;
+
+    U32 ulChannel = TIM_CHANNEL_1; // default
+    uint32_t arrp1 = __HAL_TIM_GET_AUTORELOAD(&htim1) + 1U;
+
+    switch(pstHalPorting->ulChannel)
+    {
+        case 1: ulChannel = TIM_CHANNEL_1; break;
+        case 2: ulChannel = TIM_CHANNEL_2; break;
+        case 3: ulChannel = TIM_CHANNEL_3; break;
+        case 4: ulChannel = TIM_CHANNEL_4; break;
+        default: return; // Error
+    }
+
+    __HAL_TIM_SET_COMPARE(&htim1, ulChannel, duty_to_ccr(fDuty, arrp1));
+}

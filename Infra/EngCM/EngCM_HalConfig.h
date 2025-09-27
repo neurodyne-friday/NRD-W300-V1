@@ -192,7 +192,7 @@ static THalFunction astHalFunctionTbl[] =
 
 		/* THalPWMFunction */
 		EngHAL_PWM_Init_F4xx,
-		NULL,
+		EngHAL_PWM_SetDuty_F4xx,
 
         /* THalCANFunction */
 		EngHAL_CAN_Init_F4xx,

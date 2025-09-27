@@ -526,7 +526,7 @@ typedef struct
 typedef struct
 {
 	void (*pfnInit)(THalPWMPorting *);						/* 0 */
-	//void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
+	void (*pfnSetDuty)(THalPWMPorting *, F32); 				/* 1 */
 } THalPWMFunction;
 
 

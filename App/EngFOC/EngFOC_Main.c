@@ -194,7 +194,8 @@ void EngFOC_Task_CurrentControl(void *argument)
     const float Kp_d = 0.1, Ki_d = 0.05;
     const float Kp_q = 0.1, Ki_q = 0.05;
     // (필요시 크로스 보상계수: Ld, Lq, ω 등의 변수도 선언)
-    
+    static int cur_cnt = 0; // 모니터링용
+
     for(;;) 
     {
         // ADC 인터럽트로부터 알림 대기 (블로킹 대기)
@@ -266,14 +267,22 @@ void EngFOC_Task_CurrentControl(void *argument)
         
         // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
         float Ta, Tb, Tc;
-        //SVPWM_CalcDuty(v_alpha, v_beta, Vbus, &Ta, &Tb, &Tc);
         EngFOC_SVPWM_CalcDuty(pstFOCManager->fVAlpha, pstFOCManager->fVBeta, V_BUS, &Ta, &Tb, &Tc);
 
         // SVPWM_CalcDuty: 참조 전압을 기준으로 섹터 결정 후 T1, T2, T0 계산, 0.0~1.0의 Ta, Tb, Tc 듀티 반환
-        TIM1->CCR1 = Ta * TIM1->ARR;
-        TIM1->CCR2 = Tb * TIM1->ARR;
-        TIM1->CCR3 = Tc * TIM1->ARR;
+        //TIM1->CCR1 = Ta * TIM1->ARR;
+        //TIM1->CCR2 = Tb * TIM1->ARR;
+        //TIM1->CCR3 = Tc * TIM1->ARR;
+        EngHAL_PWM_SetDuty(HAL_PWM_NAME_UH, Ta);
+        EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
+        EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
         
+        if((cur_cnt % 10) == 0)
+        {
+
+            //DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
+        }
+
         // (다음 인터럽트까지 대기 상태로 대기)
     }
 }

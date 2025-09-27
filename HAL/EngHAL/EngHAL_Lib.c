@@ -701,6 +701,27 @@ void EngHAL_PWM_Init(U32 ulHalName)
 	}
 }
 
+void EngHAL_PWM_SetDuty(U32 ulHalName, float fDuty)
+{
+	THalPWMPorting *pstHalPWMPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+	pstHalPWMPorting = EngHAL_FindHalPWM(ulHalName);
+	
+	if(pstHalPWMPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stPWM.pfnSetDuty != NULL)
+	{
+		pstHalFunction->stPWM.pfnSetDuty(pstHalPWMPorting, fDuty);
+	}
+}
+
 
 /**
   * @brief SPI Interface Functions

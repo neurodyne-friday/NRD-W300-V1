@@ -75,6 +75,7 @@ EXTERN U32 EngHAL_ADC_GetValue(U32 ulHalName);
 
 /* EngChip - PWM Interface */
 EXTERN void EngHAL_PWM_Init(U32 ulHalName);
+EXTERN void EngHAL_PWM_SetDuty(U32 ulHalName, float fDuty);
 
 /* EngChip - RTC Interface */
 EXTERN void EngHAL_RTC_Init(void);
