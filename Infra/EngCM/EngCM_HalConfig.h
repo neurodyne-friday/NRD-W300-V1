@@ -192,6 +192,8 @@ static THalFunction astHalFunctionTbl[] =
 
 		/* THalPWMFunction */
 		EngHAL_PWM_Init_F4xx,
+		EngHAL_PWM_Start_F4xx,
+		EngHAL_PWM_Stop_F4xx,
 		EngHAL_PWM_SetDuty_F4xx,
 
         /* THalCANFunction */
@@ -205,7 +207,7 @@ static THalFunction astHalFunctionTbl[] =
 		NULL,
 		NULL,
 		
-		/* THalETHFunction */
+		/* THalETHFunction - no use in STM32F4xx */
 		NULL,//EngHAL_ETH_Init_F4xx,
 		NULL,//EngHAL_ETH_Connect_Entry_F4xx,
 		NULL,//EngHAL_ETH_Connect_Activity_F4xx,

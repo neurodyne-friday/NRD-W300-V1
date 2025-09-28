@@ -98,3 +98,8 @@ F32 EngFOC_IF_GetPosition(void)
 {
     return 0.0f;
 }
+
+void EngFOC_IF_NotifyByADCIRQ(void)
+{
+    EngFOC_NotifyBy_ADC_IRQHandler();
+}

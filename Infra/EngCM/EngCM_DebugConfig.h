@@ -241,7 +241,11 @@ EXTERN U32 g_ulContinuousCnt;
 	#define DBG_EMERGENCY_UART					ENG_PRINT
 	#define DBG_UART							EngLog_IF_PrintToUart//EngLog_IF_DumpPrintToUart
 	#define DBG_SWO								EngLog_IF_PrintToSWO//EngLog_IF_DumpPrintToUart
+	#define DBG_ENGHAL_PWM_TO_SWO				//EngLog_IF_PrintToSWO
+	#define DBG_ENGHAL_ADC_TO_SWO				//EngLog_IF_PrintToSWO
 	#define DBG_ENGHAL_CAN_TO_SWO				//EngLog_IF_PrintToSWO
+	#define DBG_ENGHAL_SPI_TO_SWO				//EngLog_IF_PrintToSWO
+	#define DBG_ENGHAL_I2C_TO_SWO				//EngLog_IF_PrintToSWO
 	#define DBG_EMERGENCY						EngLog_IF_DumpPrintEmergency
 	#define DBG_ENGIFSVC						EngLog_IF_DumpPrintEngIFSvc
 	#define DBG_ENGTMSVC		

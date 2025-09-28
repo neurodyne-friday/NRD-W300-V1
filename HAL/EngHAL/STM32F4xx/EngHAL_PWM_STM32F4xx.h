@@ -32,6 +32,8 @@
 
 
 EXTERN void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting);
-EXTERN void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty)
+EXTERN void EngHAL_PWM_Start_F4xx(THalPWMPorting *pstHalPorting);
+EXTERN void EngHAL_PWM_Stop_F4xx(THalPWMPorting *pstHalPorting);
+EXTERN void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty);
 
 #endif //__ENGHAL_PWM_H__

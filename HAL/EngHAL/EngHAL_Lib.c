@@ -61,7 +61,7 @@ BOOL EngHAL_LibraryEntry(void)
 
     THalFunction *pstHalFunction = NULL;
 
-    /* Initilize all hal items */
+    /* Initilize all hal items in sequence */
     pstHalFunction = &astHalFunctionTbl[0];
     if(pstHalFunction != NULL)
     {
@@ -77,18 +77,6 @@ BOOL EngHAL_LibraryEntry(void)
 		}
 		DBG_SWO(ENG_DBG_STRING"GPIO Initialized", ENG_TICK, "EngHAL");
 
-        /* ADC Initialize */
-        if((void *)pstHalFunction->stADC.pfnInit != NULL)
-        {
-            THalADCPorting *pstADCHal = &astHalADCTbl[0];
-            while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
-            {
-                pstHalFunction->stADC.pfnInit(pstADCHal);
-                pstADCHal++;
-            }
-		}
-		DBG_SWO(ENG_DBG_STRING"ADC Initialized", ENG_TICK, "EngHAL");
-
         /* PWM Initialize */
         if((void *)pstHalFunction->stPWM.pfnInit != NULL)
         {
@@ -100,6 +88,18 @@ BOOL EngHAL_LibraryEntry(void)
             }
         }
 		DBG_SWO(ENG_DBG_STRING"PWM Initialized", ENG_TICK, "EngHAL");
+
+        /* ADC Initialize */
+        if((void *)pstHalFunction->stADC.pfnInit != NULL)
+        {
+            THalADCPorting *pstADCHal = &astHalADCTbl[0];
+            while(pstADCHal->ulName != HAL_ADC_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stADC.pfnInit(pstADCHal);
+                pstADCHal++;
+            }
+		}
+		DBG_SWO(ENG_DBG_STRING"ADC Initialized", ENG_TICK, "EngHAL");
 
         /* CAN Initialize */
         if((void *)pstHalFunction->stCAN.pfnInit != NULL)
@@ -184,6 +184,12 @@ void EngHAL_Core_Init(void)
 	EngHAL_GPIO_Config_F4xx();
 }
 
+
+
+void EngHAL_ADC_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))
+{
+	EngHAL_ADC_RegisterCallback_F4xx(ulEventId, pfnCallback);
+}
 
 void EngHAL_CAN_Init(U32 ulHalName)
 {
@@ -971,9 +977,11 @@ THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName)
 {
 	THalPWMPorting *pstHalPWMPorting = NULL;
 
-    for(U8 ubIndex = 0; ubIndex < HAL_CAN_NAME_MAX; ubIndex++)
+    for(U8 ubIndex = 0; ubIndex < HAL_PWM_NAME_MAX; ubIndex++)
     {
-        if(ulHalName == astHalCANTbl[ubIndex].ulName)
+		if(&astHalPWMTbl[ubIndex] == NULL) continue;
+
+        if(ulHalName == astHalPWMTbl[ubIndex].ulName)
         {
             pstHalPWMPorting = &astHalPWMTbl[ubIndex];
             return pstHalPWMPorting;
@@ -981,6 +989,24 @@ THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName)
     }
 
     return pstHalPWMPorting;
+}
+
+THalADCPorting* EngHAL_FindHalADC(U32 ulHalName)
+{
+	THalADCPorting *pstHalADCPorting = NULL;
+
+    for(U8 ubIndex = 0; ubIndex < HAL_ADC_NAME_MAX; ubIndex++)
+    {
+		if(&astHalADCTbl[ubIndex] == NULL) continue;
+
+        if(ulHalName == astHalADCTbl[ubIndex].ulName)
+        {
+            pstHalADCPorting = &astHalADCTbl[ubIndex];
+            return pstHalADCPorting;
+        }
+    }
+
+    return pstHalADCPorting;
 }
 
 THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName)

@@ -34,6 +34,15 @@
 EXTERN BOOL EngHAL_LibraryEntry(void);
 EXTERN void EngHAL_Core_Init(void);
 
+/* EngChip - ADC Interface */
+EXTERN void EngHAL_ADC_Init(U32 ulHalName);
+EXTERN U32 EngHAL_ADC_GetValue(U32 ulHalName);
+EXTERN void EngHAL_ADC_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
+
+/* EngChip - PWM Interface */
+EXTERN void EngHAL_PWM_Init(U32 ulHalName);
+EXTERN void EngHAL_PWM_SetDuty(U32 ulHalName, float fDuty);
+
 /* EngChip - CAN Interface */
 EXTERN void EngHAL_CAN_Init(U32 ulHalName);
 EXTERN void EngHAL_CAN_EnableInterrupt(U32 ulHalName);
@@ -68,14 +77,6 @@ EXTERN void EngHAL_ETH_Connect_Entry(U32 ulHalName);
 EXTERN void EngHAL_ETH_Connect_Activity(U32 ulHalName);
 EXTERN void EngHAL_ETH_Connect_Exit(U32 ulHalName);
 EXTERN void EngHAL_ETH_Transmit(U32 ulHalName, U8 pubData[], U16 uwLength);
-
-/* EngChip - ADC Interface */
-EXTERN void EngHAL_ADC_Init(U32 ulHalName);
-EXTERN U32 EngHAL_ADC_GetValue(U32 ulHalName);
-
-/* EngChip - PWM Interface */
-EXTERN void EngHAL_PWM_Init(U32 ulHalName);
-EXTERN void EngHAL_PWM_SetDuty(U32 ulHalName, float fDuty);
 
 /* EngChip - RTC Interface */
 EXTERN void EngHAL_RTC_Init(void);
@@ -123,6 +124,7 @@ EXTERN void EngHAL_OS_Delay(uint32_t ticks);
 */
 
 EXTERN THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName);
+EXTERN THalADCPorting* EngHAL_FindHalADC(U32 ulHalName);
 EXTERN THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName);
 EXTERN THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName);
 EXTERN THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName);

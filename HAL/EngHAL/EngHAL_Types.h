@@ -70,6 +70,10 @@ typedef void (*HAL_EVENT_CALLBACK)(void);
 #define HAL_EVENT_PWR_OFF	1	// Power Off Event
 #define HAL_EVENT_PWR_MAX	2	// Maximum Event ID
 
+/* Power Event */
+#define HAL_EVENT_ADC_IRQ	0	// Power On Event
+#define HAL_EVENT_ADC_MAX	1	// Maximum Event ID
+
 /* CAN Event */
 #define HAL_EVENT_CAN1_RX	0	// CAN0 Receive Event
 #define HAL_EVENT_CAN2_RX	1	// CAN1 Receive Event
@@ -515,9 +519,11 @@ typedef struct
  */
 typedef struct
 {
-	void (*pfnInit)(THalADCPorting *);						/* 0 */
-	void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
-} THalADCFunction;
+	void (*pfnInit)(THalPWMPorting *);						/* 0 */
+	void (*pfnStart)(THalPWMPorting *);						/* 1 */
+	void (*pfnStop)(THalPWMPorting *);						/* 2 */
+	void (*pfnSetDuty)(THalPWMPorting *, F32); 				/* 3 */
+} THalPWMFunction;
 
 
 /**
@@ -525,9 +531,9 @@ typedef struct
  */
 typedef struct
 {
-	void (*pfnInit)(THalPWMPorting *);						/* 0 */
-	void (*pfnSetDuty)(THalPWMPorting *, F32); 				/* 1 */
-} THalPWMFunction;
+	void (*pfnInit)(THalADCPorting *);						/* 0 */
+	void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
+} THalADCFunction;
 
 
 /**
@@ -610,7 +616,7 @@ typedef struct
 	THalChipType enChipType;									// 0
 	THalGPIOFunction stGPIO;									// 3
 	THalADCFunction stADC;										// 2
-	THalPWMFunction stPWM;										// 2
+	THalPWMFunction stPWM;										// 4
 	THalCANFunction stCAN;										// 8
 	THalETHFunction stETH;										// 5
 	THalUARTFunction stUART;									// 8

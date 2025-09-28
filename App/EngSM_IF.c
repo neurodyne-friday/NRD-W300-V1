@@ -23,6 +23,7 @@
 #include "EngSM_IF.h"
 #include "EngSM_Main.h"
 #include "EngIFSvc_IF.h"
+#include "EngFOC_IF.h"
 
 
 /**
@@ -50,6 +51,7 @@ BOOL EngSM_IF_Initialize(void)
 	EngSM_PowerOn();
 
     /* Register the Hardware Interrupts */
+	EngHAL_ADC_RegisterCallback(HAL_EVENT_ADC_IRQ, EngFOC_IF_NotifyByADCIRQ);
 	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyEventByCAN1);
 	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_IF_NotifyEventByPowerOff);
 

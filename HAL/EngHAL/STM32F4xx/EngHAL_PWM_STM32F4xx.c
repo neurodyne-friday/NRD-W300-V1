@@ -41,6 +41,43 @@ static inline uint32_t duty_to_ccr(float d, uint32_t arr_plus1)
     return (uint32_t)(d * (float)arr_plus1);
 }
 
+static inline U32 _get_tim_channel(U32 ulChannel)
+{
+    switch(ulChannel)
+    {
+        case 1: return TIM_CHANNEL_1;
+        case 2: return TIM_CHANNEL_2;
+        case 3: return TIM_CHANNEL_3;
+        case 4: return TIM_CHANNEL_4;
+        default: return 0; // Error
+    }
+}
+
+static inline U16 _set_gpio_pin(GPIO_InitTypeDef* s, U8 ubPin)
+{
+    switch(ubPin)
+    { 
+        case 0: s->Pin |= GPIO_PIN_0; break;
+        case 1: s->Pin |= GPIO_PIN_1; break;
+        case 2: s->Pin |= GPIO_PIN_2; break;
+        case 3: s->Pin |= GPIO_PIN_3; break;
+        case 4: s->Pin |= GPIO_PIN_4; break;
+        case 5: s->Pin |= GPIO_PIN_5; break;
+        case 6: s->Pin |= GPIO_PIN_6; break;
+        case 7: s->Pin |= GPIO_PIN_7; break;
+        case 8: s->Pin |= GPIO_PIN_8; break;
+        case 9: s->Pin |= GPIO_PIN_9; break;
+        case 10: s->Pin |= GPIO_PIN_10; break;
+        case 11: s->Pin |= GPIO_PIN_11; break;
+        case 12: s->Pin |= GPIO_PIN_12; break;
+        case 13: s->Pin |= GPIO_PIN_13; break;
+        case 14: s->Pin |= GPIO_PIN_14; break;
+        case 15: s->Pin |= GPIO_PIN_15; break;
+        case 16: s->Pin |= GPIO_PIN_All; break;
+        default: return 0; // Error
+    }
+}
+
 
 /**
   * @brief TIM Interface Functions
@@ -54,27 +91,9 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         return;
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    U32 ulChannel = TIM_CHANNEL_1; // default
+    U32 ulChannel = _get_tim_channel(pstHalPorting->ulChannel);
 
-    switch(pstHalPorting->ubGPIOPin)
-    {
-        case 1: GPIO_InitStruct.Pin |= GPIO_PIN_1; break;
-        case 2: GPIO_InitStruct.Pin |= GPIO_PIN_2; break;
-        case 3: GPIO_InitStruct.Pin |= GPIO_PIN_3; break;
-        case 4: GPIO_InitStruct.Pin |= GPIO_PIN_4; break;
-        case 5: GPIO_InitStruct.Pin |= GPIO_PIN_5; break;
-        case 6: GPIO_InitStruct.Pin |= GPIO_PIN_6; break;
-        case 7: GPIO_InitStruct.Pin |= GPIO_PIN_7; break;
-        case 8: GPIO_InitStruct.Pin |= GPIO_PIN_8; break;
-        case 9: GPIO_InitStruct.Pin |= GPIO_PIN_9; break;
-        case 10: GPIO_InitStruct.Pin |= GPIO_PIN_10; break;
-        case 11: GPIO_InitStruct.Pin |= GPIO_PIN_11; break;
-        case 12: GPIO_InitStruct.Pin |= GPIO_PIN_12; break;
-        case 13: GPIO_InitStruct.Pin |= GPIO_PIN_13; break;
-        case 14: GPIO_InitStruct.Pin |= GPIO_PIN_14; break;
-        case 15: GPIO_InitStruct.Pin |= GPIO_PIN_15; break;
-        default: return; // Error
-    }
+    _set_gpio_pin(&GPIO_InitStruct, pstHalPorting->ubGPIOPin);
 
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -94,15 +113,6 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         default: return; // Error
     }
     
-    switch(pstHalPorting->ulChannel)
-    {
-        case 1: ulChannel = TIM_CHANNEL_1; break;
-        case 2: ulChannel = TIM_CHANNEL_2; break;
-        case 3: ulChannel = TIM_CHANNEL_3; break;
-        case 4: ulChannel = TIM_CHANNEL_4; break;
-        default: return; // Error
-    }
-
     TIM_OC_InitTypeDef oc = {0};
     oc.Pulse = 0;
     oc.OCPolarity = TIM_OCPOLARITY_HIGH;
@@ -110,15 +120,6 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
     oc.OCFastMode = TIM_OCFAST_DISABLE;
     oc.OCIdleState = TIM_OCIDLESTATE_RESET;
     oc.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-
-    // === BDTR: MOE 등 ===
-    TIM_BreakDeadTimeConfigTypeDef bdtr = {0};
-    bdtr.OffStateRunMode  = TIM_OSSR_DISABLE;
-    bdtr.OffStateIDLEMode = TIM_OSSI_DISABLE;
-    bdtr.LockLevel        = TIM_LOCKLEVEL_OFF;
-    bdtr.DeadTime         = 0;                  // L6230 사용 시 MCU 데드타임 불필요
-    bdtr.BreakState       = TIM_BREAK_DISABLE;  // 하드 BKIN 미사용 시
-    bdtr.AutomaticOutput  = TIM_AUTOMATICOUTPUT_DISABLE;
 
     if(pstHalPorting->ulModuleNo == HAL_MODULE_1)
     {
@@ -137,20 +138,53 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         {
             Error_Handler();
         }
-
-        if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &bdtr) != HAL_OK)
-        {
-            Error_Handler();
-        }
-
-        if(HAL_TIM_PWM_Start(&htim1, ulChannel) != HAL_OK)
-        {
-            Error_Handler();
-        }
     }
 
-    //__HAL_TIM_MOE_ENABLE(&htim1);
     //HAL_TIM_MspPostInit(&htim1);
+}
+
+void EngHAL_PWM_Start_F4xx(THalPWMPorting *pstHalPorting)
+{
+    if(!pstHalPorting)
+        return;
+
+    if(pstHalPorting->ulModuleNo != HAL_MODULE_1)
+        return;
+
+    U32 ulChannel = _get_tim_channel(pstHalPorting->ulChannel);
+    // === BDTR: MOE 등 ===
+    TIM_BreakDeadTimeConfigTypeDef bdtr = {0};
+    bdtr.OffStateRunMode  = TIM_OSSR_DISABLE;
+    bdtr.OffStateIDLEMode = TIM_OSSI_DISABLE;
+    bdtr.LockLevel        = TIM_LOCKLEVEL_OFF;
+    bdtr.DeadTime         = 0;                  // L6230 사용 시 MCU 데드타임 불필요
+    bdtr.BreakState       = TIM_BREAK_DISABLE;  // 하드 BKIN 미사용 시
+    bdtr.AutomaticOutput  = TIM_AUTOMATICOUTPUT_DISABLE;
+
+    if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &bdtr) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    if(HAL_TIM_PWM_Start(&htim1, ulChannel) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    __HAL_TIM_MOE_ENABLE(&htim1);
+}
+
+void EngHAL_PWM_Stop_F4xx(THalPWMPorting *pstHalPorting)
+{
+    if(!pstHalPorting)
+        return;
+
+    U32 ulChannel = _get_tim_channel(pstHalPorting->ulChannel);
+
+    if(HAL_TIM_PWM_Stop(&htim1, ulChannel) != HAL_OK)
+    {
+        Error_Handler();
+    }
 }
 
 void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty)
@@ -158,7 +192,7 @@ void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty)
     if(!pstHalPorting)
         return;
 
-    if(pstHalPorting->ModuleNo != HAL_MODULE_1)
+    if(pstHalPorting->ulModuleNo != HAL_MODULE_1)
         return;
 
     U32 ulChannel = TIM_CHANNEL_1; // default
