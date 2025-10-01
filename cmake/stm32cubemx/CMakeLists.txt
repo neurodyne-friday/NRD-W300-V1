@@ -76,6 +76,7 @@ target_sources(stm32cubemx INTERFACE
     ../../HAL/EngChip/Core/Src/system_stm32f4xx.c
 
     ../../HAL/EngHAL/EngHal_Lib.c
+    ../../HAL/EngHAL/STM32F4xx/EngHAL_Base_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_Core_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_ADC_STM32F4xx.c
     ../../HAL/EngHAL/STM32F4xx/EngHAL_PWM_STM32F4xx.c

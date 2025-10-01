@@ -31,6 +31,10 @@
 #define POS_INT_MAX 10
 
 #define V_BUS 24.0 //24v or 48v?
+#define CURRENT_SCALE 0.001596;  // ADC 값 -> 전류(A) 변환 스케일, 1ADC = 0.001596A (예: 3.3V/4096/0.82*1/0.15)
+#define CURRENT_OFFSET_A 2048  // ADC 오프셋 (중간값)
+#define CURRENT_OFFSET_B 2048
+#define CURRENT_OFFSET_C 2048
 
 /*
  * @brief Structure Definitions
@@ -57,6 +61,9 @@ typedef struct _TEngFOCManager
 	F32 fVBeta;			// 역변환 후 β축 전압
 	U16 uwADCPhaseA;	// ADC DMA로부터 얻은 샘플 값
 	U16 uwADCPhaseB;	// ADC DMA로부터 얻은 샘플 값
+	F32 fIa;			// 상 A 전류 (실제값, A)
+	F32 fIb;			// 상 B 전류 (실제값, A)
+	F32 fIc;			// 상 C 전류 (실제값, A)
 
 	F32 fRefOmega;		// 속도 레퍼런스
 

@@ -48,6 +48,18 @@
             "detail": "CMake template clean rebuild task"
         },
         {
+            "type": "cmake",
+            "label": "CMake: clean",
+            "command": "clean",
+            "targets": [
+                "all"
+            ],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake template clean rebuild task"
+        },
+        {
             "type": "shell",
             "label": "CubeProg: List all available communication interfaces",
             "command": "STM32_Programmer_CLI",

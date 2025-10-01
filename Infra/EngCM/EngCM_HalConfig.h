@@ -30,6 +30,7 @@
 #include "EngHAL_Types.h"
 
 #if defined(STM32F4XX_SUPPORT)
+	#include "EngHAL_Base_STM32F4xx.h"
 	#include "EngHAL_Core_STM32F4xx.h"
 	#include "EngHAL_GPIO_STM32F4xx.h"
 	#include "EngHAL_ADC_STM32F4xx.h"
@@ -188,7 +189,7 @@ static THalFunction astHalFunctionTbl[] =
 
 		/* THalADCFunction */
 		EngHAL_ADC_Init_F4xx,
-		NULL,
+		EngHAL_ADC_GetValue_F4xx,
 
 		/* THalPWMFunction */
 		EngHAL_PWM_Init_F4xx,

@@ -31,8 +31,9 @@
 #define CAN_RX_DATA_SIZE    64 // able to support FD-CAN
 #define CAN_TX_DATA_SIZE    64 // able to support FD-CAN
 
-CAN_HandleTypeDef hcan1;
-CAN_HandleTypeDef hcan2;
+extern CAN_HandleTypeDef hcan1;
+extern CAN_HandleTypeDef hcan2;
+
 
 typedef struct _THalCANRxBuffer
 {

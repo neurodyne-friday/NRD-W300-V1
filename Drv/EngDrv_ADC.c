@@ -21,14 +21,9 @@
 
 #include "EngCM_DriverConfig.h"
 #include "EngDrv_ADC.h"
-#include "EngDrv_Sensor.h"
+//#include "EngDrv_Sensor.h"
 #include "EngDrv_IF.h"
-
-#if defined(STM32F4XX_SUPPORT)
-	#include "EngHAL_ADC_STM32F4xx.h"
-#elif defined(STM32F7XX_SUPPORT)
-	#include "EngHAL_ADC_STM32F7xx.h"
-#endif
+#include "EngHAL_Lib.h"
 
 
 void EngDrv_ADC_Create(void)
@@ -48,30 +43,16 @@ void EngDrv_ADC_Create(void)
 
 void EngDrv_ADC_Configuration(void)
 {
-	EngHAL_ADC_Init_F4xx(NULL); // should change EngHAL_ADC_Init() to eliminate dependency
 }
 
 void EngDrv_ADC_Initialize(TADC* pstADC)
 {
-    pstADC->ulADCValue = 0;
+    pstADC->uwADCValue = 0;
 }
 
 
-U32 EngDrv_ADC_GetValue(TADC* pstADC)
+U16 EngDrv_ADC_GetValue(TADC* pstADC)
 {
-	pstADC->ulADCValue = EngHAL_ADC_GetValue(pstADC->ulDeviceKey);
-	return pstADC->ulADCValue;
-}
-
-U32 EngHAL_ADC_GetValue(U32 ulDeviceKey)
-{
-    TADC* pstADC = EngDrv_IF_GetADC(ulDeviceKey); // should make Hal Instance and use it later
-    U32 ulAdcValue = 0;
-
-	return ulAdcValue;
-}
-
-void EngHAL_ADC_SelChannel(U32 ulDeviceKey)
-{
-    TADC* pstADC = EngDrv_IF_GetADC(ulDeviceKey); // should make Hal Instance and use it later
+	pstADC->uwADCValue = EngHAL_ADC_GetValue(pstADC->ulHalID);
+	return pstADC->uwADCValue;
 }

@@ -22,8 +22,8 @@
 #include "Eng_CommonType.h"
 #include "EngHAL_PWM_STM32F4xx.h"
 
-TIM_HandleTypeDef htim1;
-
+extern TIM_HandleTypeDef htim1;
+static uint8_t s_tim1enabled = 0;
 
 static inline uint32_t TIM1_GetTimerClock(void)
 {
@@ -78,6 +78,25 @@ static inline U16 _set_gpio_pin(GPIO_InitTypeDef* s, U8 ubPin)
     }
 }
 
+static void _rcc_bist(const char* tag)
+{
+    volatile uint32_t *apb2 = &RCC->APB2ENR;
+    uint32_t before = *apb2;
+
+    // 1) HAL 매크로로 Enable
+    __HAL_RCC_TIM1_CLK_ENABLE();
+    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM1EN);
+    uint32_t after_hal = *apb2;
+
+    // 2) 직접 레지스터 쓰기
+    *apb2 |= RCC_APB2ENR_TIM1EN;
+    uint32_t after_raw = *apb2;
+
+    DBG_SWO("[BIST:%s] APB2ENR before=0x%08lX, after_hal=0x%08lX, after_raw=0x%08lX",
+            tag, before, after_hal, after_raw);
+}
+
+
 
 /**
   * @brief TIM Interface Functions
@@ -130,7 +149,19 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         htim1.Init.RepetitionCounter = 1;
         htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
         htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-        HAL_TIM_PWM_Init(&htim1);
+
+        //_rcc_bist("pre-HAL_TIM_PWM_Init");
+        if(s_tim1enabled == 0)
+        {
+            s_tim1enabled = 1;
+            __HAL_RCC_TIM1_CLK_ENABLE();
+        }
+
+        HAL_StatusTypeDef st = HAL_TIM_PWM_Init(&htim1);
+        DBG_SWO("HAL_TIM_PWM_Init -> %d", (int)st);
+        DBG_SWO("TIM1->ARR=%lu, PSC=%lu, CR1=0x%08lX", TIM1->ARR, TIM1->PSC, TIM1->CR1);
+
+        EngHAL_Base_TIM1_Probe_State("after PWM_Init");
 
         oc.OCMode = TIM_OCMODE_PWM1;
 
@@ -139,8 +170,6 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
             Error_Handler();
         }
     }
-
-    //HAL_TIM_MspPostInit(&htim1);
 }
 
 void EngHAL_PWM_Start_F4xx(THalPWMPorting *pstHalPorting)
@@ -208,4 +237,13 @@ void EngHAL_PWM_SetDuty_F4xx(THalPWMPorting *pstHalPorting, float fDuty)
     }
 
     __HAL_TIM_SET_COMPARE(&htim1, ulChannel, duty_to_ccr(fDuty, arrp1));
+}
+
+
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* htim)
+{
+    if (htim->Instance == TIM1)
+    {
+        __HAL_RCC_TIM1_CLK_ENABLE();
+    }
 }

@@ -101,6 +101,19 @@ BOOL EngHAL_LibraryEntry(void)
 		}
 		DBG_SWO(ENG_DBG_STRING"ADC Initialized", ENG_TICK, "EngHAL");
 
+		/* PWM TIM Start */
+        if((void *)pstHalFunction->stPWM.pfnInit != NULL)
+        {
+            THalPWMPorting *pstPWMHal = &astHalPWMTbl[0];
+            while(pstPWMHal->ulName != HAL_PWM_NAME_UNSPECIFIED)
+            {
+                pstHalFunction->stPWM.pfnStart(pstPWMHal);
+                pstPWMHal++;
+            }
+        }
+		DBG_SWO(ENG_DBG_STRING"PWM TIM Started", ENG_TICK, "EngHAL");
+
+
         /* CAN Initialize */
         if((void *)pstHalFunction->stCAN.pfnInit != NULL)
         {
@@ -184,6 +197,53 @@ void EngHAL_Core_Init(void)
 	EngHAL_GPIO_Config_F4xx();
 }
 
+void EngHAL_ADC_Init(U32 ulHalName)
+{
+	THalADCPorting *pstHalADCPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalADCPorting = EngHAL_FindHalADC(ulHalName);
+    
+	if(pstHalADCPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stADC.pfnInit != NULL)
+	{
+		pstHalFunction->stADC.pfnInit(pstHalADCPorting);
+	}
+}
+
+U16 EngHAL_ADC_GetValue(U32 ulHalName)
+{
+	THalADCPorting *pstHalADCPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+	U16 uwValue = 0;
+
+    pstHalADCPorting = EngHAL_FindHalADC(ulHalName);
+    
+	if(pstHalADCPorting == NULL)
+	{
+		ASSERT(0);
+		return 0;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stADC.pfnGetValue != NULL)
+	{
+		uwValue = pstHalFunction->stADC.pfnGetValue(pstHalADCPorting);
+	}
+}
+
+void EngHAL_ADC_GetCurrentRaw(uint16_t *pIa, uint16_t *pIb, uint16_t *pIc)
+{
+	EngHAL_ADC_GetCurrentRaw_F4xx(pIa, pIb, pIc);
+}
 
 
 void EngHAL_ADC_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))

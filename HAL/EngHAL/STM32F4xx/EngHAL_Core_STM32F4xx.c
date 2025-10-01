@@ -17,7 +17,7 @@
  * @version 	V0.1
  */
 
-#define __ENGHAL_PWR_STM32F4xx_C__
+#define __ENGHAL_CORE_STM32F4xx_C__
 
 #include "Eng_CommonType.h"
 #include "EngHAL_Core_STM32F4xx.h"

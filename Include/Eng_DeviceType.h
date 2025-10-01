@@ -505,8 +505,8 @@ typedef struct _TSensor
 
 typedef enum
 {
-	ADC_NAME_CURRENT1			    = DEVICE_ADC_KEY_BASE,
-    ADC_NAME_CURRENT2,
+	ADC_NAME_CURRENT_PHA	   = DEVICE_ADC_KEY_BASE,
+    ADC_NAME_CURRENT_PHB,
 
     ADC_NAME_MAX,
     ADC_NAME_UNSPECIFIED       = ADC_NAME_MAX
@@ -540,16 +540,13 @@ typedef struct _TADC
 	U8 *pubName;
     TADCChannel eChannel;
     TADCMuxAddress eMuxAddr;
-    //GPIO_TypeDef* pstHalBaseID;
-	//U32 ulHalPinID;
-    MutexId* pstOsMutex;
-
+    U32 ulHalID;
 	/******************************************************************/
 
-    U32 ulADCValue;
+    U16 uwADCValue;
   
     void (*pfnInitialize)(struct _TADC *pstADC);
-    U32 (*pfnGetValue)(struct _TADC *pstADC);
+    U16 (*pfnGetValue)(struct _TADC *pstADC);
 
 } TADC;
 
@@ -588,7 +585,6 @@ typedef struct _TEncoder
     TEncoderType enType;
     TEncoderCommType enCommType;
     U32 ulHalID;
-
     /******************************************************************/
 
     S32 slCounter;

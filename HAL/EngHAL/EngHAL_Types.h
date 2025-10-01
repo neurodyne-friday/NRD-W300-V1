@@ -532,7 +532,7 @@ typedef struct
 typedef struct
 {
 	void (*pfnInit)(THalADCPorting *);						/* 0 */
-	void (*pfnGet)(THalADCPorting *, U8*); 					/* 1 */
+	U16 (*pfnGetValue)(THalADCPorting *); 					/* 1 */
 } THalADCFunction;
 
 

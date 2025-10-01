@@ -1,6 +1,6 @@
 /**
- * @file        EngDrv_ADC.h
- * @brief       This is type definition file for ADC Driver
+ * @file        EngHAL_Base_STM32F4xx.h
+ * @brief       This is type definition file for Base HAL Interface of STM32F4xx series
  *
  * <b> Copyright 2024 by Neurodyne, Inc. All rights reserved.</b>
  *
@@ -8,34 +8,30 @@
  * of Neurodyne, Inc. ("Confidential Information"). \n
  * You shall not disclose such Confidential Information and shall use
  * it only in accordance with the terms of the license agreement
- * you entered into with Samsung.
+ * you entered into with Neurodyne.
  *
  * @author		Jeongseob Kim
  * @imp			Jeongseob Kim
  * @dept		Embedded Developement Team
- * @date		19/02/2024(D/M/Y)
+ * @date		19/02/2025(D/M/Y)
  * @version		V0.1
  */
 
-#ifndef __ENGDRV_ADC_H__
-#define __ENGDRV_ADC_H__
+#ifndef __ENGHAL_BASE_STM32F4xx_H__
+#define __ENGHAL_BASE_STM32F4xx_H__
 
 #undef EXTERN
-#ifdef __ENGDRV_ADC_C__
+#ifdef __ENGHAL_BASE_STM32F4xx_C__
 #define EXTERN
 #else
 #define EXTERN extern
 #endif
 
 #include "Eng_DeviceType.h"
-#include <EngDrv_IF.h>
-
-EXTERN void EngDrv_ADC_Create(void);
-EXTERN void EngDrv_ADC_Configuration(void);
-EXTERN void EngDrv_ADC_Initialize(TADC* pstADC);
-EXTERN U16 EngDrv_ADC_GetValue(TADC* pstADC);
-
-//EXTERN U32 EngHAL_ADC_GetValue(U32 ulDeviceDey);
+#include "stm32f4xx_hal.h"
 
 
-#endif//__ENGDRV_CAN_H__
+EXTERN void EngHAL_Base_TIM1_Probe_State(const char* tag);
+EXTERN void EngHAL_Base_TIM1_Config_TRGO_Center(void);
+
+#endif //__ENGHAL_BASE_STM32F4xx_H__

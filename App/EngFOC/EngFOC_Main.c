@@ -89,18 +89,32 @@ BOOL EngFOC_Initialize(void)
 void EngFOC_NotifyBy_ADC_IRQHandler(void) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    TADC* pstADCPhaseA = EngDrv_IF_GetADC(ADC_NAME_CURRENT_PHA);
+    TADC* pstADCPhaseB = EngDrv_IF_GetADC(ADC_NAME_CURRENT_PHB);
     //BaseType_t xHigherPTWoken = pdFALSE;
+    U16 uwIA = 0, uwIB = 0, uwIC = 0;
 
     // ADC 값 읽기 (예: ADC1=PhaseA, ADC2=PhaseB)
     //adc_val_phaseA = ADC1->DR;
     //adc_val_phaseB = ADC2->DR;
-    pstFOCManager->uwADCPhaseA = ADC1->DR;
-    pstFOCManager->uwADCPhaseB = ADC2->DR;
+    //pstFOCManager->uwADCPhaseA = ADC1->DR;
+    //pstFOCManager->uwADCPhaseB = ADC2->DR;
+
+    //EngHAL_ADC_GetCurrentRaw(&uwIA, &uwIB, &uwIC);
+    //pstFOCManager->uwADCPhaseA = uwIA;
+    //pstFOCManager->uwADCPhaseB = uwIB;
+
+    pstFOCManager->uwADCPhaseA = EngHAL_ADC_GetValue(HAL_ADC_NAME_CURRENT_PHA);
+    pstFOCManager->uwADCPhaseB = EngHAL_ADC_GetValue(HAL_ADC_NAME_CURRENT_PHB);
+    //pstFOCManager->uwADCPhaseA = pstADCPhaseA->pfnGetValue(pstADCPhaseA);
+    //pstFOCManager->uwADCPhaseB = pstADCPhaseB->pfnGetValue(pstADCPhaseB);
     
 	// 전류제어 태스크에 신호 (세마포어나 직접 알림)
     //vTaskNotifyGiveFromISR(CurrentControlTaskHandle, &xHigherPTWoken);
 
-    EngOS_NotifyFromISR(NULL);
+    TTaskProperty *pProperty = EngOS_Task_GetProperty("CurrentControlTask");
+    if(pProperty != NULL)
+        EngOS_NotifyFromISR(pProperty);
     //portYIELD_FROM_ISR(xHigherPTWoken);
 }
 
@@ -184,7 +198,6 @@ void EngFOC_Task_CurrentControl(void *argument)
     TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("CurrentControlTask");
 
     // 보정용 상수 및 변수
-    const float CURRENT_SCALE = 0.005;  // ADC 값 -> 전류(A) 변환 스케일
     const float INV_SQRT3 = 0.5774f;    // 1/√3
     float i_a, i_b, i_c;
     float i_alpha, i_beta;
@@ -205,10 +218,14 @@ void EngFOC_Task_CurrentControl(void *argument)
         // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
         //i_a = (float)adc_val_phaseA * CURRENT_SCALE;
         //i_b = (float)adc_val_phaseB * CURRENT_SCALE;
-        i_a = (float)pstFOCManager->uwADCPhaseA * CURRENT_SCALE;
-        i_b = (float)pstFOCManager->uwADCPhaseB * CURRENT_SCALE;
+        i_a = (float)(pstFOCManager->uwADCPhaseA - CURRENT_OFFSET_A) * CURRENT_SCALE;
+        i_b = (float)(pstFOCManager->uwADCPhaseB - CURRENT_OFFSET_B) * CURRENT_SCALE;
         // i_c는 KCL로 계산
         i_c = -(i_a + i_b);
+
+        pstFOCManager->fIa = i_a;
+        pstFOCManager->fIb = i_b;
+        pstFOCManager->fIc = i_c;
         
         // Clarke 변환: abc -> αβ
         i_alpha = i_a;
@@ -277,11 +294,26 @@ void EngFOC_Task_CurrentControl(void *argument)
         EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
         EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
         
-        if((cur_cnt % 10) == 0)
+        if((cur_cnt % (2000 * 1)) == 0) // 20kHz => 0.05msec * 2000 = 100ms
         {
-
-            //DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
+            // 모니터링용 (예: UART 출력)
+            //DBG_SWO(ENG_DBG_STRING"i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", i_d, i_q, v_d_out, v_q_out);
+            DBG_SWO(ENG_DBG_STRING"i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", i_a, i_b, i_c);
+            //DBG_SWO(ENG_DBG_STRING"Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", Ta, Tb, Tc);
+            //DBG_SWO(ENG_DBG_STRING"err_d=%f, err_q=%f", ENG_TICK, "EngFOC", err_d, err_q);
+            DBG_SWO(ENG_DBG_STRING"ADC_A=%d, ADC_B=%d", ENG_TICK, "EngFOC", pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB);
+            
+            // Temporary Test
+            // TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
+            // U8 pubData[8];
+            // float_to_bytes_le(i_d, &pubData[0]);
+            // float_to_bytes_le(i_q, &pubData[4]);
+            // if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+            // {
+            //     pstCAN->pfnSendData(pstCAN, pubData, 8);
+            // }
         }
+        cur_cnt++;
 
         // (다음 인터럽트까지 대기 상태로 대기)
     }
@@ -452,7 +484,7 @@ void EngFOC_Task_PositionControl(void *argument)
         {
             if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
             {
-                pstCAN->pfnSendData(pstCAN, pubDataPos, 8);
+                //pstCAN->pfnSendData(pstCAN, pubDataPos, 8);
             }
 
             DBG_SWO(ENG_DBG_STRING"pos. = %f", ENG_TICK, "EngFOC", pos_curr);
@@ -463,7 +495,7 @@ void EngFOC_Task_PositionControl(void *argument)
         {
             if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
             {
-                pstCAN->pfnSendData(pstCAN, pubDataSpd, 8);
+                //pstCAN->pfnSendData(pstCAN, pubDataSpd, 8);
             }
 
             DBG_SWO(ENG_DBG_STRING"vel. = %f", ENG_TICK, "EngFOC", omega_meas);

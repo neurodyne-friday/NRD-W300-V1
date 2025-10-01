@@ -102,10 +102,10 @@ EXTERN TETH s_astDeviceETHTbl[DEVICE_ETH_MAX_NUMS];
 #ifdef __ENGDRV_IF_C__
 EXTERN TADC s_astDeviceADCTbl[] =
 {
-	/*	DeviceKey				Name				TADCChannel		TADCMuxAddress			*/
+	/*	DeviceKey				Name				TADCChannel		TADCMuxAddress		HalID			*/
 	/* ML */
-	{	ADC_NAME_CURRENT1,		"CurrentSensor1",	ADC_CHANNEL_1,	ADC_MUX_ADDR_1,			},	
-	{	ADC_NAME_CURRENT1,		"CurrentSensor2",	ADC_CHANNEL_1,	ADC_MUX_ADDR_2,			},	
+	{	ADC_NAME_CURRENT_PHA,	"CurrentSensor1",	ADC_CHANNEL_1,	ADC_MUX_ADDR_1,		HAL_ADC_NAME_CURRENT_PHA	},	
+	{	ADC_NAME_CURRENT_PHA,	"CurrentSensor2",	ADC_CHANNEL_1,	ADC_MUX_ADDR_2,		HAL_ADC_NAME_CURRENT_PHB	},	
 	
 	{	ADC_NAME_UNSPECIFIED	}
 };

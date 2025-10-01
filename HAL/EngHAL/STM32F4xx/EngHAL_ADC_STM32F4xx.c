@@ -29,7 +29,6 @@
 #include "EngHAL_ADC_STM32F4xx.h"
 
 /* Already defined by PWM HAL */
-extern TIM_HandleTypeDef htim1;
 
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
@@ -113,26 +112,6 @@ static void _enable_gpio_for_adc_ch(uint32_t hal_channel)
     }
 }
 
-static void _tim1_config_trgo_center(void)
-{
-    /* TIM1 CH4를 ARR/2로 설정하고, TRGO=OC4REF로 설정 */
-    TIM_OC_InitTypeDef oc = {0};
-    TIM_MasterConfigTypeDef mst = {0};
-
-    uint32_t arr = __HAL_TIM_GET_AUTORELOAD(&htim1);
-    oc.OCMode     = TIM_OCMODE_PWM1;
-    oc.Pulse      = (arr + 1u) / 2u;         /* 주기 중앙 */
-    oc.OCPolarity = TIM_OCPOLARITY_HIGH;
-    oc.OCFastMode = TIM_OCFAST_DISABLE;
-
-    HAL_TIM_OC_ConfigChannel(&htim1, &oc, TIM_CHANNEL_4);
-    HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
-
-    mst.MasterOutputTrigger = TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
-    mst.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
-    HAL_TIMEx_MasterConfigSynchronization(&htim1, &mst);
-}
-
 static void _adc1_base_init(void)
 {
     __HAL_RCC_ADC1_CLK_ENABLE();
@@ -185,8 +164,11 @@ static void _adc1_config_injected_rank(uint32_t hal_channel, uint32_t rank)
 
 BOOL EngHAL_ADC_Init_F4xx(THalADCPorting *pstHalPorting)
 {
-if(!pstHalPorting) return FALSE;
-    if(pstHalPorting->enChipType != HAL_CHIP_STM32F4xx) return FALSE;
+    if(!pstHalPorting) 
+        return FALSE;
+    
+    if(pstHalPorting->enChipType != HAL_CHIP_STM32F4xx) 
+        return FALSE;
 
     /* IA/IB/IC만 주입 그룹에 포함 (VBUS, TEMP는 필요 시 Regular로 별도 사용) */
     if( pstHalPorting->ulName != HAL_ADC_NAME_CURRENT_PHA &&
@@ -195,13 +177,15 @@ if(!pstHalPorting) return FALSE;
     {
         /* VBUS/TEMP 등은 핀만 Analog로 풀어둠 */
         uint32_t ch = _map_adc_ch_from_number(pstHalPorting->ulChannel);
-        if(ch != 0xFFFFFFFFu) _enable_gpio_for_adc_ch(ch);
+        if(ch != 0xFFFFFFFFu) 
+            _enable_gpio_for_adc_ch(ch);
         return TRUE;
     }
 
     /* EngCM 채널 번호 → HAL 상수 */
     uint32_t hal_ch = _map_adc_ch_from_number(pstHalPorting->ulChannel);
-    if(hal_ch == 0xFFFFFFFFu) return FALSE;
+    if(hal_ch == 0xFFFFFFFFu) 
+        return FALSE;
 
     _enable_gpio_for_adc_ch(hal_ch);
 
@@ -209,7 +193,7 @@ if(!pstHalPorting) return FALSE;
     if(s_injectedCount == 0)
     {
         _adc1_base_init();
-        _tim1_config_trgo_center();
+        EngHAL_Base_TIM1_Config_TRGO_Center();
     }
 
     /* 순차적으로 rank1~3 채워 넣기 (순서: IA→IB→IC) */
@@ -226,6 +210,9 @@ if(!pstHalPorting) return FALSE;
     /* 3개 모두 설정되면 외부트리거 기반 주입변환(인터럽트) 시작 */
     if(s_injectedCount == 3 && !s_adcStarted)
     {
+        HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
+        HAL_NVIC_EnableIRQ(ADC_IRQn);
+
         if (HAL_ADCEx_InjectedStart_IT(&hadc1) != HAL_OK)
         {
             Error_Handler();
@@ -269,6 +256,7 @@ U16 EngHAL_ADC_GetValue_F4xx(THalADCPorting *pstHalPorting)
     sConfig.Channel      = hal_ch;
     sConfig.Rank         = 1;
     sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+
     if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
     {
         Error_Handler();
@@ -314,7 +302,8 @@ void EngHAL_ADC_RegisterCallback_F4xx(ulEventId, pfnCallback)
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-    if(hadc->Instance != ADC1) return;
+    if(hadc->Instance != ADC1) 
+        return;
 
     /* rank1~rank3 순으로 읽기 */
     uint16_t v1 = (uint16_t)HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
