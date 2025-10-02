@@ -78,26 +78,6 @@ static inline U16 _set_gpio_pin(GPIO_InitTypeDef* s, U8 ubPin)
     }
 }
 
-static void _rcc_bist(const char* tag)
-{
-    volatile uint32_t *apb2 = &RCC->APB2ENR;
-    uint32_t before = *apb2;
-
-    // 1) HAL 매크로로 Enable
-    __HAL_RCC_TIM1_CLK_ENABLE();
-    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM1EN);
-    uint32_t after_hal = *apb2;
-
-    // 2) 직접 레지스터 쓰기
-    *apb2 |= RCC_APB2ENR_TIM1EN;
-    uint32_t after_raw = *apb2;
-
-    DBG_SWO("[BIST:%s] APB2ENR before=0x%08lX, after_hal=0x%08lX, after_raw=0x%08lX",
-            tag, before, after_hal, after_raw);
-}
-
-
-
 /**
   * @brief TIM Interface Functions
   * @param None
@@ -150,7 +130,6 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
         htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
 
-        //_rcc_bist("pre-HAL_TIM_PWM_Init");
         if(s_tim1enabled == 0)
         {
             s_tim1enabled = 1;
@@ -158,10 +137,10 @@ void EngHAL_PWM_Init_F4xx(THalPWMPorting *pstHalPorting)
         }
 
         HAL_StatusTypeDef st = HAL_TIM_PWM_Init(&htim1);
-        DBG_SWO("HAL_TIM_PWM_Init -> %d", (int)st);
-        DBG_SWO("TIM1->ARR=%lu, PSC=%lu, CR1=0x%08lX", TIM1->ARR, TIM1->PSC, TIM1->CR1);
+        //DBG_SWO("HAL_TIM_PWM_Init -> %d", (int)st);
+        //DBG_SWO("TIM1->ARR=%lu, PSC=%lu, CR1=0x%08lX", TIM1->ARR, TIM1->PSC, TIM1->CR1);
 
-        EngHAL_Base_TIM1_Probe_State("after PWM_Init");
+        //EngHAL_Base_TIM1_Probe_State("after PWM_Init");
 
         oc.OCMode = TIM_OCMODE_PWM1;
 

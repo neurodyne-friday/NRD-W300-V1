@@ -37,10 +37,15 @@
 #define GET_HIGH_BYTE(a)			(U8)((a & 0xff00) >> 8)
 #define GET_TWO_WORD(a,b)			(U32)((a & 0xffff0000)|(b & 0x0000ffff))
 
-
-//#define	SET_BIT(dest, position)					((dest) |=  (0x1 << (position)))
-//#define	CLEAR_BIT(dest, position)				((dest) &= ~(0x1 << (position)))
-//#define	INVERT_BIT(dest, position)				((dest) ^=  (0x1 << (position)))
+#ifndef SET_BIT
+#define	SET_BIT(dest, position)					((dest) |=  (position))
+#endif
+#ifndef CLEAR_BIT
+#define	CLEAR_BIT(dest, position)				((dest) &= ~(position))
+#endif
+#ifndef INVERT_BIT
+#define	INVERT_BIT(dest, position)				((dest) ^=  (position))
+#endif
 
 #define	SET_BITS(dest, bits, position)			((dest) |=  (((unsigned)bits) << (position)))
 #define	CLEAR_BITS(dest, bits, position)		((dest) &= ~(((unsigned)bits) << (position)))
