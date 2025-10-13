@@ -30,7 +30,7 @@
 
 EXTERN BOOL EngFOC_Initialize(void);
 
-EXTERN void EngFOC_NotifyBy_ADC_IRQHandler(void);
+EXTERN void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength);
 EXTERN void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc);
 EXTERN void EngFOC_Task_CurrentControl(void *argument);
 EXTERN void EngFOC_Task_SpeedControl(void *argument);

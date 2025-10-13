@@ -44,16 +44,16 @@ BOOL EngSM_IF_Initialize(void)
 	EngLib_IF_Entry(INIT_STEP_1ST);
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
+    /* Register the Hardware Interrupts */
+	EngLib_IF_RegistryCallBackFunc("EngFOC_IF_NotifyByADCIRQ", HAL_EVENT_ADC_IRQ, EngFOC_IF_NotifyByADCIRQ);
+	EngLib_IF_RegistryCallBackFunc("EngIFSvc_IF_NotifyByCAN1Rx", HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyByCAN1Rx);
+	EngLib_IF_RegistryCallBackFunc("EngSM_IF_NotifyByPowerOff", HAL_EVENT_PWR_OFF, EngSM_IF_NotifyByPowerOff);
+
     /* Initialize the Hardware */   
     EngHAL_LibraryEntry();
 
     /* Do power on sequence: backup data restore */
 	EngSM_PowerOn();
-
-    /* Register the Hardware Interrupts */
-	EngHAL_ADC_RegisterCallback(HAL_EVENT_ADC_IRQ, EngFOC_IF_NotifyByADCIRQ);
-	EngHAL_CAN_RegisterCallback(HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyEventByCAN1);
-	EngHAL_PWR_RegisterCallback(HAL_EVENT_PWR_OFF, EngSM_IF_NotifyEventByPowerOff);
 
 	/* Create & Initialize Device Driver */
 	EngDrv_IF_Create();
@@ -202,7 +202,7 @@ void EngSM_IF_Main(void)
 * @remarks     		
 */
 
-void EngSM_IF_NotifyEventByPowerOff(void)
+void EngSM_IF_NotifyByPowerOff(U8* pubData, U32 ulLength)
 {
 	EngSM_PowerOff();
 }

@@ -22,8 +22,8 @@
 
 
 
-EXTERN void EngIFSvc_IF_NotifyEventByCAN1(void);
-EXTERN void EngIFSvc_IF_NotifyEventByCAN2(void);
+EXTERN void EngIFSvc_IF_NotifyByCAN1Rx(U8* pubData, U32 ulLength);
+EXTERN void EngIFSvc_IF_NotifyByCAN2Rx(U8* pubData, U32 ulLength);
 
 
 #endif /* __ENGIFSVC_IF_H__ */

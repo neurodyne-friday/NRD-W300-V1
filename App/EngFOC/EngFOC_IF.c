@@ -99,7 +99,7 @@ F32 EngFOC_IF_GetPosition(void)
     return 0.0f;
 }
 
-void EngFOC_IF_NotifyByADCIRQ(void)
+void EngFOC_IF_NotifyByADCIRQ(U8* pubData, U32 ulLength)
 {
-    EngFOC_NotifyBy_ADC_IRQHandler();
+    EngFOC_NotifyByADCIRQ(pubData, ulLength);
 }

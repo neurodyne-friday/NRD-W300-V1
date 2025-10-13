@@ -24,6 +24,7 @@
 
 #define M_PI 3.14159265358979323846
 #define ENC_CPR 16384 // 2^14
+#define INV_SQRT3 0.5773502691896257f // 1/sqrt(3)
 
 #define INT_MAX_D 10
 #define INT_MAX_Q 1
@@ -66,6 +67,18 @@ typedef struct _TEngFOCManager
 	F32 fIc;			// 상 C 전류 (실제값, A)
 
 	F32 fRefOmega;		// 속도 레퍼런스
+
+	// Gains
+	F32 fKp_d;			// d축 비례 이득
+	F32 fKi_d;			// d축 적분 이득
+	F32 fKp_q;			// q축 비례 이득
+	F32 fKi_q;			// q축 적분 이득
+
+	F32 fKp_omega;		// 속도 제어 비례 이득
+	F32 fKi_omega;		// 속도 제어 적분 이득
+
+	F32 fKp_pos;		// 위치 제어 비례 이득
+	F32 fKi_pos;		// 위치 제어 적분 이득
 
 } TEngFOCManager;
 

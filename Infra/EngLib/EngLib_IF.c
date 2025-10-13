@@ -23,25 +23,25 @@
 
 #include "EngLib_Types.h"
 #include "EngLog_IF.h"
-//#include "EngVM_Lib.h"
-
 #include "EngLib_IF.h"
 
-static TEngLibCallBackFunc astCallBackFuncList[] = 
-{
-	{	"pfnIFSvcEtoK", 			(U32*)&stEngLib.pfnIFSvcEtoK				}, 
-	{	"pfnGetErrorTableInfo", 	(U32*)&stEngLib.pfnGetErrorTableInfo		}, 
-	{	"pfnIFSvcNewIFInterrupt",	(U32*)&stEngLib.pfnIFSvcNewIFInterrupt		},
-	{	"pfnSMHndIFStartHandler",	(U32*)&stEngLib.pfnSMHndIFStartHandler		},
-	{	"pfnSMHndIFSendEvent",		(U32*)&stEngLib.pfnSMHndIFSendEvent			},
-	{	"pfnLMSAssertEA",			(U32*)&stEngLib.pfnLMSAssertEA				},
-	{	"pfnGetCurrentRTCTime",		(U32*)&stEngLib.pfnGetCurrentRTCTime		},
-	{	"pfnInDecreaseVMCountSA",	(U32*)&stEngLib.pfnInDecreaseVMCountSA		},
-	{	"pfnCheckVMCountOverEA",	(U32*)&stEngLib.pfnCheckVMCountOverEA		},
-	{	"pfnVMCallByTaskEA",		(U32*)&stEngLib.pfnVMCallByTaskEA			},		
-	{	"pfnLMSTaskLogBufferFullEA",(U32*)&stEngLib.pfnLMSTaskLogBufferFullEA	},
-	{	"pfnFOCNotifyByADCIRQ",		(U32*)&stEngLib.pfnFOCNotifyByADCIRQ		},
-};
+// static TEngLibCallBackFunc astCallBackFuncList[] = 
+// {
+// 	{	"pfnIFSvcEtoK", 			(U32*)&stEngLib.pfnIFSvcEtoK				}, 
+// 	{	"pfnGetErrorTableInfo", 	(U32*)&stEngLib.pfnGetErrorTableInfo		}, 
+// 	{	"pfnIFSvcNewIFInterrupt",	(U32*)&stEngLib.pfnIFSvcNewIFInterrupt		},
+// 	{	"pfnSMHndIFStartHandler",	(U32*)&stEngLib.pfnSMHndIFStartHandler		},
+// 	{	"pfnSMHndIFSendEvent",		(U32*)&stEngLib.pfnSMHndIFSendEvent			},
+// 	{	"pfnLMSAssertEA",			(U32*)&stEngLib.pfnLMSAssertEA				},
+// 	{	"pfnGetCurrentRTCTime",		(U32*)&stEngLib.pfnGetCurrentRTCTime		},
+// 	{	"pfnInDecreaseVMCountSA",	(U32*)&stEngLib.pfnInDecreaseVMCountSA		},
+// 	{	"pfnCheckVMCountOverEA",	(U32*)&stEngLib.pfnCheckVMCountOverEA		},
+// 	{	"pfnVMCallByTaskEA",		(U32*)&stEngLib.pfnVMCallByTaskEA			},		
+// 	{	"pfnLMSTaskLogBufferFullEA",(U32*)&stEngLib.pfnLMSTaskLogBufferFullEA	},
+// 	{	"pfnFOCNotifyByADCIRQ",		(U32*)&stEngLib.pfnFOCNotifyByADCIRQ		},
+// };
+
+static TEngLibCallBackFunc astCallBackFuncList[MAX_ENG_LIB_CALLBACK_FUNC] = {0,};
 
 void EngLib_IF_Entry(TInitialStepType enInitStep)
 {		
@@ -68,18 +68,57 @@ TEngLib *EngLib_IF_GetLibrary(void)
 	return &stEngLib;
 }
 
-void EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndl)
+BOOL EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndlID,  TENGLIB_HAL_EVENT_CALLBACK_F pFuncHndl)
 {
 	U32 ulCnt = 0;
-	
-	for(ulCnt = 0; ulCnt < ARRAY_SIZE(astCallBackFuncList); ulCnt++)
+
+	TEngLibCallBackFunc *pstHead = &astCallBackFuncList[0];
+
+	while(pstHead->ulFuncHndlID != 0 && pstHead->pubFuncName != NULL)
 	{
-		if(strcmp(astCallBackFuncList[ulCnt].pubFuncName, pubFuncName) == 0)
+		pstHead = pstHead->pNext;
+		ulCnt++;
+
+		if(ulCnt >= MAX_ENG_LIB_CALLBACK_FUNC)
 		{
-			*astCallBackFuncList[ulCnt].pulCallBackFunc = ulFuncHndl;
-			break;
+			DBG_EMERGENCY("\r\n[%s:EH]EngLib_IF_RegistryCallBackFunc: Overflow", ENG_TICK);
+			return FALSE;
 		}
 	}
+
+	if(pstHead->pubFuncName == NULL)
+	{
+		pstHead->pubFuncName = pubFuncName;
+		pstHead->ulFuncHndlID = ulFuncHndlID;
+		pstHead->pfnCallBackFunc = pFuncHndl;
+		pstHead->pNext = NULL;
+		DBG_SWO(ENG_DBG_STRING"EngLib_IF_RegistryCallBackFunc: Registered=>%s, ID=%d", ENG_TICK, "EngLib", pubFuncName, ulFuncHndlID);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+void EngLib_IF_NotifyCallBackFunc(U32 ulFuncHndlID, U8* pubData, U32 ulLength)
+{
+	TEngLibCallBackFunc *pstHead = &astCallBackFuncList[0];
+
+	while(pstHead->ulFuncHndlID != 0 && pstHead->pubFuncName != NULL)
+	{
+		if(pstHead->ulFuncHndlID == ulFuncHndlID)
+		{
+			if(pstHead->pfnCallBackFunc != NULL)
+			{
+				void (*pfnCallback)(U8*, U32) = (void (*)(U8*, U32))pstHead->pfnCallBackFunc;
+				pfnCallback(pubData, ulLength);
+			}
+			return;
+		}
+
+		pstHead = pstHead->pNext;
+	}
+
+	DBG_EMERGENCY("\r\n[%s:EH]EngLib_IF_NotifyCallBackFunc: Not Found(%d)", ENG_TICK, ulFuncHndlID);
 }
 
 BOOL EngLib_IF_Assert(U32 ulValue, U8 *pubFileName, U32 ulLine)
@@ -100,10 +139,10 @@ BOOL EngLib_IF_Assert(U32 ulValue, U8 *pubFileName, U32 ulLine)
 		}
 #endif
 
-		if(stEngLib.pfnSMHndIFStartHandler != NULL)
-		{
+		//if(stEngLib.pfnSMHndIFStartHandler != NULL)
+		//{
 			//stEngLib.pfnSMHndIFStartHandler(ENG_HND_EH, ERROR_NAME_ENG_ASSERT, NULL);
-		}
+		//}
 		
 		if((0 == C_ENG_MAJOR_VERSION) || (1 == C_ENG_MAJOR_VERSION))
 		{

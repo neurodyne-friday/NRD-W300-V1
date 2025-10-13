@@ -65,26 +65,34 @@ typedef void (*HAL_EVENT_CALLBACK)(void);
 #define HAL_MODULE_6		6
 #define HAL_MODULE_7		7
 
-/* Power Event */
-#define HAL_EVENT_PWR_ON	0	// Power On Event
-#define HAL_EVENT_PWR_OFF	1	// Power Off Event
-#define HAL_EVENT_PWR_MAX	2	// Maximum Event ID
 
-/* Power Event */
-#define HAL_EVENT_ADC_IRQ	0	// Power On Event
-#define HAL_EVENT_ADC_MAX	1	// Maximum Event ID
+/**
+ * HAL EVENT Name
+ */
 
-/* CAN Event */
-#define HAL_EVENT_CAN1_RX	0	// CAN0 Receive Event
-#define HAL_EVENT_CAN2_RX	1	// CAN1 Receive Event
-#define HAL_EVENT_CAN_MAX	2	// Maximum Event ID
+typedef enum
+{
+	/* Power Event */
+	HAL_EVENT_PWR_ON		= 0x001F,		// Power On Event
+	HAL_EVENT_PWR_OFF,		// Power Off Event
+	HAL_EVENT_PWR_MAX,		// Maximum Event ID
 
-/* UART Event */
-#define HAL_EVENT_UART1_RX	0	// UART1 Receive Event
-#define HAL_EVENT_UART2_RX	1	// UART1 Receive Event
-#define HAL_EVENT_UART3_RX	2	// UART3 Receive Event
-#define HAL_EVENT_UART4_RX	3	// UART4 Receive Event
-#define HAL_EVENT_UART_MAX	4	// Maximum Event ID
+	/* Power Event */
+	HAL_EVENT_ADC_IRQ,		// Power On Event
+	HAL_EVENT_ADC_MAX,		// Maximum Event ID
+
+	/* CAN Event */
+	HAL_EVENT_CAN1_RX,		// CAN0 Receive Event
+	HAL_EVENT_CAN2_RX,		// CAN1 Receive Event
+	HAL_EVENT_CAN_MAX,		// Maximum Event ID
+
+	/* UART Event */
+	HAL_EVENT_UART1_RX,		// UART1 Receive Event
+	HAL_EVENT_UART2_RX,		// UART1 Receive Event
+	HAL_EVENT_UART3_RX,		// UART3 Receive Event
+	HAL_EVENT_UART4_RX,		// UART4 Receive Event
+	HAL_EVENT_UART_MAX,		// Maximum Event ID
+} THalEventName;
 
 
 /**

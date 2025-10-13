@@ -1,0 +1,8 @@
+{
+    "cortex-debug.armToolchainPath": "C:\\PROGRAM FILES (X86)\\GNU ARM EMBEDDED TOOLCHAIN\\10 2021.10\\BIN",
+    "files.associations": {
+        "eng_commontype.h": "c",
+        "enghal_lib.h": "c",
+        "englib_if.h": "c"
+    }
+}

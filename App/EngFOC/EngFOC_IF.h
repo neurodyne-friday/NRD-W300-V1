@@ -40,7 +40,7 @@ EXTERN F32 EngFOC_IF_GetTorque(void);
 EXTERN F32 EngFOC_IF_GetSpeed(void);
 EXTERN F32 EngFOC_IF_GetPosition(void);
 
-EXTERN void EngFOC_IF_NotifyByADCIRQ(void);
+EXTERN void EngFOC_IF_NotifyByADCIRQ(U8* pubData, U32 ulLength);
 
 
 #endif /* __ENGFOC_IF_H__ */

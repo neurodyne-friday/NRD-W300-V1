@@ -199,11 +199,6 @@ void ADC_IRQHandler(void)
   HAL_ADC_IRQHandler(&hadc3);
   /* USER CODE BEGIN ADC_IRQn 1 */
 
-  TEngLib* pstEngLib = EngLib_IF_GetLibrary();
-  if(pstEngLib->pfnFOCNotifyByADCIRQ != NULL)
-  {
-    pstEngLib->pfnFOCNotifyByADCIRQ();
-  }
   /* USER CODE END ADC_IRQn 1 */
 }
 

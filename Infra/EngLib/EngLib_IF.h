@@ -29,7 +29,8 @@
 
 EXTERN void EngLib_IF_Entry(TInitialStepType enInitStep);
 EXTERN TEngLib *EngLib_IF_GetLibrary(void);
-EXTERN void EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndl);
+EXTERN BOOL EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndlID, TENGLIB_HAL_EVENT_CALLBACK_F pFuncHndl);
+EXTERN void EngLib_IF_NotifyCallBackFunc(U32 ulFuncHndlID, U8* pubData, U32 ulLength);
 
 EXTERN BOOL EngLib_IF_Assert(U32 ulValue, U8 *pubFileName, U32 ulLine);
 EXTERN void EngLib_VM_SendAssert(U32 ulValue, U8 *pubFileName, U32 ulLine);

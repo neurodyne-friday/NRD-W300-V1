@@ -58,12 +58,13 @@ BOOL EngFOC_Initialize(void)
 	//DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
     DBG_SWO(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 	
-    pstTaskProperty = EngOS_Task_CreateProperty(
-        "CurrentControlTask", 
-        EngFOC_Task_CurrentControl, 
-        TASK_RUNTYPE_Interrupt, 
-        0);
-    EngOS_Task_Register(pstTaskProperty);
+    // pstTaskProperty = EngOS_Task_CreateProperty(
+    //     "CurrentControlTask", 
+    //     EngFOC_Task_CurrentControl, 
+    //     TASK_RUNTYPE_Interrupt, 
+    //     0);
+    // EngOS_Task_Register(pstTaskProperty);
+    // => ADC IRQ에서 직접 알림으로 변경
 
     pstTaskProperty = EngOS_Task_CreateProperty(
         "SpeedControlTask", 
@@ -79,14 +80,14 @@ BOOL EngFOC_Initialize(void)
         10);
     EngOS_Task_Register(pstTaskProperty);
 
-    EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", EngFOC_NotifyBy_ADC_IRQHandler);
+    //EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", HAL_EVENT_ADC_IRQ, EngFOC_NotifyByADCIRQ); // move to EngSM_IF_Initialize()
 
     return TRUE;
 }
 
 
 // ADC 변환 완료 인터럽트 (혹은 DMA Half-Transfer Complete ISR)
-void EngFOC_NotifyBy_ADC_IRQHandler(void) 
+void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
     TADC* pstADCPhaseA = EngDrv_IF_GetADC(ADC_NAME_CURRENT_PHA);
@@ -198,7 +199,6 @@ void EngFOC_Task_CurrentControl(void *argument)
     TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("CurrentControlTask");
 
     // 보정용 상수 및 변수
-    const float INV_SQRT3 = 0.5774f;    // 1/√3
     float i_a, i_b, i_c;
     float i_alpha, i_beta;
     float i_d, i_q;
@@ -216,12 +216,9 @@ void EngFOC_Task_CurrentControl(void *argument)
         EngOS_Task_Pending(pstTaskProperty);
         
         // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
-        //i_a = (float)adc_val_phaseA * CURRENT_SCALE;
-        //i_b = (float)adc_val_phaseB * CURRENT_SCALE;
         i_a = (float)(pstFOCManager->uwADCPhaseA - CURRENT_OFFSET_A) * CURRENT_SCALE;
         i_b = (float)(pstFOCManager->uwADCPhaseB - CURRENT_OFFSET_B) * CURRENT_SCALE;
-        // i_c는 KCL로 계산
-        i_c = -(i_a + i_b);
+        i_c = -(i_a + i_b);// i_c는 KCL로 계산
 
         pstFOCManager->fIa = i_a;
         pstFOCManager->fIb = i_b;

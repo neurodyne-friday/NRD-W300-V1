@@ -34,7 +34,7 @@
  * @remarks		This function is called when a CAN1 event occurs.
  */
 
-void EngIFSvc_IF_NotifyEventByCAN1(void)
+void EngIFSvc_IF_NotifyByCAN1Rx(U8* pubData, U32 ulLength)
 {
 	DBG_SWO(ENG_DBG_STRING"EngSM_IF_NotifyEventByCAN1", ENG_TICK, "SM");
 
@@ -55,7 +55,7 @@ void EngIFSvc_IF_NotifyEventByCAN1(void)
  * @global
  * @remarks		This function is called when a CAN2 event occurs.
  */
-void EngIFSvc_IF_NotifyEventByCAN2(void)
+void EngIFSvc_IF_NotifyByCAN2Rx(U8* pubData, U32 ulLength)
 {
 
 }

@@ -45,6 +45,6 @@ EXTERN U32  EngSM_IF_GetIntervalTime(TIntervalTimeType enType);
 EXTERN void EngSM_IF_Main(void);
 
 /* Interface with hardware events */
-EXTERN void EngSM_IF_NotifyEventByPowerOff(void);
+EXTERN void EngSM_IF_NotifyByPowerOff(U8* pubData, U32 ulLength);
 
 #endif /* __ENGSM_IF_H__ */

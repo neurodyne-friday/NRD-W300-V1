@@ -8,7 +8,7 @@
  * of Neurodyne, Inc. ("Confidential Information"). \n
  * You shall not disclose such Confidential Information and shall use
  * it only in accordance with the terms of the license agreement
- * you entered into with Samsung.
+ * you entered into with Neurodyne.
  *
  * @author		Jeongseob Kim
  * @imp			Jeongseob Kim
@@ -191,44 +191,49 @@ typedef struct
 /**
  * @brief For callback lib function
  */
-typedef struct
+
+#define MAX_ENG_LIB_CALLBACK_FUNC		32
+
+// typedef U32 (*TENGLIB_ETOK_F)(U32, U32);
+// typedef BOOL (*TENGLIB_ERROR_TBL_INFO_F)(U8 *, U32);
+// typedef U32 (*TENGLIB_NEWIF_INTERRUPT_F)(U32, U32);
+// typedef BOOL (*TENGLIB_SM_HNDIF_START_HND_F)(U32, U32, void*);
+// typedef U32 (*TENGLIB_SM_HNDIF_SENDEVENT_F)(U32, U32, TStateMachine *, U32, U32);
+
+// typedef void (*TENGLIB_LMS_ASSERT_EA_F)(U8 *, U32);
+// typedef U8 * (*TENGLIB_TM_GET_CURRENT_RTC_TIME_F)(U8 *);
+// typedef void (*TENGLIB_LMS_VM_DEC_SA_F)(BOOL);
+// typedef void (*TENGLIB_LMS_VM_OVER_EA_F)(U32, void*);
+// typedef void (*TENGLIB_LMS_VM_CALL_EA_F)(U32, void*);
+// typedef void (*TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F)(void);
+
+typedef void (*TENGLIB_HAL_EVENT_CALLBACK_F)(U8 *, U32);
+
+
+typedef struct _TEngLibCallBackFunc
 {
 	U8	*pubFuncName;
-	U32 *pulCallBackFunc;
+	U32	ulFuncHndlID;		// HAL Event Name..
+	TENGLIB_HAL_EVENT_CALLBACK_F pfnCallBackFunc;	// Function Pointer
+	struct _TEngLibCallBackFunc *pNext;
 } TEngLibCallBackFunc;
-
-typedef U32 (*TENGLIB_ETOK_F)(U32, U32);
-typedef BOOL (*TENGLIB_ERROR_TBL_INFO_F)(U8 *, U32);
-typedef U32 (*TENGLIB_NEWIF_INTERRUPT_F)(U32, U32);
-typedef BOOL (*TENGLIB_SM_HNDIF_START_HND_F)(U32, U32, void*);
-typedef U32 (*TENGLIB_SM_HNDIF_SENDEVENT_F)(U32, U32, TStateMachine *, U32, U32);
-
-typedef void (*TENGLIB_LMS_ASSERT_EA_F)(U8 *, U32);
-typedef U8 * (*TENGLIB_TM_GET_CURRENT_RTC_TIME_F)(U8 *);
-typedef void (*TENGLIB_LMS_VM_DEC_SA_F)(BOOL);
-typedef void (*TENGLIB_LMS_VM_OVER_EA_F)(U32, void*);
-typedef void (*TENGLIB_LMS_VM_CALL_EA_F)(U32, void*);
-typedef void (*TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F)(void);
-
-typedef void (*TENGLIB_FOC_NOTIFY_BY_ADC_IRQ_F)(void);
 
 
 typedef struct
 {
 	/* Call Back Function From Upper Layer */
-	TENGLIB_ETOK_F pfnIFSvcEtoK;
-	TENGLIB_ERROR_TBL_INFO_F pfnGetErrorTableInfo;
-	TENGLIB_NEWIF_INTERRUPT_F pfnIFSvcNewIFInterrupt;
-	TENGLIB_SM_HNDIF_START_HND_F pfnSMHndIFStartHandler;
-	TENGLIB_SM_HNDIF_SENDEVENT_F pfnSMHndIFSendEvent;
-	TENGLIB_LMS_ASSERT_EA_F pfnLMSAssertEA;
-	TENGLIB_TM_GET_CURRENT_RTC_TIME_F pfnGetCurrentRTCTime;
-	TENGLIB_LMS_VM_DEC_SA_F pfnInDecreaseVMCountSA;
-	TENGLIB_LMS_VM_OVER_EA_F pfnCheckVMCountOverEA;
-	TENGLIB_LMS_VM_CALL_EA_F pfnVMCallByTaskEA;	
-	TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F pfnLMSTaskLogBufferFullEA;
-
-	TENGLIB_FOC_NOTIFY_BY_ADC_IRQ_F pfnFOCNotifyByADCIRQ;
+	// TENGLIB_ETOK_F pfnIFSvcEtoK;
+	// TENGLIB_ERROR_TBL_INFO_F pfnGetErrorTableInfo;
+	// TENGLIB_NEWIF_INTERRUPT_F pfnIFSvcNewIFInterrupt;
+	// TENGLIB_SM_HNDIF_START_HND_F pfnSMHndIFStartHandler;
+	// TENGLIB_SM_HNDIF_SENDEVENT_F pfnSMHndIFSendEvent;
+	// TENGLIB_LMS_ASSERT_EA_F pfnLMSAssertEA;
+	// TENGLIB_TM_GET_CURRENT_RTC_TIME_F pfnGetCurrentRTCTime;
+	// TENGLIB_LMS_VM_DEC_SA_F pfnInDecreaseVMCountSA;
+	// TENGLIB_LMS_VM_OVER_EA_F pfnCheckVMCountOverEA;
+	// TENGLIB_LMS_VM_CALL_EA_F pfnVMCallByTaskEA;	
+	// TENGLIB_LMS_TASKLOG_BUFF_FULL_EA_F pfnLMSTaskLogBufferFullEA;
+	TENGLIB_HAL_EVENT_CALLBACK_F pfnFOCNotifyByADCIRQ;
 } TEngLib;
 
 #ifdef __ENGLIB_IF_C__

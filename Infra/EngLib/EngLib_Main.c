@@ -2387,13 +2387,13 @@ void EngLib_CallBackWatchDog(void)
 {
 	U8 *pubTime = NULL;
 
-	if(stEngLib.pfnGetCurrentRTCTime)
-	{
-		pubTime = stEngLib.pfnGetCurrentRTCTime("%d-%02d-%02d %02d:%02d:%02d");
-	}
+	//if(stEngLib.pfnGetCurrentRTCTime)
+	//{
+	//	pubTime = stEngLib.pfnGetCurrentRTCTime("%d-%02d-%02d %02d:%02d:%02d");
+	//}
 
 	/* Call handler */
-	if(stEngLib.pfnSMHndIFSendEvent)
+	//if(stEngLib.pfnSMHndIFSendEvent)
 	{
 		//stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
 	}
@@ -2442,10 +2442,10 @@ void EngLib_DumpStack(U32 *pulStackAddr)
 		// }
 	}
 
-	if(stEngLib.pfnGetCurrentRTCTime)
-	{
-		pubTime = stEngLib.pfnGetCurrentRTCTime("%d-%02d-%02d %02d:%02d:%02d");
-	}
+	//if(stEngLib.pfnGetCurrentRTCTime)
+	//{
+	//	pubTime = stEngLib.pfnGetCurrentRTCTime("%d-%02d-%02d %02d:%02d:%02d");
+	//}
 
 	DBG_EMERGENCY("\r\n***** Stack Dump(%s / %s) *****", C_ENG_FULL_VERSION, pubTime);			DBG_EMERGENCY_UART("\r\n***** Stack Dump(%s / %s) *****", C_ENG_FULL_VERSION, pubTime);	
 	DBG_EMERGENCY("\r\nSP = 0x%x", pulStackAddr);												DBG_EMERGENCY_UART("\r\nSP = 0x%x", pulStackAddr);
@@ -2531,7 +2531,7 @@ void __rt_trap(ErrBlock *err, U32 *pulRegs)
 	EngLib_DumpRegister(pulRegs);
 
 	/* Call handler */
-	if(stEngLib.pfnSMHndIFSendEvent)
+	//if(stEngLib.pfnSMHndIFSendEvent)
 	{
 		//stEngLib.pfnSMHndIFSendEvent(ENG_HND_MH, ENG_EV_OCCURRED_EXCEPTION, NULL, NULL, 0);
 	}
