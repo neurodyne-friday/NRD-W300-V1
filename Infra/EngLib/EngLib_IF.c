@@ -52,6 +52,7 @@ void EngLib_IF_Entry(TInitialStepType enInitStep)
 
 	if(enInitStep & INIT_STEP_1ST)
 	{
+		EngLib_IF_InitCallBackFuncList();
 	}
 
 	if(enInitStep & INIT_STEP_2ND)
@@ -66,6 +67,27 @@ void EngLib_IF_Entry(TInitialStepType enInitStep)
 TEngLib *EngLib_IF_GetLibrary(void)
 {
 	return &stEngLib;
+}
+
+void EngLib_IF_InitCallBackFuncList()
+{
+	U32 ulCnt = 0;
+
+	TEngLibCallBackFunc *pstHead = &astCallBackFuncList[0];
+
+	for(ulCnt = 0; ulCnt < MAX_ENG_LIB_CALLBACK_FUNC; ulCnt++)
+	{
+		pstHead = &astCallBackFuncList[ulCnt];
+
+		pstHead->pubFuncName = NULL;
+		pstHead->ulFuncHndlID = 0;
+		pstHead->pfnCallBackFunc = NULL;
+
+		if(ulCnt + 1 < MAX_ENG_LIB_CALLBACK_FUNC)
+		{
+			pstHead->pNext = &astCallBackFuncList[ulCnt+1];
+		}
+	}
 }
 
 BOOL EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndlID,  TENGLIB_HAL_EVENT_CALLBACK_F pFuncHndl)
@@ -91,7 +113,7 @@ BOOL EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndlID,  TENGLIB_
 		pstHead->pubFuncName = pubFuncName;
 		pstHead->ulFuncHndlID = ulFuncHndlID;
 		pstHead->pfnCallBackFunc = pFuncHndl;
-		pstHead->pNext = NULL;
+
 		DBG_SWO(ENG_DBG_STRING"EngLib_IF_RegistryCallBackFunc: Registered=>%s, ID=%d", ENG_TICK, "EngLib", pubFuncName, ulFuncHndlID);
 		return TRUE;
 	}
