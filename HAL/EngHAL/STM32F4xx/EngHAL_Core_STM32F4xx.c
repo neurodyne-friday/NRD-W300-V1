@@ -118,3 +118,10 @@ void EngHAL_Core_SWO_Config_F4xx(uint32_t cpuHz, uint32_t swoHz)
     ITM->TCR = 0x0001000D; // Trace Control Register Configuration
     ITM->TER = 0x00000001; // Trace Enable Register Configuration 
 }
+
+void EngHAL_Core_DWT_Init(void)
+{
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // TRCENA bit activate
+    DWT->CYCCNT = 0;                                // Cycle-counter initialize
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // Cycle-counter activate
+}

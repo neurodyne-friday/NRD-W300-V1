@@ -117,7 +117,7 @@ EXTERN void EngHAL_USB_OTG_FS_PCD_Init(void);
 
 
 /* EngChip - Delay Timer Interface */
-EXTERN void EngHAL_OS_Delay(uint32_t ticks);
+EXTERN void EngHAL_Delay(uint32_t msec);
 
 
 /**

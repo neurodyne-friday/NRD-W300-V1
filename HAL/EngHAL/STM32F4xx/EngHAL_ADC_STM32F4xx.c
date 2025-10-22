@@ -317,4 +317,10 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 
     if(g_pfnHalAdcEventCallback[HAL_EVENT_ADC_IRQ] != NULL)
         g_pfnHalAdcEventCallback[HAL_EVENT_ADC_IRQ]();
+
+#ifdef USE_CURRENT_TASK_LOOP_BY_ENGOS
+    EngOS_NotifyFromISR(EngOS_Task_GetProperty("CurrentControlTask"));
+#else
+    EngLib_IF_NotifyCallBackFunc(HAL_EVENT_ADC_IRQ, NULL, 0);
+#endif
 }

@@ -43,8 +43,8 @@ EXTERN TTaskProperty* EngOS_Task_GetProperty(U8* pubName);
 EXTERN void EngOS_Task_StartAll(void);
 EXTERN void EngOS_Task_EndAll(void);
 
+EXTERN void EngOS_Delay(U32 ulDelayTime); // msec
 EXTERN U32 EngOS_GetSysTick(void);
-EXTERN void EngOS_Task_Main(void *p_arg);
 
 EXTERN SemaphoreId EngOS_CreateSemaphore(U8* pubSemaphoreName);
 EXTERN void EngOS_ReleaseSemaphore(SemaphoreId id);

@@ -45,7 +45,8 @@ EXTERN BOOL EngSM_Main(void);
 EXTERN BOOL EngSM_InitStatus(void);
 EXTERN U32 EngSM_GetStatus(U32 ulStatusID);
 EXTERN BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue);
-
+EXTERN BOOL EngSM_SetState(TEngState eNewState);
+EXTERN TEngState EngSM_GetState(void);
 EXTERN U32 EngSM_EngineState(U32 ulSetGet, U32 ulDeviceStatusID, U32 ulValue);
 
 EXTERN void EngSM_PowerOn(void);

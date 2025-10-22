@@ -45,7 +45,9 @@ BOOL EngSM_IF_Initialize(void)
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
     /* Register the Hardware Interrupts */
+#ifndef USE_CURRENT_TASK_LOOP_BY_ENGOS
 	EngLib_IF_RegistryCallBackFunc("EngFOC_IF_NotifyByADCIRQ", HAL_EVENT_ADC_IRQ, EngFOC_IF_NotifyByADCIRQ);
+#endif
 	EngLib_IF_RegistryCallBackFunc("EngIFSvc_IF_NotifyByCAN1Rx", HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyByCAN1Rx);
 	EngLib_IF_RegistryCallBackFunc("EngSM_IF_NotifyByPowerOff", HAL_EVENT_PWR_OFF, EngSM_IF_NotifyByPowerOff);
 
@@ -67,11 +69,26 @@ BOOL EngSM_IF_Initialize(void)
 #endif
 
 	/* Create and register SM Task */
-    pstTaskProperty = EngOS_Task_CreateProperty("SystemManagerTask", EngSM_IF_Main, TASK_RUNTYPE_Cycle, 1);
-    EngOS_Task_Register(pstTaskProperty);
+    EngOS_Task_Register(EngOS_Task_CreateProperty("SystemManagerTask", 
+		EngSM_IF_Main, TASK_RUNTYPE_Cycle, 1));
 
 	/* Initialize the Engine System Manager */
     return EngSM_Initialize();
+}
+
+/**
+* @brief       	
+* 
+* @param[in]		None
+* @range			
+* @retval			None
+* @global			
+* @remarks     	
+*/
+void EngSM_IF_Start(void)
+{
+	// Set system state to ACTIVE
+	EngSM_IF_SetState(ENG_ST_ACTIVE);
 }
 
 
@@ -187,10 +204,37 @@ void EngSM_IF_Main(void)
 	{
 		EngSM_Main();
 
-		EngHAL_CAN_GetRxFifoFillLevel(HAL_CAN_NAME_MOTOR_CTRL);
+		//EngHAL_CAN_GetRxFifoFillLevel(HAL_CAN_NAME_MOTOR_CTRL);
 
 		EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
 	}
+}
+
+
+/** 
+* @brief	   	Set system state value
+* @param[in]	None
+* @range			
+* @retval		None
+* @global			
+* @remarks     		
+*/
+void EngSM_IF_SetState(TEngState eNewState)
+{
+	EngSM_SetState(eNewState);
+}
+
+/** 
+* @brief	   	Get system state value
+* @param[in]	None
+* @range			
+* @retval		None
+* @global			
+* @remarks     		
+*/
+TEngState EngSM_IF_GetState(void)
+{
+	return EngSM_GetState();
 }
 
 /** 

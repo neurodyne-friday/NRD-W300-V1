@@ -22,6 +22,8 @@
 
 
 EXTERN BOOL EngFOC_IF_Initialize(void);
+EXTERN void EngFOC_IF_SetState(TEngState eNewState);
+EXTERN TEngState EngFOC_IF_GetState(void);
 
 /* command interface with FOC component */
 EXTERN BOOL EngFOC_IF_StartMotor(void);

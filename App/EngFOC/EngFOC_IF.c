@@ -30,6 +30,16 @@ BOOL EngFOC_IF_Initialize(void)
     return EngFOC_Initialize();
 }
 
+void EngFOC_IF_SetState(TEngState eNewState)
+{
+    EngFOC_SetState(eNewState);
+}
+
+TEngState EngFOC_IF_GetState(void)
+{
+    return EngFOC_GetState();
+}
+
 /**
  * command interface with FOC component 
 */

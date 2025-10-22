@@ -61,7 +61,7 @@ int main(void)
 
   if(EngSM_IF_Initialize() == TRUE)
   {
-    // Start OS-Tasks
+    EngSM_IF_Start();
   	EngOS_Task_StartAll();
   }
 

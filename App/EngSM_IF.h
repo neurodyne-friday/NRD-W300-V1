@@ -29,6 +29,7 @@
 
 
 EXTERN BOOL EngSM_IF_Initialize(void);
+EXTERN void EngSM_IF_Start(void);
 //EXTERN void *EngSM_IF_GetHandler(TEngHandlerID enComponentID, U32 ulClassifyID);
 //EXTERN void *EngSM_IF_GetHandlerFunc(TEngHandlerID enComponentID, U8* pubFuncName, U32 ulArgCnt);
 //EXTERN void *EngSM_IF_GetSystemFunc(U8* pubFuncName, U32 ulArgCnt);
@@ -41,8 +42,9 @@ EXTERN U32 EngSM_IF_SendEvent(U32 ulEventID, TStateMachine *pstStateMachine, U32
 EXTERN void *EngSM_IF_GetFeature(U32 ulFeatureID);
 EXTERN BOOL EngSM_IF_IsIntervalTimeValid(TIntervalTimeType enType);
 EXTERN U32  EngSM_IF_GetIntervalTime(TIntervalTimeType enType);
-//EXTERN BOOL EngSM_IF_Main(void);
 EXTERN void EngSM_IF_Main(void);
+EXTERN void EngSM_IF_SetState(TEngState eNewState);
+EXTERN TEngState EngSM_IF_GetState(void);
 
 /* Interface with hardware events */
 EXTERN void EngSM_IF_NotifyByPowerOff(U8* pubData, U32 ulLength);

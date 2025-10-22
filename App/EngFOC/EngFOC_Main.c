@@ -55,34 +55,34 @@ BOOL EngFOC_Initialize(void)
 	TEngFOCManager *pstFOCManager = &s_stFOCManager;
     TTaskProperty* pstTaskProperty = NULL;
 	
-	//DBG_ENGSM(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
     DBG_SWO(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
-	
-    // pstTaskProperty = EngOS_Task_CreateProperty(
-    //     "CurrentControlTask", 
-    //     EngFOC_Task_CurrentControl, 
-    //     TASK_RUNTYPE_Interrupt, 
-    //     0);
-    // EngOS_Task_Register(pstTaskProperty);
-    // => ADC IRQ에서 직접 알림으로 변경
 
-    pstTaskProperty = EngOS_Task_CreateProperty(
-        "SpeedControlTask", 
-        EngFOC_Task_SpeedControl, 
-        TASK_RUNTYPE_Cycle, 
-        1);
-    EngOS_Task_Register(pstTaskProperty);
+#ifdef USE_CURRENT_TASK_LOOP_BY_ENGOS
+    //EngOS_Task_Register(EngOS_Task_CreateProperty("CurrentControlTask", 
+    //    EngFOC_Task_CurrentControl, TASK_RUNTYPE_Interrupt, 0));
+    // => 현재는 xCreatTask 실행 시, DeadLock에 빠짐. ADC IRQ에서 직접 알림으로 변경
+#endif
 
-    pstTaskProperty = EngOS_Task_CreateProperty(
-        "PositionControlTask", 
-        EngFOC_Task_PositionControl, 
-        TASK_RUNTYPE_Cycle, 
-        10);
-    EngOS_Task_Register(pstTaskProperty);
+    EngOS_Task_Register(EngOS_Task_CreateProperty("SpeedControlTask", 
+        EngFOC_Task_SpeedControl, TASK_RUNTYPE_Cycle, 1));
 
-    //EngLib_IF_RegistryCallBackFunc("pfnFOCNotifyByADCIRQ", HAL_EVENT_ADC_IRQ, EngFOC_NotifyByADCIRQ); // move to EngSM_IF_Initialize()
+    EngOS_Task_Register(EngOS_Task_CreateProperty("PositionControlTask", 
+        EngFOC_Task_PositionControl, TASK_RUNTYPE_Cycle, 10));
 
     return TRUE;
+}
+
+void EngFOC_SetState(TEngState eNewState)
+{
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    pstFOCManager->enPrevEngState = pstFOCManager->enEngState;
+    pstFOCManager->enEngState = eNewState;
+}
+
+TEngState EngFOC_GetState(void)
+{
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    return pstFOCManager->enEngState;
 }
 
 
@@ -96,27 +96,13 @@ void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength)
     U16 uwIA = 0, uwIB = 0, uwIC = 0;
 
     // ADC 값 읽기 (예: ADC1=PhaseA, ADC2=PhaseB)
-    //adc_val_phaseA = ADC1->DR;
-    //adc_val_phaseB = ADC2->DR;
-    //pstFOCManager->uwADCPhaseA = ADC1->DR;
-    //pstFOCManager->uwADCPhaseB = ADC2->DR;
-
-    //EngHAL_ADC_GetCurrentRaw(&uwIA, &uwIB, &uwIC);
-    //pstFOCManager->uwADCPhaseA = uwIA;
-    //pstFOCManager->uwADCPhaseB = uwIB;
 
     pstFOCManager->uwADCPhaseA = EngHAL_ADC_GetValue(HAL_ADC_NAME_CURRENT_PHA);
     pstFOCManager->uwADCPhaseB = EngHAL_ADC_GetValue(HAL_ADC_NAME_CURRENT_PHB);
     //pstFOCManager->uwADCPhaseA = pstADCPhaseA->pfnGetValue(pstADCPhaseA);
     //pstFOCManager->uwADCPhaseB = pstADCPhaseB->pfnGetValue(pstADCPhaseB);
-    
-	// 전류제어 태스크에 신호 (세마포어나 직접 알림)
-    //vTaskNotifyGiveFromISR(CurrentControlTaskHandle, &xHigherPTWoken);
 
-    TTaskProperty *pProperty = EngOS_Task_GetProperty("CurrentControlTask");
-    if(pProperty != NULL)
-        EngOS_NotifyFromISR(pProperty);
-    //portYIELD_FROM_ISR(xHigherPTWoken);
+    EngFOC_Task_CurrentControl(NULL);
 }
 
 
@@ -209,110 +195,118 @@ void EngFOC_Task_CurrentControl(void *argument)
     // (필요시 크로스 보상계수: Ld, Lq, ω 등의 변수도 선언)
     static int cur_cnt = 0; // 모니터링용
 
+#ifdef USE_CURRENT_TASK_LOOP_BY_ENGOS
     for(;;) 
+#endif    
     {
         // ADC 인터럽트로부터 알림 대기 (블로킹 대기)
-        //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        EngOS_Task_Pending(pstTaskProperty);
-        
-        // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
-        i_a = (float)(pstFOCManager->uwADCPhaseA - CURRENT_OFFSET_A) * CURRENT_SCALE;
-        i_b = (float)(pstFOCManager->uwADCPhaseB - CURRENT_OFFSET_B) * CURRENT_SCALE;
-        i_c = -(i_a + i_b);// i_c는 KCL로 계산
+#ifdef USE_CURRENT_TASK_LOOP_BY_ENGOS
+        uint32_t got = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        if(got > 0)
+#endif
+        {
+            if(pstFOCManager->enEngState != ENG_ST_ACTIVE)
+                return;
 
-        pstFOCManager->fIa = i_a;
-        pstFOCManager->fIb = i_b;
-        pstFOCManager->fIc = i_c;
-        
-        // Clarke 변환: abc -> αβ
-        i_alpha = i_a;
-        i_beta  = INV_SQRT3 * (i_a + 2 * i_b);
-        
-        // Park 변환: αβ -> dq (현재 전기각 theta_e는 엔코더로부터 업데이트 된 상태)
-        //float cosT = arm_cos_f32(theta_e);
-        //float sinT = arm_sin_f32(theta_e);
-        float cosT = arm_cos_f32(pstFOCManager->fThetaE);
-        float sinT = arm_sin_f32(pstFOCManager->fThetaE);
-        i_d =  i_alpha * cosT + i_beta * sinT;
-        i_q = -i_alpha * sinT + i_beta * cosT;
-        
-        // d축 전류 제어 (PI)
-        //err_d = i_d_ref - i_d;
-        err_d = pstFOCManager->fRefId - i_d;
-        int_d += err_d;                        // 적분항 누적
+            // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
+            i_a = (float)(pstFOCManager->uwADCPhaseA - CURRENT_OFFSET_A) * CURRENT_SCALE;
+            i_b = (float)(pstFOCManager->uwADCPhaseB - CURRENT_OFFSET_B) * CURRENT_SCALE;
+            i_c = -(i_a + i_b);// i_c는 KCL로 계산
 
-        // Anti-windup: 적분 한계 처리
-        if(int_d > INT_MAX_D) 
-        {
-            int_d = INT_MAX_D;
-        }
-        if(int_d < -INT_MAX_D) 
-        {
-            int_d = -INT_MAX_D;
-        }
-        //v_d_out = Kp_d * err_d + Ki_d * int_d;
-        pstFOCManager->fOutVd = Kp_d * err_d + Ki_d * int_d;
-        
-        // q축 전류 제어 (PI)
-        //err_q = i_q_ref - i_q;
-        err_q = pstFOCManager->fRefIq - i_q;
-        int_q += err_q;
-
-        if(int_q > INT_MAX_Q) 
-        {
-            int_q = INT_MAX_Q;
-        }
-        if(int_q < -INT_MAX_Q) 
-        {
-            int_q = -INT_MAX_Q;
-        }
-        //v_q_out = Kp_q * err_q + Ki_q * int_q;
-        pstFOCManager->fOutVq = Kp_q * err_q + Ki_q * int_q;
-        
-        // (선택) 역기전력 보상 및 decoupling 보상
-        // v_d_out += -(omega_e * Lq) * i_q; 
-        // v_q_out +=  (omega_e * Ld) * i_d + omega_e * lambda_m;
-        
-        // 역 Park 변환: dq -> αβ 전압
-        //v_alpha = v_d_out * cosT - v_q_out * sinT;
-        //v_beta  = v_d_out * sinT + v_q_out * cosT;
-        pstFOCManager->fVAlpha = pstFOCManager->fOutVd * cosT - pstFOCManager->fOutVq * sinT;
-        pstFOCManager->fVBeta  = pstFOCManager->fOutVd * sinT + pstFOCManager->fOutVq * cosT;
-        
-        // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
-        float Ta, Tb, Tc;
-        EngFOC_SVPWM_CalcDuty(pstFOCManager->fVAlpha, pstFOCManager->fVBeta, V_BUS, &Ta, &Tb, &Tc);
-
-        // SVPWM_CalcDuty: 참조 전압을 기준으로 섹터 결정 후 T1, T2, T0 계산, 0.0~1.0의 Ta, Tb, Tc 듀티 반환
-        //TIM1->CCR1 = Ta * TIM1->ARR;
-        //TIM1->CCR2 = Tb * TIM1->ARR;
-        //TIM1->CCR3 = Tc * TIM1->ARR;
-        EngHAL_PWM_SetDuty(HAL_PWM_NAME_UH, Ta);
-        EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
-        EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
-        
-        if((cur_cnt % (2000 * 1)) == 0) // 20kHz => 0.05msec * 2000 = 100ms
-        {
-            // 모니터링용 (예: UART 출력)
-            //DBG_SWO(ENG_DBG_STRING"i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", i_d, i_q, v_d_out, v_q_out);
-            DBG_SWO(ENG_DBG_STRING"i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", i_a, i_b, i_c);
-            //DBG_SWO(ENG_DBG_STRING"Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", Ta, Tb, Tc);
-            //DBG_SWO(ENG_DBG_STRING"err_d=%f, err_q=%f", ENG_TICK, "EngFOC", err_d, err_q);
-            DBG_SWO(ENG_DBG_STRING"ADC_A=%d, ADC_B=%d", ENG_TICK, "EngFOC", pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB);
+            pstFOCManager->fIa = i_a;
+            pstFOCManager->fIb = i_b;
+            pstFOCManager->fIc = i_c;
             
-            // Temporary Test
-            // TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
-            // U8 pubData[8];
-            // float_to_bytes_le(i_d, &pubData[0]);
-            // float_to_bytes_le(i_q, &pubData[4]);
-            // if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
-            // {
-            //     pstCAN->pfnSendData(pstCAN, pubData, 8);
-            // }
-        }
-        cur_cnt++;
+            // Clarke 변환: abc -> αβ
+            i_alpha = i_a;
+            i_beta  = INV_SQRT3 * (i_a + 2 * i_b);
+            
+            // Park 변환: αβ -> dq (현재 전기각 theta_e는 엔코더로부터 업데이트 된 상태)
+            //float cosT = arm_cos_f32(theta_e);
+            //float sinT = arm_sin_f32(theta_e);
+            float cosT = arm_cos_f32(pstFOCManager->fThetaE);
+            float sinT = arm_sin_f32(pstFOCManager->fThetaE);
+            i_d =  i_alpha * cosT + i_beta * sinT;
+            i_q = -i_alpha * sinT + i_beta * cosT;
+            
+            // d축 전류 제어 (PI)
+            //err_d = i_d_ref - i_d;
+            err_d = pstFOCManager->fRefId - i_d;
+            int_d += err_d;                        // 적분항 누적
 
-        // (다음 인터럽트까지 대기 상태로 대기)
+            // Anti-windup: 적분 한계 처리
+            if(int_d > INT_MAX_D) 
+            {
+                int_d = INT_MAX_D;
+            }
+            if(int_d < -INT_MAX_D) 
+            {
+                int_d = -INT_MAX_D;
+            }
+            //v_d_out = Kp_d * err_d + Ki_d * int_d;
+            pstFOCManager->fOutVd = Kp_d * err_d + Ki_d * int_d;
+            
+            // q축 전류 제어 (PI)
+            //err_q = i_q_ref - i_q;
+            err_q = pstFOCManager->fRefIq - i_q;
+            int_q += err_q;
+
+            if(int_q > INT_MAX_Q) 
+            {
+                int_q = INT_MAX_Q;
+            }
+            if(int_q < -INT_MAX_Q) 
+            {
+                int_q = -INT_MAX_Q;
+            }
+            //v_q_out = Kp_q * err_q + Ki_q * int_q;
+            pstFOCManager->fOutVq = Kp_q * err_q + Ki_q * int_q;
+            
+            // (선택) 역기전력 보상 및 decoupling 보상
+            // v_d_out += -(omega_e * Lq) * i_q; 
+            // v_q_out +=  (omega_e * Ld) * i_d + omega_e * lambda_m;
+            
+            // 역 Park 변환: dq -> αβ 전압
+            //v_alpha = v_d_out * cosT - v_q_out * sinT;
+            //v_beta  = v_d_out * sinT + v_q_out * cosT;
+            pstFOCManager->fVAlpha = pstFOCManager->fOutVd * cosT - pstFOCManager->fOutVq * sinT;
+            pstFOCManager->fVBeta  = pstFOCManager->fOutVd * sinT + pstFOCManager->fOutVq * cosT;
+            
+            // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
+            float Ta, Tb, Tc;
+            EngFOC_SVPWM_CalcDuty(pstFOCManager->fVAlpha, pstFOCManager->fVBeta, V_BUS, &Ta, &Tb, &Tc);
+
+            // SVPWM_CalcDuty: 참조 전압을 기준으로 섹터 결정 후 T1, T2, T0 계산, 0.0~1.0의 Ta, Tb, Tc 듀티 반환
+            //TIM1->CCR1 = Ta * TIM1->ARR;
+            //TIM1->CCR2 = Tb * TIM1->ARR;
+            //TIM1->CCR3 = Tc * TIM1->ARR;
+            EngHAL_PWM_SetDuty(HAL_PWM_NAME_UH, Ta);
+            EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
+            EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
+            
+            if((cur_cnt % (2000 * 1)) == 0) // 20kHz => 0.05msec * 2000 = 100ms
+            {
+                // 모니터링용 (예: UART 출력)
+                //DBG_SWO(ENG_DBG_STRING"i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", i_d, i_q, v_d_out, v_q_out);
+                DBG_SWO(ENG_DBG_STRING"i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", i_a, i_b, i_c);
+                //DBG_SWO(ENG_DBG_STRING"Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", Ta, Tb, Tc);
+                //DBG_SWO(ENG_DBG_STRING"err_d=%f, err_q=%f", ENG_TICK, "EngFOC", err_d, err_q);
+                DBG_SWO(ENG_DBG_STRING"ADC_A=%d, ADC_B=%d", ENG_TICK, "EngFOC", pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB);
+                
+                // Temporary Test
+                // TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
+                // U8 pubData[8];
+                // float_to_bytes_le(i_d, &pubData[0]);
+                // float_to_bytes_le(i_q, &pubData[4]);
+                // if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
+                // {
+                //     pstCAN->pfnSendData(pstCAN, pubData, 8);
+                // }
+            }
+            cur_cnt++;
+
+            // (다음 인터럽트까지 대기 상태로 대기)
+        }
     }
 }
 
@@ -396,7 +390,6 @@ void EngFOC_Task_SpeedControl(void *argument)
 			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
 		}
         
-        //vTaskDelayUntil(&lastWakeTime, 1);  // 1ms 주기 대기
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
     }
 }

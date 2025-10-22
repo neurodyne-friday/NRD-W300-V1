@@ -23,16 +23,12 @@
     #define BOOT_LOADER
 #endif
 
-#define D_MOTION_HANDLER_TYPE_SLEEVE
-#define U_MOTION_HANDLER_TYPE_HAND
-#define U_MOTION_HANDLER_TYPE_TORSE
-
 
 #define USE_SYSTICK
 //#define USE_LWIP
 //#define USE_DHCP        /* enable DHCP, if disabled static address is used*/
 #define USE_SWO
-
+//#define USE_CURRENT_TASK_LOOP_BY_ENGOS
 
 
 /** 

@@ -29,6 +29,8 @@
  
 
 EXTERN BOOL EngFOC_Initialize(void);
+EXTERN void EngFOC_SetState(TEngState eNewState);
+EXTERN TEngState EngFOC_GetState(void);
 
 EXTERN void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength);
 EXTERN void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc);

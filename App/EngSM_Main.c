@@ -21,7 +21,7 @@
 
 #include "Eng_CommonType.h"
 #include "EngSM_Main.h"
-#include "EngFOC_Main.h"
+#include "EngFOC_IF.h"
 
 /* Initilize the Engine System Manager infomation */
 static TEngSystemManager s_stSystemManager;
@@ -597,6 +597,55 @@ BOOL EngSM_SetStatus(U32 ulStatusID, U32 ulNewValue)
     return TRUE;
 }
 
+
+/**
+* @brief
+*
+* @param[in]		None
+* @range
+* @retval			None
+* @global
+* @remarks
+*/
+BOOL EngSM_SetState(TEngState eNewState)
+{
+	TEngSystemManager *pstSystemManager = &s_stSystemManager;
+
+	switch(eNewState)
+	{
+		case ENG_ST_WARMUP:
+		case ENG_ST_STANDBY:
+		case ENG_ST_SLEEP:
+		case ENG_ST_ERROR:
+		case ENG_ST_ACTIVE:
+			EngFOC_IF_SetState(eNewState);
+			break;
+		default:
+			DBG_ENGSM(ENG_DBG_STRING"Warning!! (Invalid State Value=%d)", ENG_TICK, "SM", eNewState);
+			return FALSE;
+	}
+	
+	pstSystemManager->enPrevEngState = pstSystemManager->enEngState;
+	pstSystemManager->enEngState = eNewState;
+
+	return TRUE;
+}
+
+/**
+* @brief
+*
+* @param[in]		None
+* @range
+* @retval			None
+* @global
+* @remarks
+*/
+TEngState EngSM_GetState(void)
+{
+	TEngSystemManager *pstSystemManager = &s_stSystemManager;
+	
+	return pstSystemManager->enEngState;
+}
 
 /**
 * @brief

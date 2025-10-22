@@ -188,6 +188,9 @@ void EngHAL_Core_Init(void)
 	/* Configure the system clock */
 	EngHAL_Core_SystemClock_Config_F4xx();
 
+	/* Initialize the DWT for time measurement */
+	EngHAL_Core_DWT_Init();
+
 	/* Configure the system clock */
 #ifdef FR_ENGLIB_SWO_DEBUG
 	EngHAL_Core_SWO_Config_F4xx(180000000UL, 2000000UL);
@@ -1018,13 +1021,16 @@ void EngHAL_USB_OTG_FS_PCD_Init(void)
 }
 
 /**
-  * @brief Delay Timer Interface Functions
+  * @brief Delay Interface Functions
   * @param None
   * @retval None
   */
-void EngHAL_OS_Delay(uint32_t ticks)
+void EngHAL_Delay(uint32_t msec)
 {
-    osDelay(ticks);
+    // DWT 기반 busy-wait (사전에 EngHAL_Core_DWT_Init() 호출 필요)
+    const uint32_t start  = DWT->CYCCNT;
+    const uint32_t ticks  = (SystemCoreClock / 1000U) * msec;
+    while ((DWT->CYCCNT - start) < ticks) { __NOP(); }
 }
 
 

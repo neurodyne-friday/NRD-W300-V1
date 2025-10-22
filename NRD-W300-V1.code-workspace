@@ -45,7 +45,8 @@
 			"stdbool.h": "c",
 			"engcm_featureconfig.h": "c",
 			"type_traits": "c",
-			"enghal_base_stm32f4xx.h": "c"
+			"enghal_base_stm32f4xx.h": "c",
+			"stdio.h": "c"
 		},
 		"cmake.useCMakePresets": "always"
 	}
