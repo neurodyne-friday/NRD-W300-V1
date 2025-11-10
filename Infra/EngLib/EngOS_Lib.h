@@ -37,7 +37,7 @@ EXTERN void EngOS_Task_Pending(TTaskProperty* pTaskProperty); // Use this in fro
 EXTERN void EngOS_Task_Waiting(TTaskProperty* pTaskProperty, U32* ulPreviousWakeTime); // Use this after main routine
 EXTERN void EngOS_NotifyFromISR(TTaskProperty* pTaskProperty);
 
-EXTERN TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc, TTaskRunType eRunType, U32 ulInterval);
+EXTERN TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc(void*), TTaskRunType eRunType, U32 ulInterval);
 EXTERN TTaskProperty* EngOS_Task_GetProperty(U8* pubName);
 
 EXTERN void EngOS_Task_StartAll(void);

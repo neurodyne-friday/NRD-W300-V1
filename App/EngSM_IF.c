@@ -45,7 +45,7 @@ BOOL EngSM_IF_Initialize(void)
 	EngLib_IF_Entry(INIT_STEP_2ND);
    	
     /* Register the Hardware Interrupts */
-#ifndef USE_CURRENT_TASK_LOOP_BY_ENGOS
+#ifndef USE_ENGOS_CURRENT_TASK_LOOP
 	EngLib_IF_RegistryCallBackFunc("EngFOC_IF_NotifyByADCIRQ", HAL_EVENT_ADC_IRQ, EngFOC_IF_NotifyByADCIRQ);
 #endif
 	EngLib_IF_RegistryCallBackFunc("EngIFSvc_IF_NotifyByCAN1Rx", HAL_EVENT_CAN1_RX, EngIFSvc_IF_NotifyByCAN1Rx);

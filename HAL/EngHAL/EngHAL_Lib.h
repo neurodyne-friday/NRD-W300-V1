@@ -38,7 +38,6 @@ EXTERN void EngHAL_Core_Init(void);
 EXTERN void EngHAL_ADC_Init(U32 ulHalName);
 EXTERN U16 EngHAL_ADC_GetValue(U32 ulHalName);
 void EngHAL_ADC_GetCurrentRaw(uint16_t *pIa, uint16_t *pIb, uint16_t *pIc); // 임시 구현
-EXTERN void EngHAL_ADC_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void)); // 임시 구현 - 추후 Observer 패턴 표준으로 변경 예정
 
 /* EngChip - PWM Interface */
 EXTERN void EngHAL_PWM_Init(U32 ulHalName);

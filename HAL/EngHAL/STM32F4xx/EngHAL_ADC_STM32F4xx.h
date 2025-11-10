@@ -33,6 +33,4 @@ EXTERN BOOL EngHAL_ADC_Init_F4xx(THalADCPorting *pstHalPorting);
 EXTERN void EngHAL_ADC_GetCurrentRaw_F4xx(uint16_t *pIa, uint16_t *pIb, uint16_t *pIc);
 EXTERN U16 EngHAL_ADC_GetValue_F4xx(THalADCPorting *pstHalPorting);
 
-EXTERN void EngHAL_ADC_RegisterCallback_F4xx(ulEventId, pfnCallback);
-
 #endif //__ENGHAL_ADC_STM32F7XX_H__

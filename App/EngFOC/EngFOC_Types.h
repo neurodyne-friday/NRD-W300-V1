@@ -37,6 +37,8 @@
 #define CURRENT_OFFSET_B 2048
 #define CURRENT_OFFSET_C 2048
 
+#define POLE_PAIRS 7  // YT2804 모터 극쌍 수
+
 /*
  * @brief Structure Definitions
  */
@@ -44,8 +46,11 @@ typedef struct _TEngFOCManager
 {
 	TEngState enPrevEngState;						/**<  TBD  */
 	TEngState enEngState;							/**<  TBD  */
-	
-// 전역 변수 (또는 RTOS 큐/Notification으로 전달)
+
+	// Measurements
+	F32 fAngle;			// Current Mechanical Angle (rad, 엔코더로부터 계산)
+	F32 fOmega;			// Current Angular Velocity (rad/s, 엔코더로부터 계산)
+
 //float i_d_ref = 0.0f;    // d축 전류 목표값 (보통 0)
 //float i_q_ref = 0.0f;    // q축 전류 목표값 (토크 요구사항에 따라 갱신)
 //float theta_e = 0.0f;    // 현재 전기각 (엔코더로부터 계산)

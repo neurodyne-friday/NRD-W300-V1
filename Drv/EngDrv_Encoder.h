@@ -34,6 +34,7 @@ EXTERN void EngDrv_Encoder_Create(void);
 EXTERN void EngDrv_Encoder_Initialize(TEncoder* pstEncoder);
 EXTERN void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount);
 EXTERN F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder);
+EXTERN F32 EngDrv_Encoder_GetAngle(TEncoder* pstEncoder);
 EXTERN void EngDrv_Encoder_Reset(TEncoder* pstEncoder);
 
 

@@ -53,6 +53,5 @@ void EngDrv_ADC_Initialize(TADC* pstADC)
 
 U16 EngDrv_ADC_GetValue(TADC* pstADC)
 {
-	pstADC->uwADCValue = EngHAL_ADC_GetValue(pstADC->ulHalID);
-	return pstADC->uwADCValue;
+	return EngHAL_ADC_GetValue(pstADC->ulHalID);
 }

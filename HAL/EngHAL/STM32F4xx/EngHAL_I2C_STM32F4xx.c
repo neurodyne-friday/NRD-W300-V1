@@ -303,32 +303,27 @@ BOOL EngHAL_I2C_MemRead_F4xx(THalI2CPorting *pstHalPorting, U16 devAddr7b, U16 m
     if(pstHalPorting == NULL || pData == NULL || len == 0) 
         return FALSE;
 
-    prvEnsureI2CReady(pstHalPorting);
-    
+    //prvEnsureI2CReady(pstHalPorting); // 수행시간 많이 잡아먹나?? 
     I2C_HandleTypeDef *h = prvGetHandleByChannel(pstHalPorting->ulChannel);
     
     if(!h) 
         return FALSE;
 
     HAL_StatusTypeDef st = HAL_I2C_Mem_Read(h, (devAddr7b << 1), memAddr, (memAddrSize == 2) ? I2C_MEMADD_SIZE_16BIT : I2C_MEMADD_SIZE_8BIT, pData, len, timeout);
-    if(st == HAL_OK) return TRUE;
+    if(st == HAL_OK)
+        return TRUE;
 
-    EngHAL_I2C_RecoverAndReinit_F4xx(pstHalPorting);
+    // EngHAL_I2C_RecoverAndReinit_F4xx(pstHalPorting);
+    // st = HAL_I2C_Mem_Read(h, (devAddr7b<<1), memAddr, (memAddrSize==2)?I2C_MEMADD_SIZE_16BIT:I2C_MEMADD_SIZE_8BIT, pData, len, timeout);
+    // if(st == HAL_OK)
+    //     return TRUE;
 
-    st = HAL_I2C_Mem_Read(h, (devAddr7b<<1), memAddr, (memAddrSize==2)?I2C_MEMADD_SIZE_16BIT:I2C_MEMADD_SIZE_8BIT, pData, len, timeout);
-    if(st == HAL_OK) return TRUE;
-
-    if(st == HAL_BUSY) {
-        /* 핸들 락/상태를 RESET으로 강제 후 재초기화 */
-        prvI2C_ForceUnlockAndResetHandle(pstHalPorting);
-
-        /* 주변장치 DeInit/Init로 핸들 상태까지 HAL이 다시 세팅하도록 */
-        /* (MX_I2Cx_Init 안에서 HAL_I2C_Init 호출됨) */
-        EngHAL_I2C_RecoverAndReinit_F4xx(pstHalPorting);
-
-        /* 최종 재시도 */
-        st = HAL_I2C_Mem_Read(h, (devAddr7b<<1), memAddr, (memAddrSize==2)?I2C_MEMADD_SIZE_16BIT:I2C_MEMADD_SIZE_8BIT, pData, len, timeout);
-    }
+    // if(st == HAL_BUSY) 
+    // {
+    //     prvI2C_ForceUnlockAndResetHandle(pstHalPorting); // 핸들 락/상태를 RESET으로 강제 후 재초기화
+    //     EngHAL_I2C_RecoverAndReinit_F4xx(pstHalPorting); // 주변장치 DeInit/Init로 핸들 상태까지 HAL이 다시 세팅하도록 (MX_I2Cx_Init 안에서 HAL_I2C_Init 호출됨)
+    //     st = HAL_I2C_Mem_Read(h, (devAddr7b<<1), memAddr, (memAddrSize==2)?I2C_MEMADD_SIZE_16BIT:I2C_MEMADD_SIZE_8BIT, pData, len, timeout); // 최종 재시도
+    // }
 
     return (st == HAL_OK);
 }

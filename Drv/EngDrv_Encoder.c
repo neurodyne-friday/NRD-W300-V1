@@ -22,6 +22,7 @@
 #include "EngDrv_IF.h"
 #include "EngDrv_Encoder.h"
 #include "EngCM_DriverConfig.h"
+#include "EngHAL_Lib.h"
 
 void EngDrv_Encoder_Create(void)
 {
@@ -35,6 +36,7 @@ void EngDrv_Encoder_Create(void)
         pstInstance->pfnInitialize = EngDrv_Encoder_Initialize;
         pstInstance->pfnSet = EngDrv_Encoder_Set;
         pstInstance->pfnReadAngle = EngDrv_Encoder_ReadAngle;
+        pstInstance->pfnGetAngle = EngDrv_Encoder_GetAngle;
         pstInstance->pfnReset = EngDrv_Encoder_Reset;
     } 
 }
@@ -95,19 +97,21 @@ void EngDrv_Encoder_Set(TEncoder* pstEncoder, S32 slCount)
 F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
 {
     U16 angle12 = 0;
+    static U16 prev_angle12 = 0;
 
     if(pstEncoder->enCommType == Encoder_CommType_I2C)
     {
-        if (EngHAL_I2C_AS5600_ReadAngle12(pstEncoder->ulHalID, &angle12))
+        if (EngHAL_I2C_AS5600_ReadAngle12(pstEncoder->ulHalID, &angle12) == TRUE)
         {
             /* angle12를 0~360도로 변환(선택) */
             float deg = (angle12 * 360.0f) / 4096.0f;
-            /* TODO: FOC 관측기나 속도 추정기에 연결 */
             pstEncoder->fAngle = deg;
+            prev_angle12 = angle12;
         }
         else
         {
-            pstEncoder->fAngle = -1.0f; // 오류 처리
+            //pstEncoder->fAngle = -1.0f; // 오류 처리
+            pstEncoder->fAngle = (prev_angle12 * 360.0f) / 4096.0f;// 이전 값 유지
         }
     }
     else if(pstEncoder->enCommType == Encoder_CommType_SPI)
@@ -123,6 +127,11 @@ F32 EngDrv_Encoder_ReadAngle(TEncoder* pstEncoder)
         }
     }
 
+    return pstEncoder->fAngle;
+}
+
+F32 EngDrv_Encoder_GetAngle(TEncoder* pstEncoder)
+{
     return pstEncoder->fAngle;
 }
 

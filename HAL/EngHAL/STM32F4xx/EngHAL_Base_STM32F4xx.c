@@ -37,8 +37,7 @@ void EngHAL_Base_TIM1_Probe_State(const char* tag)
     volatile uint32_t psc_hw = TIM1->PSC;
     volatile uint32_t cr1    = TIM1->CR1;
 
-    // 브레이크포인트를 걸거나, 로깅
-    DBG_SWO(ENG_DBG_STRING"[%s] APB2.TIM1EN=%lu, ARR=%lu, PSC=%lu, CR1=0x%08lx\n", ENG_TICK, "EngHAL_PWM", tag, apb2en?1:0, arr_hw, psc_hw, cr1);
+    DBG_SWO(ENG_DBG_STRING"[%s] APB2.TIM1EN=%lu, ARR=%lu, PSC=%lu, CR1=0x%08lx\n", ENG_TICK, "EngHAL", tag, apb2en?1:0, arr_hw, psc_hw, cr1);
 }
 
 /**
@@ -77,7 +76,8 @@ void EngHAL_Base_TIM1_Config_TRGO_Center(void)
     HAL_TIM_OC_ConfigChannel(&htim1, &oc, TIM_CHANNEL_4);
     HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
 
-    mst.MasterOutputTrigger = TIM_TRGO_UPDATE;//TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
+    mst.MasterOutputTrigger = TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
+    //mst.MasterOutputTrigger = TIM_TRGO_UPDATE;
     mst.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
     HAL_TIMEx_MasterConfigSynchronization(&htim1, &mst);
 }

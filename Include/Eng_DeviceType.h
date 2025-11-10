@@ -507,6 +507,10 @@ typedef enum
 {
 	ADC_NAME_CURRENT_PHA	   = DEVICE_ADC_KEY_BASE,
     ADC_NAME_CURRENT_PHB,
+    //ADC_NAME_CURRENT_PHC,
+
+    ADC_NAME_CURRENT_VBUS,
+    ADC_NAME_CURRENT_TEMP,
 
     ADC_NAME_MAX,
     ADC_NAME_UNSPECIFIED       = ADC_NAME_MAX
@@ -538,8 +542,8 @@ typedef struct _TADC
 	/************ Below variables are initialized in table ************/
 	U32 ulDeviceKey;
 	U8 *pubName;
-    TADCChannel eChannel;
-    TADCMuxAddress eMuxAddr;
+    //TADCChannel eChannel;
+    //TADCMuxAddress eMuxAddr;
     U32 ulHalID;
 	/******************************************************************/
 
@@ -589,9 +593,10 @@ typedef struct _TEncoder
 
     S32 slCounter;
     F32 fAngle; // 0 ~ 360 deg
- 
+    
     void (*pfnInitialize)(struct _TEncoder *pstEncoder);
     void (*pfnSet)(struct _TEncoder *pstEncoder, S32 slCount);
+    F32 (*pfnGetAngle)(struct _TEncoder *pstEncoder);
     F32 (*pfnReadAngle)(struct _TEncoder *pstEncoder);
     void  (*pfnReset)(struct _TEncoder *pstEncoder);
 } TEncoder;

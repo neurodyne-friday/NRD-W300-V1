@@ -33,10 +33,10 @@ EXTERN void EngFOC_SetState(TEngState eNewState);
 EXTERN TEngState EngFOC_GetState(void);
 
 EXTERN void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength);
-EXTERN void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc);
 EXTERN void EngFOC_Task_CurrentControl(void *argument);
 EXTERN void EngFOC_Task_SpeedControl(void *argument);
 EXTERN void EngFOC_Task_PositionControl(void *argument);
+EXTERN void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, float *Tb, float *Tc);
 
 #endif /* __ENGFOC_MAIN_H__
  */

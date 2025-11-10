@@ -111,7 +111,7 @@ BOOL EngHAL_LibraryEntry(void)
                 pstPWMHal++;
             }
         }
-		DBG_SWO(ENG_DBG_STRING"PWM TIM Started", ENG_TICK, "EngHAL");
+		DBG_SWO(ENG_DBG_STRING"PWM-TIM Started", ENG_TICK, "EngHAL");
 
 
         /* CAN Initialize */
@@ -178,6 +178,8 @@ BOOL EngHAL_LibraryEntry(void)
     EngHAL_PWR_Init();
 	EngHAL_SRAM_Init();
     //EngHAL_USB_OTG_FS_PCD_Init(); // make it later
+
+	DBG_SWO(ENG_DBG_STRING"Every HAL Components are Initialized", ENG_TICK, "EngHAL");
 }
 
 void EngHAL_Core_Init(void)
@@ -241,6 +243,8 @@ U16 EngHAL_ADC_GetValue(U32 ulHalName)
 	{
 		uwValue = pstHalFunction->stADC.pfnGetValue(pstHalADCPorting);
 	}
+
+	return uwValue;
 }
 
 void EngHAL_ADC_GetCurrentRaw(uint16_t *pIa, uint16_t *pIb, uint16_t *pIc)
@@ -248,11 +252,6 @@ void EngHAL_ADC_GetCurrentRaw(uint16_t *pIa, uint16_t *pIb, uint16_t *pIc)
 	EngHAL_ADC_GetCurrentRaw_F4xx(pIa, pIb, pIc);
 }
 
-
-void EngHAL_ADC_RegisterCallback(U32 ulEventId, void (*pfnCallback)(void))
-{
-	EngHAL_ADC_RegisterCallback_F4xx(ulEventId, pfnCallback);
-}
 
 void EngHAL_CAN_Init(U32 ulHalName)
 {

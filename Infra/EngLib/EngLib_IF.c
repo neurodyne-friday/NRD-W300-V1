@@ -114,7 +114,7 @@ BOOL EngLib_IF_RegistryCallBackFunc(U8 *pubFuncName, U32 ulFuncHndlID,  TENGLIB_
 		pstHead->ulFuncHndlID = ulFuncHndlID;
 		pstHead->pfnCallBackFunc = pFuncHndl;
 
-		DBG_SWO(ENG_DBG_STRING"EngLib_IF_RegistryCallBackFunc: Registered=>%s, ID=%d", ENG_TICK, "EngLib", pubFuncName, ulFuncHndlID);
+		//DBG_SWO(ENG_DBG_STRING"EngLib_IF_RegistryCallBackFunc: Registered=>%s, ID=%d", ENG_TICK, "EngLib", pubFuncName, ulFuncHndlID);
 		return TRUE;
 	}
 

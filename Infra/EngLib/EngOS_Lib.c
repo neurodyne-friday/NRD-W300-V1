@@ -127,7 +127,7 @@ void EngOS_NotifyFromISR(TTaskProperty* pProperty)
 #endif
 }
 
-TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc, TTaskRunType eRunType, U32 ulInterval)
+TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc(void*), TTaskRunType eRunType, U32 ulInterval)
 {
 	if(g_stOSTaskManager.ubUsedCount >= OS_TASK_MAX_SIZE)
 	{

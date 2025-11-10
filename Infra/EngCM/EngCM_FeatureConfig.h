@@ -28,7 +28,7 @@
 //#define USE_LWIP
 //#define USE_DHCP        /* enable DHCP, if disabled static address is used*/
 #define USE_SWO
-//#define USE_CURRENT_TASK_LOOP_BY_ENGOS
+//#define USE_ENGOS_CURRENT_TASK_LOOP
 
 
 /** 

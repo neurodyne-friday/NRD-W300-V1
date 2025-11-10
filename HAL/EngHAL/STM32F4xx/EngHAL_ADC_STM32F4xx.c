@@ -44,8 +44,6 @@ static uint32_t s_injectedCh[3] = {0xFFFFFFFFu, 0xFFFFFFFFu, 0xFFFFFFFFu};
 static uint8_t  s_injectedCount = 0;
 static uint8_t  s_adcStarted    = 0;
 
-HAL_EVENT_CALLBACK g_pfnHalAdcEventCallback[HAL_EVENT_ADC_MAX] = {0};
-
 /* ---------- Util functions to use inner hal ---------- */
 static uint32_t _map_adc_ch_from_number(uint32_t ulChannelNumber)
 {
@@ -286,20 +284,6 @@ U16 EngHAL_ADC_GetValue_F4xx(THalADCPorting *pstHalPorting)
     return val;
 }
 
-void EngHAL_ADC_RegisterCallback_F4xx(ulEventId, pfnCallback)
-{
-    if(ulEventId < HAL_EVENT_ADC_MAX)
-    {
-        g_pfnHalAdcEventCallback[HAL_EVENT_ADC_IRQ] = pfnCallback;
-    }
-}
-
-/* ---------- HAL ฤÝน้ ---------- */
-// void ADC_IRQHandler(void)
-// {
-//     HAL_ADC_IRQHandler(&hadc1);
-// }
-
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     if(hadc->Instance != ADC1) 
@@ -315,10 +299,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     s_u16IB = v2;
     s_u16IC = v3;
 
-    if(g_pfnHalAdcEventCallback[HAL_EVENT_ADC_IRQ] != NULL)
-        g_pfnHalAdcEventCallback[HAL_EVENT_ADC_IRQ]();
-
-#ifdef USE_CURRENT_TASK_LOOP_BY_ENGOS
+#ifdef USE_ENGOS_CURRENT_TASK_LOOP
     EngOS_NotifyFromISR(EngOS_Task_GetProperty("CurrentControlTask"));
 #else
     EngLib_IF_NotifyCallBackFunc(HAL_EVENT_ADC_IRQ, NULL, 0);
