@@ -27,7 +27,7 @@
 #define EXTERN extern
 #endif
 
-#include "EngDrv_IF.h"
+#include "Eng_DeviceType.h"
 
 EXTERN void EngDrv_SPI_Create(void);
 EXTERN void EngDrv_SPI_Configuration(void);

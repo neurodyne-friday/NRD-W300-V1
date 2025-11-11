@@ -48,7 +48,7 @@ U8 EngDrv_Flash_Erase(void)
 
 U8 EngDrv_Flash_WriteBlock(U32 ulAddress, U8* pubData, U16 uwSize)
 {
-    ulAddress = ulAddress * DEVFLASH_BLOCK_SIZE;	
+    //ulAddress = ulAddress * DEVFLASH_BLOCK_SIZE;	
 	return EngDrv_Flash_WriteWord(ulAddress, (U32*)pubData, uwSize);
 }
 
