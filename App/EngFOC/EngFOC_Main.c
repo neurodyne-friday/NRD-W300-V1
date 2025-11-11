@@ -53,8 +53,8 @@ static inline void float_to_bytes_le(float v, uint8_t out[4]) {
 
 BOOL EngFOC_Initialize(void)
 {
-	TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TTaskProperty* pstTaskProperty = NULL;
+	//TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    //TTaskProperty* pstTaskProperty = NULL;
 	
     DBG_SWO(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 
@@ -66,6 +66,7 @@ BOOL EngFOC_Initialize(void)
 
     EngOS_Task_Register(EngOS_Task_CreateProperty("SpeedControlTask", EngFOC_Task_SpeedControl, TASK_RUNTYPE_Cycle, 1));
     EngOS_Task_Register(EngOS_Task_CreateProperty("PositionControlTask", EngFOC_Task_PositionControl, TASK_RUNTYPE_Cycle, 10));
+    EngOS_Task_Register(EngOS_Task_CreateProperty("DebugLogTask", EngFOC_Task_DebugLog, TASK_RUNTYPE_Cycle, 100));
 
     return TRUE;
 }
@@ -106,8 +107,6 @@ void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength)
 void EngFOC_Task_CurrentControl(void *argument) 
 {
     TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("CurrentControlTask");
-    TEncoder* pstEncoder = EngDrv_IF_GetEncoder(ENCODER_NAME_MAIN);
 
     const float Tc = 0.00005f;              // 20kHz 주기 (초)
     // 보정용 상수 및 변수
@@ -214,11 +213,11 @@ void EngFOC_Task_CurrentControl(void *argument)
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
             
-            if((cur_cnt % (2000 * 10)) == 0) // 20kHz => 0.05msec * (2000 * 11) => 1000ms
+            if((cur_cnt % (2000 * 10)) == 0) // 20kHz => 0.05msec * (2000 * 10) => 1000ms
             {
                 // SWO가 오버헤드 엄청 먹음... 실제 사용에서는 필히 Disable 시키고 발행
-                DBG_SWO(ENG_DBG_STRING"(CurrentControl) ADC_A=%d, ADC_B=%d, i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", 
-                    pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, i_a, i_b, i_c);
+                //DBG_SWO(ENG_DBG_STRING"(CurrentControl) ADC_A=%d, ADC_B=%d, i_a=%ld, i_b=%ld, i_c=%ld", ENG_TICK, "EngFOC", 
+                //    pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, (long)(i_a*1000), (long)(i_b*1000), (long)(i_c*1000));
                 //DBG_SWO(ENG_DBG_STRING"i_alpha=%f, i_beta=%f", ENG_TICK, "EngFOC", i_alpha, i_beta);
                 //DBG_SWO(ENG_DBG_STRING"i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", i_d, i_q, pstFOCManager->fOutVd , pstFOCManager->fOutVq);
                 //DBG_SWO(ENG_DBG_STRING"v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", i_d, i_q, pstFOCManager->fVAlpha , pstFOCManager->fVBeta);
@@ -234,6 +233,7 @@ void EngFOC_Task_CurrentControl(void *argument)
                 // {
                 //     pstCAN->pfnSendData(pstCAN, pubData, 8);
                 // }
+                cur_cnt = 0; // reset
             }
             cur_cnt++;
 
@@ -481,4 +481,24 @@ void EngFOC_SVPWM_CalcDuty(float v_alpha, float v_beta, float Vbus, float *Ta, f
     *Ta = T_a;
     *Tb = T_b;
     *Tc = T_c;
+}
+
+void EngFOC_Task_DebugLog(void *argument)
+{
+    TEngFOCManager *pstFOCManager = &s_stFOCManager;
+    TTaskProperty *pstTaskProperty = EngOS_Task_GetProperty("DebugLogTask");
+    static int debug_cnt = 0;
+    U32 lastWakeTime = EngOS_GetSysTick();
+
+    for(;;) 
+    {
+        if((debug_cnt % 10) == 0) // 1000msec
+        {
+            DBG_SWO(ENG_DBG_STRING"(CurrentControl) ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
+                pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
+        }
+
+        debug_cnt++;
+        EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
+    }
 }

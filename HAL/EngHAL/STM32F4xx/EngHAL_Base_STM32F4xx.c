@@ -76,8 +76,8 @@ void EngHAL_Base_TIM1_Config_TRGO_Center(void)
     HAL_TIM_OC_ConfigChannel(&htim1, &oc, TIM_CHANNEL_4);
     HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
 
-    mst.MasterOutputTrigger = TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
-    //mst.MasterOutputTrigger = TIM_TRGO_UPDATE;
+    //mst.MasterOutputTrigger = TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
+    mst.MasterOutputTrigger = TIM_TRGO_UPDATE;
     mst.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
     HAL_TIMEx_MasterConfigSynchronization(&htim1, &mst);
 }

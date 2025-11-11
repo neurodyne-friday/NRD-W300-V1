@@ -127,7 +127,7 @@ void EngOS_NotifyFromISR(TTaskProperty* pProperty)
 #endif
 }
 
-TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc(void*), TTaskRunType eRunType, U32 ulInterval)
+TTaskProperty* EngOS_Task_CreateProperty(const U8* pubName, void* pfnFunc(void*), TTaskRunType eRunType, U32 ulInterval)
 {
 	if(g_stOSTaskManager.ubUsedCount >= OS_TASK_MAX_SIZE)
 	{
@@ -150,7 +150,7 @@ TTaskProperty* EngOS_Task_CreateProperty(U8* pubName, void* pfnFunc(void*), TTas
 	return pstProperty;
 }
 
-TTaskProperty* EngOS_Task_GetProperty(U8* pubName)
+TTaskProperty* EngOS_Task_GetProperty(const U8* pubName)
 {
 	for(U8 ubIndex = 0; ubIndex < g_stOSTaskManager.ubUsedCount; ubIndex++)
 	{
