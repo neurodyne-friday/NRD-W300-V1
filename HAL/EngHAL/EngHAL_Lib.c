@@ -1136,3 +1136,25 @@ THalI2CPorting* EngHAL_FindHalI2C(U32 ulHalName)
     }
     return pstHalI2C;
 }
+
+
+void EngHAL_TICK_Init(void)
+{
+	EngHAL_Core_TICK_Init_F4xx();
+}
+
+U32 EngHAL_TICK_Start(void)
+{
+	return EngHAL_Core_TICK_Start_F4xx();
+}
+
+U32 EngHAL_TICK_Stop(void)
+{
+	return EngHAL_Core_TICK_Stop_F4xx();
+}
+
+F32 EngHAL_TICK_MeasureUS(void)
+{
+	//return EngHAL_Core_TICK_US_F4xx(180000000UL); // F446RE
+	return EngHAL_Core_TICK_US_F4xx(SystemCoreClock);
+}

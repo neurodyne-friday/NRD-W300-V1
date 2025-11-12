@@ -130,4 +130,10 @@ EXTERN THalUARTPorting* EngHAL_FindHalUART(U32 ulHalName);
 EXTERN THalSPIPorting* EngHAL_FindHalSPI(U32 ulHalName);
 EXTERN THalI2CPorting* EngHAL_FindHalI2C(U32 ulHalName);
 
+// Time measurement functions based on TICK
+EXTERN void EngHAL_TICK_Init(void);
+EXTERN U32 EngHAL_TICK_Start(void);
+EXTERN U32 EngHAL_TICK_Stop(void);
+EXTERN F32 EngHAL_TICK_MeasureUS(void);
+
 #endif //__ENGHAL_LIB_H__

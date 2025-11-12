@@ -134,6 +134,8 @@ void EngFOC_Task_CurrentControl(void *argument)
             if(pstFOCManager->enEngState != ENG_ST_ACTIVE)
                 return;
 
+            EngHAL_TICK_Init();
+            EngHAL_TICK_Start();
             // ADC로 읽은 값을 전류 (i_a, i_b)로 환산
             i_a = (float)(pstFOCManager->uwADCPhaseA - CURRENT_OFFSET_A) * CURRENT_SCALE;
             i_b = (float)(pstFOCManager->uwADCPhaseB - CURRENT_OFFSET_B) * CURRENT_SCALE;
@@ -212,6 +214,9 @@ void EngFOC_Task_CurrentControl(void *argument)
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_UH, Ta);
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
+
+            EngHAL_TICK_Stop();
+            pstFOCManager->fTaskTimeMeasure = EngHAL_TICK_MeasureUS();
             
             if((cur_cnt % (2000 * 10)) == 0) // 20kHz => 0.05msec * (2000 * 10) => 1000ms
             {
@@ -393,7 +398,7 @@ void EngFOC_Task_PositionControl(void *argument)
                 //pstCAN->pfnSendData(pstCAN, pubDataPos, 8);
             }
 
-            DBG_SWO(ENG_DBG_STRING"(PositionControl) pos. = %f, vel. = %f", ENG_TICK, "EngFOC", pos_curr, omega_meas);
+            //DBG_SWO(ENG_DBG_STRING"(PositionControl) pos. = %f, vel. = %f", ENG_TICK, "EngFOC", pos_curr, omega_meas);
             //EngHAL_I2C_AS5600_Scan(HAL_I2C_NAME_AS5600);
         }
 
@@ -494,8 +499,8 @@ void EngFOC_Task_DebugLog(void *argument)
     {
         if((debug_cnt % 10) == 0) // 1000msec
         {
-            DBG_SWO(ENG_DBG_STRING"(CurrentControl) ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
-                pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
+            DBG_SWO(ENG_DBG_STRING"(CurrentControl) t=%0.3fusec, ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
+                pstFOCManager->fTaskTimeMeasure, pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
         }
 
         debug_cnt++;

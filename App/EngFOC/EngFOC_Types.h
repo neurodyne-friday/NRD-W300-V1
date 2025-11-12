@@ -85,6 +85,9 @@ typedef struct _TEngFOCManager
 	F32 fKp_pos;		// 위치 제어 비례 이득
 	F32 fKi_pos;		// 위치 제어 적분 이득
 
+	// etc
+	F32 fTaskTimeMeasure;	// 디버깅용 전류제어 루프 처리시간 측정값 (us)
+
 } TEngFOCManager;
 
 #endif /* __ENGFOC_TYPES_H__ */

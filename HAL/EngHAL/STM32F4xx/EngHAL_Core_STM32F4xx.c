@@ -31,6 +31,10 @@
   * @retval None
   */
 
+static U32 __t0 = 0; // it is for measuring cpu tick time
+static U32 __t1 = 0;
+
+
 void EngHAL_Core_Init_F4xx()
 {
     HAL_Init();
@@ -124,4 +128,36 @@ void EngHAL_Core_DWT_Init(void)
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // TRCENA bit activate
     DWT->CYCCNT = 0;                                // Cycle-counter initialize
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // Cycle-counter activate
+}
+
+static inline uint32_t cycles(void)
+{
+    return DWT->CYCCNT;
+}
+
+static inline float cycles_to_us(uint32_t cyc, uint32_t cpu_hz)
+{
+    return (float)cyc * 1e6f / (float)cpu_hz;
+}
+
+void EngHAL_Core_TICK_Init_F4xx(void)
+{
+    EngHAL_Core_DWT_Init();
+    __t0 = 0;
+    __t1 = 0;
+}
+
+U32 EngHAL_Core_TICK_Start_F4xx(void)
+{
+    do { __t0 = cycles(); } while (0);
+}
+
+U32 EngHAL_Core_TICK_Stop_F4xx(void)
+{
+    do { __t1 = cycles(); } while (0);
+}
+
+F32 EngHAL_Core_TICK_US_F4xx(U32 cpuHz)
+{
+    return cycles_to_us((__t1 - __t0), cpuHz);
 }

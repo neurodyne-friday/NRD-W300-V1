@@ -34,5 +34,9 @@ EXTERN void EngHAL_Core_Init_F4xx();
 EXTERN void EngHAL_Core_SystemClock_Config_F4xx();
 EXTERN void EngHAL_Core_SWO_Config_F4xx(uint32_t cpuHz, uint32_t swoHz);
 EXTERN void EngHAL_Core_DWT_Init(void);
+EXTERN void EngHAL_Core_TICK_Init_F4xx(void);
+EXTERN U32 EngHAL_Core_TICK_Start_F4xx(void);
+EXTERN U32 EngHAL_Core_TICK_Stop_F4xx(void);
+EXTERN F32 EngHAL_Core_TICK_US_F4xx(U32 cpuHz);
 
 #endif //__ENGHAL_GPIO_H__

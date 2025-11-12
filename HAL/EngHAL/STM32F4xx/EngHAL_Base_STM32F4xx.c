@@ -57,7 +57,7 @@ void EngHAL_Base_TIM1_Config_TRGO_Center(void)
     TIM_OC_InitTypeDef oc = {0};
     TIM_MasterConfigTypeDef mst = {0};
 
-    EngHAL_Base_TIM1_Probe_State("before TRGO");
+    //EngHAL_Base_TIM1_Probe_State("before TRGO");
 
     uint32_t arr = __HAL_TIM_GET_AUTORELOAD(&htim1);
     if (arr != htim1.Init.Period) {
@@ -75,6 +75,8 @@ void EngHAL_Base_TIM1_Config_TRGO_Center(void)
 
     HAL_TIM_OC_ConfigChannel(&htim1, &oc, TIM_CHANNEL_4);
     HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
+
+    //EngHAL_Base_TIM1_Probe_State("after TRGO");
 
     //mst.MasterOutputTrigger = TIM_TRGO_OC4REF;      /* OC4REF를 마스터 트리거로 */
     mst.MasterOutputTrigger = TIM_TRGO_UPDATE;

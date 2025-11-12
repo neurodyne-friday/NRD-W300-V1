@@ -79,7 +79,7 @@
               //"monitor tpiu config internal swo 180000000 2000000",
               //"monitor itm port 0 on"
             ],
-      
+
             // ★ Cortex-Debug의 SWO 수집 설정
             "swoConfig": {
                 "enabled": true,
