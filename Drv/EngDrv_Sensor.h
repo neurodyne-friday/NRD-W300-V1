@@ -41,18 +41,7 @@ EXTERN void EngDrv_Sensor_UpdateSensorAll(void);
 EXTERN U8 EngDrv_Sensor_GetValue(TSensor* pstSensor);
 EXTERN void EngDrv_Sensor_Read(TSensor* pstSensor);
 EXTERN void EngDrv_Sensor_UpdateDataBus(void); // need to be modified 
-
-EXTERN void EngDrv_Sensor_OnOffCheck(void);
 EXTERN U16 EngDrv_Sensor_GetADCValue(U32 ulDeviceKay);
-EXTERN void EngHAL_Sensor_SelectADC(TSensorName eSensorName);
-EXTERN void EngDrv_Sensor_SetLevel(TSensorName ulSensorName, TSensorLevel eLevel);
-EXTERN U16 EngDrv_Sensor_GetOnOffError(void);
-
-/* HAL functions */
-EXTERN void EngHAL_Sensor_PortControl(U8 ubAddress, GPIO_TypeDef* pHalBaseID, U32 ulHalPinID, U8 ubSet);
-EXTERN void EngHAL_Sensor_SetLevel(TSensorName ulSensorName, TSensorLevel eLevel);
-EXTERN void EngHAL_Sensor_PowerControl(U8 ubOnOff);
-EXTERN U16 EngHAL_Sensor_GetADCValue(TADCType eType);
 
 
 #endif /* __ENGDRV_SENSOR_H__ */

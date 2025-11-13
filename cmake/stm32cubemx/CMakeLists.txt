@@ -59,6 +59,8 @@ target_sources(stm32cubemx INTERFACE
     ../../Drv/EngDrv_CAN.c
     ../../Drv/EngDrv_Encoder.c
     ../../Drv/EngDrv_Flash.c
+    ../../Drv/EngDrv_Sensor.c
+    ../../Drv/EngDrv_SPI.c
     ../../Drv/EngDrv_UART.c
 
     ../../Infra/EngLib/EngLib_IF.c

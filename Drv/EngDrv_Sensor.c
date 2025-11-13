@@ -23,36 +23,6 @@
 #include "EngDrv_IF.h"
 #include "EngCM_DriverConfig.h"
 
-//static void EngDrv_Sensor_TaskControl(void *p_arg);
-
-OS_MUTEX osmMutexADC;
-
-void EngDrv_Sensor_ControlTask(void *p_arg)
-{
-	(void)p_arg;
-
-	while(1)
-	{
-        
-		EngDrv_Sensor_UpdateSensorAll();
-		
-		EngDrv_Sensor_TalkToListener(NULL);
-
-		/*
-		// CST 1ms Timer
-		g_vu32TimerCount++;
-				
-		RJB_CheckInIRSensor(); // note checking
-
-        if(g_vu32TimerCount % 100 == 0)
-        {
-            MountingCheckStatus(0);
-        }
-        */
-		
-		OSTimeDly(1u, OS_OPT_TIME_DLY, &g_errDelay);
-	}
-}
 
 void EngDrv_Sensor_Create(void)
 {
@@ -65,180 +35,7 @@ void EngDrv_Sensor_Create(void)
 
         pstInstance->pfnInitialize = EngDrv_Sensor_Initialize;
         pstInstance->pfnGet = EngDrv_Sensor_GetValue;
-        pstInstance->pfnSetLevel = EngDrv_Sensor_SetLevel;
-
-        pstInstance->pfnInitialize(pstInstance);
     }
-}
-
-void EngDrv_Sensor_Configuration(void)
-{
-	EngDrv_Sensor_ReadGPIOConfiguration();
-
-	//EngDrv_Sensor_InitializeAll();
-}
-
-void EngDrv_Sensor_ReadGPIOConfiguration(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-
-	/**********************************************************************/
-	/*                       Sensor Read Select                           */
-	/**********************************************************************/
-	
-	// Enable GPIO clock 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
-
-	//
-	// GPIOC Pin 5	: RD_2
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	
-	//
-	// GPIOD Pin 6	: RD_1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-
-	//
-	// GPIOG Pin 11	: RD_3
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOG, &GPIO_InitStructure);
-
-	//
-	// GPIOH Pin 10	: RD_4
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOH, &GPIO_InitStructure);
-
-	//
-	// Active Low
-	//
-	GPIO_SetBits(GPIOC, GPIO_Pin_5);
-	GPIO_SetBits(GPIOD, GPIO_Pin_6);
-	GPIO_SetBits(GPIOG, GPIO_Pin_11);
-	GPIO_SetBits(GPIOH, GPIO_Pin_10);
-
-
-	/**********************************************************************/
-	/*                       Sensor Read Data                             */
-	/**********************************************************************/
-	
-	// Enable GPIOF clock 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-
-	//
-	// GPIOF Pin 0	: DATA00
-	// GPIOF Pin 1	: DATA01
-	// GPIOF Pin 2	: DATA02
-	// GPIOF Pin 3	: DATA03
-	// GPIOF Pin 4	: DATA04
-	// GPIOF Pin 5	: DATA05
-	// GPIOF Pin 12	: DATA06
-	// GPIOF Pin 13	: DATA07
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3
-								| GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_12 | GPIO_Pin_13;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOF, &GPIO_InitStructure);
-
-	// 
-	// 20240213 : IR Sensor Data 
-	//
-	// Enable GPIO clock 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-
-	//
-	// GPIOB Pin 5	: ML_FCNDS_DATA
-	// GPIOB Pin 6	: ML_FDNDS_DATA
-	// GPIOB Pin 7	: ML_FENDS_DATA
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	//
-	// GPIOG Pin 10	: ML_FANDS_DATA
-	// GPIOG Pin 12	: ML_FBNDS_DATA
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_12;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOG, &GPIO_InitStructure);
-
-	/**********************************************************************/
-	/*                           Sensor Enable                            */
-	/**********************************************************************/
-
-	// 20240213  : Sensor Ctrl configuration
-	
-	// Enable GPIO clock 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOI, ENABLE);
-	
-	//
-	// GPIOC Pin 4	: LRJB_SENSOR_CTRL1
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	//
-	// GPIOE Pin 5	: IR_SENSOR_CTRL0
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
-
-	//
-	// GPIOI Pin 10	: INT_SENSOR_CTRL2
-	//
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOI, &GPIO_InitStructure);
 }
 
 void EngDrv_Sensor_Initialize(TSensor* pstSensor)
@@ -246,18 +43,6 @@ void EngDrv_Sensor_Initialize(TSensor* pstSensor)
 
 }
 
-void EngDrv_Sensor_InitializeAll()
-{
-	//
-	// Sensor Off Test
-    //
-	EngDrv_Sensor_OnOffCheck();
-
-	//
-	// RJB : INT, Short, Long Sensor Power On.
-	//
-	EngHAL_Sensor_PowerControl(ENABLE);
-}
 
 void EngDrv_Sensor_UpdateSensorAll()
 {
@@ -312,7 +97,7 @@ void EngDrv_Sensor_Read(TSensor* pstSensor)
 	if(pstSensor == NULL)
 		return;
 
-	for(u8 ubIndex = 1; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
+	for(U8 ubIndex = 1; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
 	{
 		pstSensor->aubSensorValue[ubIndex - 1] = pstSensor->aubSensorValue[ubIndex];
 	}
@@ -335,7 +120,6 @@ void EngDrv_Sensor_Read(TSensor* pstSensor)
 			if(ubBitShift > 15)
 				return;
 		}
-		ubReadData = EngHAL_Sensor_ReadFromDataBus(pstSensor->eSelectDataBus);
 		ubReadData = (ubReadData & (0x01 << ubBitShift)) >> ubBitShift;
 
 		if(pstSensor->eIOActiveType == HAL_GPIO_ACTIVE_LOW)
@@ -346,7 +130,7 @@ void EngDrv_Sensor_Read(TSensor* pstSensor)
 
 	// On check
 	ubBitResult = 0x01;
-	for(u8 ubIndex = 0; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
+	for(U8 ubIndex = 0; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
 	{
 		ubBitResult &= pstSensor->aubSensorValue[ubIndex];
 	}
@@ -356,7 +140,7 @@ void EngDrv_Sensor_Read(TSensor* pstSensor)
 
 	// Off check
 	ubBitResult = 0x00;
-	for(u8 ubIndex = 0; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
+	for(U8 ubIndex = 0; ubIndex < SENSOR_BUFFER_SIZE; ubIndex++)
 	{
 		ubBitResult |= pstSensor->aubSensorValue[ubIndex];
 	}
@@ -382,136 +166,6 @@ void EngDrv_Sensor_UpdateDataBus(void)
     }
 }
 
-
-void EngDrv_Sensor_OnOffCheck(void)
-{
-    TSensor* pstSensor = NULL;
-
-	// RJP, CST : INT, Short, Long Sensor Power Off.
-    EngHAL_Sensor_PowerControl(DISABLE);
-
-	// RJP Sensor Off Test
-    pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJP_RANPS);
-    if(EngDrv_Sensor_GetValue(pstSensor) == FALSE)
-		EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-    
-    pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJP_RBNPS);
-    if(EngDrv_Sensor_GetValue(pstSensor) == FALSE)
-		EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-	// RJP, CST : INT, Short, Long Sensor Power On.
-    EngHAL_Sensor_PowerControl(ENABLE);
-
-	//if(pstModule->pfnIsInstalled(pstModule) == TRUE)
-	if(EngDrv_Module_IsMounted() == FALSE)
-	{
-		// RJB : INT, Short, Long Sensor Power Off.
-		EngHAL_Sensor_PowerControl(DISABLE);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RAINS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RBINS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RCFNS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RAENS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RBENS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RCENS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RDANS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RAFNS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RBFNS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-		
-        pstSensor = EngDrv_IF_GetSensor(SENSOR_NAME_RJB_RCFNS);
-        if(EngDrv_Sensor_GetValue(pstSensor) == RESET)
-			EngDrv_UartDebug_WriteLogData("\n\r%8d %s Sensor[%s] Off Error", g_vu32Timer, __func__, pstSensor->pubName);
-
-		// RJB : INT, Short, Long Sensor Power On.
-		EngHAL_Sensor_PowerControl(ENABLE);
-	}
-}
-
-void EngDrv_Sensor_SetLevel(TSensorName ulSensorName, TSensorLevel eLevel)
-{
-	TSensor* pstSensor = EngDrv_IF_GetSensor(ulSensorName);
-	
-	if(!pstSensor)
-		return ;
-
-	if(pstSensor->enType == SENSOR_TYPE_LONG)
-	{
-		if(eLevel < SENSOR_LEVEL_2)
-		{
-			EngHAL_Sensor_SetLevel(pstSensor->ulDeviceKey, eLevel);
-		}
-	}
-	else if(pstSensor->enType == SENSOR_TYPE_SHORT)
-	{
-		EngHAL_Sensor_SetLevel(pstSensor->ulDeviceKey, eLevel);
-	}
-}
-
-U16 EngDrv_Sensor_GetOnOffError(void)
-{
-    return 0;//g_u16SensorOnOffError[eModuleName];
-}
-
-
-/* HAL functions */
-
-void EngHAL_Sensor_PowerControl(U8 ubOnOff)
-{
-    GPIO_ResetBits(GPIOC, GPIO_Pin_5); //RJB_BUS_CLK RESET
-
-    if(ubOnOff == ENABLE)
-    {
-        GPIO_SetBits(GPIOC, GPIO_Pin_4);
-        GPIO_SetBits(GPIOC, GPIO_Pin_0); // RJB Power?
-
-		GPIO_SetBits(GPIOE, GPIO_Pin_5); // IR_SENSOR_CTRL0
-		GPIO_SetBits(GPIOI, GPIO_Pin_10); // INT_SENSOR_CTRL2
-		GPIO_SetBits(GPIOC, GPIO_Pin_4); // LRJB_SENSOR_CTRL1 -> RJBSensorPowerControl
-
-		EngDrv_UartDebug_WriteLogData("\n\r%8d %s Enable", g_vu32Timer, __func__ );
-    }
-    else
-    {
-        GPIO_ResetBits(GPIOC, GPIO_Pin_4);
-        GPIO_ResetBits(GPIOC, GPIO_Pin_0); // RJB Power?
-
-		GPIO_ResetBits(GPIOE, GPIO_Pin_5);
-		GPIO_ResetBits(GPIOI, GPIO_Pin_10);
-		GPIO_ResetBits(GPIOC, GPIO_Pin_4);
-
-		EngDrv_UartDebug_WriteLogData("\n\r%8d %s Disable", g_vu32Timer, __func__ );
-    }
-
-    //GPIO_SetBits(GPIOC, GPIO_Pin_5); //RJB_BUS_CLK SET
-}
-
-
 U16 EngDrv_Sensor_GetADCValue(U32 ulDeviceKay)
 {
     U16 uwValue = 0;
@@ -524,186 +178,7 @@ U16 EngDrv_Sensor_GetADCValue(U32 ulDeviceKay)
     }
 
     EngHAL_Sensor_SelectADC(ulDeviceKay);
-    DelayUS(200);
     uwValue = EngHAL_Sensor_GetADCValue(eADCType);
 
     return uwValue;
 }
-
-void EngHAL_Sensor_PortControl(U8 ubAddress, GPIO_TypeDef* pHalBaseID, U32 ulHalPinID, U8 ubSet)
-{
-    if(ubSet)
-        GPIO_SetBits(pHalBaseID, ulHalPinID);
-    else
-        GPIO_ResetBits(pHalBaseID, ulHalPinID);
-}
-
-void EngHAL_Sensor_SetLevel(TSensorName ulSensorName, TSensorLevel eLevel)
-{
-	switch(ulSensorName)
-	{
-
-    default:
-        break;
-	}
-}
-
-/*
-adcType == 0
-RESET, RESET, RESET
-adcType == 1
-RESET, RESET, SET
-adcType == 2
-RESET, SET, RESET
-adcType == 3 -> (3 - 3) = 0
-RESET, RESET, RESET
-adcType == 4 -> (4 - 3) = 1
-RESET, RESET, SET
-adcType == 5 -> (5 - 3) = 2
-RESET, SET, RESET
-adcType == 6 -> (6 - 3) = 3
-RESET, SET, SET
-adcType == 7 -> (7 - 3) = 4
-SET, RESET, RESET
-adcType == 8 -> (8 - 3) = 5
-SET, RESET, SET
-adcType == 9 -> (9 - 3) = 6
-SET, SET, RESET
-*/
-void EngHAL_Sensor_SelectADC(TSensorName eSensorName)
-{
-    TSensor* pstSensor = EngDrv_IF_GetSensor(eSensorName);
-
-	switch(eSensorName)
-	{
-        case SENSOR_NAME_RJB_RAINS:
-        case SENSOR_NAME_RJB_RBINS:
-        case SENSOR_NAME_RJB_RCINS:
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_3, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_3, GPIOC, GPIO_Pin_3, TRUE);
-            break;
-        case SENSOR_NAME_RJB_RBFNS:
-        case SENSOR_NAME_RJB_RBENS:
-        case SENSOR_NAME_RJB_RCFNS:
-        case SENSOR_NAME_RJB_RAFNS:
-        case SENSOR_NAME_RJB_RDANS:
-        case SENSOR_NAME_RJB_RAENS:
-        case SENSOR_NAME_RJB_RCENS:
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_3, GPIOC, GPIO_Pin_2, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_3, GPIOC, GPIO_Pin_3, FALSE);
-            break;
-        default:
-            return;
-	}
-
-    DelayNOP(200*2);
-
-    switch(eSensorName)
-	{
-        case SENSOR_NAME_RJB_RAINS: //0
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        case SENSOR_NAME_RJB_RBINS: //1
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, TRUE);
-            break;
-        case SENSOR_NAME_RJB_RCINS: //2
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        case SENSOR_NAME_RJB_RAENS: //3
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        case SENSOR_NAME_RJB_RBENS: //4
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, TRUE);
-            break;
-        case SENSOR_NAME_RJB_RDANS: //5
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        case SENSOR_NAME_RJB_RCENS: //6
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, TRUE);
-            break;
-        case SENSOR_NAME_RJB_RAFNS: //7
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        case SENSOR_NAME_RJB_RBFNS: //8
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, FALSE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, TRUE);
-            break;
-        case SENSOR_NAME_RJB_RCFNS: //9
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_2, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_1, TRUE);
-            EngHAL_Sensor_PortControl(HAL_LRJB_ADDRESS_TYPE_4, GPIOC, GPIO_Pin_0, FALSE);
-            break;
-        default:
-            break;
-    }
-}
-
-U16 EngHAL_Sensor_GetADCValue(TADCType eType)
-{
-    U16 uwRet;
-	OS_ERR err;
-	CPU_TS ts;
-
-	OSMutexPend(&osmMutexADC, 0, OS_OPT_PEND_BLOCKING, &ts,&err);
-	
-	DelayUS(200);
-
-	switch(eType)
-	{
-	case eADC_TYPE_24V_ADC:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_28Cycles);
-		break;
-	case eADC_TYPE_RJB_ADC:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_28Cycles);
-		break;
-	case eADC_DIVERTER_RANGD:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_28Cycles);
-		break;
-	case eADC_DIVERTER_RBNGD:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_28Cycles);
-		break;
-	case eADC_TYPE_RJP_RANPS:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_28Cycles);
-		break;
-	case eADC_TYPE_RJP_RBNPS:
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_28Cycles);
-		break;
-	}
-
-	DelayUS(200);
-
-	ADC_SoftwareStartConv(ADC1);
-	
-    while(ADC_GetSoftwareStartConvStatus(ADC1))
-	{
-		OSTimeDly(1*2, OS_OPT_TIME_DLY, &g_errDelay);
-	}
-	
-    ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-
-	DelayUS(200);
-
-	uwRet = ADC_GetConversionValue(ADC1);
-
-	OSMutexPost(&osmMutexADC, OS_OPT_POST_NONE, &err);
-
-	return (uwRet >> 2);	
-}
-

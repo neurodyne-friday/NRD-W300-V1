@@ -239,10 +239,6 @@ typedef struct _TSensor
     // Internal functions
     void (*pfnInitialize)(struct _TSensor *pstSensor);
     U8 (*pfnGet)(struct _TSensor *pstSensor);
-    //void (*pfnSetLevel)(struct _TSensor *pstSensor, U8 ubValue);
-    void (*pfnSetLevel)(TSensorName ulSensorName, TSensorLevel eLevel);
-    void (*pfnOnOffCheck)(struct _TSensor *pstSensor);
-    void (*pfnGetOnOffError)(struct _TSensor *pstSensor);
 
 } TSensor;
 
