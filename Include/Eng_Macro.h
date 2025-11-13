@@ -91,6 +91,7 @@ typedef volatile unsigned long          REG32;
 
 #define MIN(a,b)                        ((a) < (b) ? (a):(b))
 #define MAX(a,b)                        ((a) < (b) ? (b):(a))
+#define MINMAX(x, min, max)             (MIN(MAX((x), (min)), (max)))
 #define ABS(x)                          ( (x) >= 0 ? (x) : -(x) )
 #define ARRAY_SIZE(x)                   (sizeof(x)/sizeof(x[0]))
 #define CONVERT_BIG_ENDIAN_16(x)        ((( (x) >> 8) & 0x00FFU) | (( (x) << 8) & 0xFF00U) )

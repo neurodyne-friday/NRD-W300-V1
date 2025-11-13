@@ -166,16 +166,8 @@ void EngFOC_Task_CurrentControl(void *argument)
             //err_d = i_d_ref - i_d;
             err_d = pstFOCManager->fRefId - i_d;
             int_d += err_d;                        // 적분항 누적
+            int_d = MINMAX(int_d, -INT_MAX_D, INT_MAX_D); // Anti-windup: 적분 한계 처리
 
-            // Anti-windup: 적분 한계 처리
-            if(int_d > INT_MAX_D) 
-            {
-                int_d = INT_MAX_D;
-            }
-            if(int_d < -INT_MAX_D) 
-            {
-                int_d = -INT_MAX_D;
-            }
             //v_d_out = Kp_d * err_d + Ki_d * int_d;
             pstFOCManager->fOutVd = Kp_d * err_d + Ki_d * int_d;
             
@@ -183,15 +175,8 @@ void EngFOC_Task_CurrentControl(void *argument)
             //err_q = i_q_ref - i_q;
             err_q = pstFOCManager->fRefIq - i_q;
             int_q += err_q;
+            int_q = MINMAX(int_q, -INT_MAX_Q, INT_MAX_Q);
 
-            if(int_q > INT_MAX_Q) 
-            {
-                int_q = INT_MAX_Q;
-            }
-            if(int_q < -INT_MAX_Q) 
-            {
-                int_q = -INT_MAX_Q;
-            }
             //v_q_out = Kp_q * err_q + Ki_q * int_q;
             pstFOCManager->fOutVq = Kp_q * err_q + Ki_q * int_q;
             
@@ -287,22 +272,13 @@ void EngFOC_Task_SpeedControl(void *argument)
         // 속도 PI 제어
         float err_w = omega_ref - omega_meas;
         int_w += err_w * Ts;
-
-        // 적분 anti-windup
-        if(int_w > W_INT_MAX)   int_w = W_INT_MAX;
-        if(int_w < -W_INT_MAX)  int_w = -W_INT_MAX;
+        int_w = MINMAX(int_w, -W_INT_MAX, W_INT_MAX); // 적분 anti-windup
 
         float torque_cmd = Kp_speed * err_w + Ki_speed * int_w;
         
         // 토크 명령을 i_q 참조값으로 (전류 한계 고려하여 클램핑)
         float iq_max = 10.0f;  // 최대 허용 q축 전류 [A]
-
-        if(torque_cmd > iq_max) {
-            torque_cmd = iq_max;
-        }
-        if(torque_cmd < -iq_max) {
-            torque_cmd = -iq_max;
-        }
+        torque_cmd = MINMAX(torque_cmd, -iq_max, iq_max);
 
         //i_q_ref = torque_cmd;
         pstFOCManager->fRefIq = torque_cmd;
@@ -347,26 +323,12 @@ void EngFOC_Task_PositionControl(void *argument)
         // 위치 PI 제어
         float err_pos = target_position - pos_curr;
         int_pos += err_pos * Tp;
-        if(int_pos > POS_INT_MAX) 
-        {
-            int_pos = POS_INT_MAX;
-        }
-        if(int_pos < -POS_INT_MAX) 
-        {
-            int_pos = -POS_INT_MAX;
-        }
+        int_pos = MINMAX(int_pos, -POS_INT_MAX, POS_INT_MAX); // 적분 anti-windup
         float omega_cmd = Kp_pos * err_pos + Ki_pos * int_pos;
         
         // 속도 명령 포화 (예: 최대 속도 제한)
         float max_speed = 100.0f; // [rad/s] 
-        if(omega_cmd > max_speed) 
-        {
-            omega_cmd = max_speed;
-        }
-        if(omega_cmd < -max_speed) 
-        {
-            omega_cmd = -max_speed;
-        }
+        omega_cmd = MINMAX(omega_cmd, -max_speed, max_speed);
         
         // 상위 속도 참조 갱신
         // (속도 제어 태스크의 omega_ref에 반영하거나 전역 변수로 공유)
