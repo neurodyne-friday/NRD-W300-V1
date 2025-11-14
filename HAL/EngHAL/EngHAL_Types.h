@@ -148,16 +148,13 @@ typedef struct
 {
    	U32 ulName;
 	THalChipType enChipType;
-	U32 ulChannel;
-	U32 ulPinNumber;
+	U8 ubGPIOPort;
+	U8 ubGPIOPin;
 	THalGPIOInOut enInOut;
 
 	THalGPIOActive ulActive;
 	U32 ulBit;
 	THalGPIOOnOff enInitState;
-	U32 ulPinSelChannel;
-	U32 ulPinSelBit;
-	U32 ulChkSum;
 } THalGPIOPorting;
 
 
@@ -517,8 +514,9 @@ typedef struct _THalRTCData
 typedef struct
 {
 	void (*pfnInit)(THalGPIOPorting *);						/* 0 */
-	U8 (*pfnGet)(THalGPIOPorting *); 						/* 1 */
-	void (*pfnSet)(THalGPIOPorting *, U8); 					/* 2 */
+	void (*pfnOn)(THalGPIOPorting *); 						/* 1 */
+	void (*pfnOff)(THalGPIOPorting *); 						/* 2 */
+	THalGPIOOnOff (*pfnGetState)(THalGPIOPorting *); 		/* 3 */
 } THalGPIOFunction;
 
 
@@ -622,7 +620,7 @@ typedef struct
 typedef struct
 {
 	THalChipType enChipType;									// 0
-	THalGPIOFunction stGPIO;									// 3
+	THalGPIOFunction stGPIO;									// 4
 	THalADCFunction stADC;										// 2
 	THalPWMFunction stPWM;										// 4
 	THalCANFunction stCAN;										// 8

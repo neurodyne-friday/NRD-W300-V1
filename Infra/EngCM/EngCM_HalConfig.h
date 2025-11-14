@@ -54,14 +54,14 @@
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalGPIOPorting astHalGPIOTbl[] =
 {
-    /*	Output Name						ChipType			        Port		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         PORT_B,		2,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-	{   HAL_GPIO_NAME_L6230_CH1_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		10,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-    {   HAL_GPIO_NAME_L6230_CH2_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		11,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
-    {   HAL_GPIO_NAME_L6230_CH3_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		12,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    /*	Output Name						ChipType			        Port		PinNumber		THalGPIOInOut		Active					Bit			Initial			*/
+    {   HAL_GPIO_NAME_INDICATOR,		HAL_CHIP_STM32F4xx,         PORT_B,		2,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF   	},
+	{   HAL_GPIO_NAME_L6230_CH1_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		10,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF	},
+    {   HAL_GPIO_NAME_L6230_CH2_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		11,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF	},
+    {   HAL_GPIO_NAME_L6230_CH3_EN,		HAL_CHIP_STM32F4xx,         PORT_C,		12,				HAL_GPIO_OUTPUT,	HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF	},
 	
-    /*	Input Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			PinSelCh	PinSelBit	ChkSum			*/
-    {   HAL_GPIO_NAME_DIAG,				HAL_CHIP_STM32F4xx,         PORT_A,		6,				HAL_GPIO_INPUT,		HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF,   0,          0,          0},
+    /*	Input Name						ChipType			        Channel		PinNumber		THalGPIOInOut		Active					Bit			Initial			*/
+    {   HAL_GPIO_NAME_DIAG,				HAL_CHIP_STM32F4xx,         PORT_A,		6,				HAL_GPIO_INPUT,		HAL_GPIO_ACTIVE_HIGH,   0,          HAL_GPIO_OFF	},
 
 	{	HAL_GPIO_NAME_UNSPECIFIED	}
 };
@@ -106,8 +106,8 @@ EXTERN THalPWMPorting astHalPWMTbl[HAL_PWM_NAME_MAX];
 #ifdef	__ENGHAL_LIB_C__
 EXTERN THalCANPorting astHalCANTbl[] =
 {
-    /*	Input Name						ChipType			        Channel         ID Type                 ID			DLC		*/
-    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F4xx,         1,              HAL_CAN_ID_TYPE_STD,    0x12C,     	8       },
+    /*	Input Name						ChipType			        Channel         ID Type                 ID			DLC		pubData	*/
+    {   HAL_CAN_NAME_MOTOR_CTRL,        HAL_CHIP_STM32F4xx,         1,              HAL_CAN_ID_TYPE_STD,    0x12C,     	8, 		NULL       },
 
 	{	HAL_CAN_NAME_UNSPECIFIED	}
 };
@@ -183,9 +183,10 @@ static THalFunction astHalFunctionTbl[] =
 		HAL_CHIP_STM32F4xx,									/* 0 */
 		
 		/* THalGPIOFunction */
-		NULL,
-		NULL,
-		NULL,
+		EngHAL_GPIO_Init_F4xx,
+		EngHAL_GPIO_On_F4xx,
+		EngHAL_GPIO_Off_F4xx,
+		EngHAL_GPIO_GetState_F4xx,
 
 		/* THalADCFunction */
 		EngHAL_ADC_Init_F4xx,

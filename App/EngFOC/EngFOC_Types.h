@@ -47,9 +47,18 @@ typedef struct _TEngFOCManager
 	TEngState enPrevEngState;						/**<  TBD  */
 	TEngState enEngState;							/**<  TBD  */
 
+	// Control targets
+	F32 fTargetPosition;	// 목표 위치 (rad)
+	F32 fTargetVelocity;	// 목표 속도 (rad/s)
+	F32 fTargetTorque;		// 목표 토크 (Nm)
+
+	F32 fRefId;				// d축 전류 목표값 (보통 0)
+	F32 fRefIq;				// q축 전류 목표값 (토크 요구사항에 따라 갱신)
+
 	// Measurements
-	F32 fAngle;			// Current Mechanical Angle (rad, 엔코더로부터 계산)
-	F32 fOmega;			// Current Angular Velocity (rad/s, 엔코더로부터 계산)
+	F32 fAngle;				// Current Mechanical Angle (rad, 엔코더로부터 계산)
+	F32 fOmega;				// Current Angular Velocity (rad/s, 엔코더로부터 계산)
+	F32 fTorque;			// Current Torque (Nm, i_q로부터 계산)
 
 //float i_d_ref = 0.0f;    // d축 전류 목표값 (보통 0)
 //float i_q_ref = 0.0f;    // q축 전류 목표값 (토크 요구사항에 따라 갱신)
@@ -58,32 +67,31 @@ typedef struct _TEngFOCManager
 //float v_alpha, v_beta;   // 역변환 후 α, β축 전압
 //uint16_t adc_val_phaseA, adc_val_phaseB;  // ADC DMA로부터 얻은 샘플 값
 
-	F32 fRefId;			// d축 전류 목표값 (보통 0)
-	F32 fRefIq;			// q축 전류 목표값 (토크 요구사항에 따라 갱신)
-	F32 fThetaE;		// 현재 전기각 (엔코더로부터 계산)
-	F32 fOutVd;			// PI 제어 출력 (d축 전압 명령)
-	F32 fOutVq;			// PI 제어 출력 (q축 전압 명령)
-	F32 fVAlpha;		// 역변환 후 α축 전압
-	F32 fVBeta;			// 역변환 후 β축 전압
-	U16 uwADCPhaseA;	// ADC DMA로부터 얻은 샘플 값
-	U16 uwADCPhaseB;	// ADC DMA로부터 얻은 샘플 값
-	F32 fIa;			// 상 A 전류 (실제값, A)
-	F32 fIb;			// 상 B 전류 (실제값, A)
-	F32 fIc;			// 상 C 전류 (실제값, A)
-
-	F32 fRefOmega;		// 속도 레퍼런스
+	F32 fThetaE;			// 현재 전기각 (엔코더로부터 계산)
+	F32 fOutVd;				// PI 제어 출력 (d축 전압 명령)
+	F32 fOutVq;				// PI 제어 출력 (q축 전압 명령)
+	F32 fVAlpha;			// 역변환 후 α축 전압
+	F32 fVBeta;				// 역변환 후 β축 전압
+	U16 uwADCPhaseA;		// ADC DMA로부터 얻은 샘플 값
+	U16 uwADCPhaseB;		// ADC DMA로부터 얻은 샘플 값
+	F32 fIa;				// 상 A 전류 (실제값, A)
+	F32 fIb;				// 상 B 전류 (실제값, A)
+	F32 fIc;				// 상 C 전류 (실제값, A)
+	F32 fTa;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
+	F32 fTb;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
+	F32 fTc;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
 
 	// Gains
-	F32 fKp_d;			// d축 비례 이득
-	F32 fKi_d;			// d축 적분 이득
-	F32 fKp_q;			// q축 비례 이득
-	F32 fKi_q;			// q축 적분 이득
+	F32 fKp_d;				// d축 비례 이득
+	F32 fKi_d;				// d축 적분 이득
+	F32 fKp_q;				// q축 비례 이득
+	F32 fKi_q;				// q축 적분 이득
 
-	F32 fKp_omega;		// 속도 제어 비례 이득
-	F32 fKi_omega;		// 속도 제어 적분 이득
+	F32 fKp_omega;			// 속도 제어 비례 이득
+	F32 fKi_omega;			// 속도 제어 적분 이득
 
-	F32 fKp_pos;		// 위치 제어 비례 이득
-	F32 fKi_pos;		// 위치 제어 적분 이득
+	F32 fKp_pos;			// 위치 제어 비례 이득
+	F32 fKi_pos;			// 위치 제어 적분 이득
 
 	// etc
 	F32 fTaskTimeMeasure;	// 디버깅용 전류제어 루프 처리시간 측정값 (us)

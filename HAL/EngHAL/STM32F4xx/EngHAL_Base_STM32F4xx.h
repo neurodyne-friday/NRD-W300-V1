@@ -34,4 +34,7 @@
 EXTERN void EngHAL_Base_TIM1_Probe_State(const char* tag);
 EXTERN void EngHAL_Base_TIM1_Config_TRGO_Center(void);
 
+EXTERN GPIO_TypeDef* EngHAL_Base_GetGPIOPort(U8 ubPort);
+EXTERN U16 EngHAL_Base_GetGPIOPin(U8 ubPin);
+
 #endif //__ENGHAL_BASE_STM32F4xx_H__

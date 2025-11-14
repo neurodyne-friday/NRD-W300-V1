@@ -34,6 +34,12 @@
 EXTERN BOOL EngHAL_LibraryEntry(void);
 EXTERN void EngHAL_Core_Init(void);
 
+/* EngChip - GPIO Interface */
+EXTERN void EngHAL_GPIO_Init(U32 ulHalName);
+EXTERN void EngHAL_GPIO_On(U32 ulHalName);
+EXTERN void EngHAL_GPIO_Off(U32 ulHalName);
+EXTERN THalGPIOOnOff EngHAL_GPIO_GetState(U32 ulHalName);
+
 /* EngChip - ADC Interface */
 EXTERN void EngHAL_ADC_Init(U32 ulHalName);
 EXTERN U16 EngHAL_ADC_GetValue(U32 ulHalName);
@@ -123,6 +129,7 @@ EXTERN void EngHAL_Delay(uint32_t msec);
 *	Common Function
 */
 
+EXTERN THalGPIOPorting* EngHAL_FindHalGPIO(U32 ulHalName);
 EXTERN THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName);
 EXTERN THalADCPorting* EngHAL_FindHalADC(U32 ulHalName);
 EXTERN THalCANPorting* EngHAL_FindHalCAN(U32 ulHalName);

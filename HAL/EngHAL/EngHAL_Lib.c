@@ -202,6 +202,94 @@ void EngHAL_Core_Init(void)
 	EngHAL_GPIO_Config_F4xx();
 }
 
+void EngHAL_GPIO_Init(U32 ulHalName)
+{
+	THalGPIOPorting *pstHalGPIOPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalGPIOPorting = EngHAL_FindHalGPIO(ulHalName);
+    
+	if(pstHalGPIOPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stGPIO.pfnInit != NULL)
+	{
+		pstHalFunction->stGPIO.pfnInit(pstHalGPIOPorting);
+	}	
+}
+
+void EngHAL_GPIO_On(U32 ulHalName)
+{
+	THalGPIOPorting *pstHalGPIOPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+    pstHalGPIOPorting = EngHAL_FindHalGPIO(ulHalName);
+    
+	if(pstHalGPIOPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stGPIO.pfnInit != NULL)
+	{
+		pstHalFunction->stGPIO.pfnOn(pstHalGPIOPorting);
+	}	
+}
+
+void EngHAL_GPIO_Off(U32 ulHalName)
+{
+	THalGPIOPorting *pstHalGPIOPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+
+	pstHalGPIOPorting = EngHAL_FindHalGPIO(ulHalName);
+	
+	if(pstHalGPIOPorting == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stGPIO.pfnInit != NULL)
+	{
+		pstHalFunction->stGPIO.pfnOff(pstHalGPIOPorting);
+	}
+}
+
+THalGPIOOnOff EngHAL_GPIO_GetState(U32 ulHalName)
+{
+	THalGPIOPorting *pstHalGPIOPorting = NULL;
+	THalFunction *pstHalFunction = NULL;
+	THalGPIOOnOff enState = HAL_GPIO_OFF;
+
+	pstHalGPIOPorting = EngHAL_FindHalGPIO(ulHalName);
+	
+	if(pstHalGPIOPorting == NULL)
+	{
+		ASSERT(0);
+		return HAL_GPIO_OFF;
+	}
+	
+	pstHalFunction = &astHalFunctionTbl[0];
+
+	if((void *)pstHalFunction->stGPIO.pfnGetState != NULL)
+	{
+		enState = pstHalFunction->stGPIO.pfnGetState(pstHalGPIOPorting);
+	}
+
+	return enState;
+}
+
+
 void EngHAL_ADC_Init(U32 ulHalName)
 {
 	THalADCPorting *pstHalADCPorting = NULL;
@@ -1038,6 +1126,25 @@ void EngHAL_Delay(uint32_t msec)
   * @param None
   * @retval None
   */
+
+THalGPIOPorting* EngHAL_FindHalGPIO(U32 ulHalName)
+{
+	THalGPIOPorting *pstHalGPIOPorting = NULL;
+
+    for(U8 ubIndex = 0; ubIndex < HAL_GPIO_NAME_MAX; ubIndex++)
+    {
+		if(&astHalGPIOTbl[ubIndex] == NULL) continue;
+
+        if(ulHalName == astHalGPIOTbl[ubIndex].ulName)
+        {
+            pstHalGPIOPorting = &astHalGPIOTbl[ubIndex];
+            return pstHalGPIOPorting;
+        }
+    }
+
+    return pstHalGPIOPorting;
+}
+
 THalPWMPorting* EngHAL_FindHalPWM(U32 ulHalName)
 {
 	THalPWMPorting *pstHalPWMPorting = NULL;

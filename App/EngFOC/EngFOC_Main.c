@@ -98,6 +98,10 @@ void EngFOC_NotifyByADCIRQ(U8* pubData, U32 ulLength)
         pstFOCManager->uwADCPhaseA = pstADCPhaseA->pfnGetValue(pstADCPhaseA);
         pstFOCManager->uwADCPhaseB = pstADCPhaseB->pfnGetValue(pstADCPhaseB);
 
+        EngHAL_GPIO_On(HAL_GPIO_NAME_L6230_CH1_EN);
+        EngHAL_GPIO_On(HAL_GPIO_NAME_L6230_CH2_EN);
+        EngHAL_GPIO_On(HAL_GPIO_NAME_L6230_CH3_EN);
+
         EngFOC_Task_CurrentControl(NULL);
     }
 }
@@ -196,6 +200,9 @@ void EngFOC_Task_CurrentControl(void *argument)
             //TIM1->CCR1 = Ta * TIM1->ARR;
             //TIM1->CCR2 = Tb * TIM1->ARR;
             //TIM1->CCR3 = Tc * TIM1->ARR;
+            pstFOCManager->fTa = Ta;
+            pstFOCManager->fTb = Tb;
+            pstFOCManager->fTc = Tc;
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_UH, Ta);
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_VH, Tb);
             EngHAL_PWM_SetDuty(HAL_PWM_NAME_WH, Tc);
@@ -270,6 +277,7 @@ void EngFOC_Task_SpeedControl(void *argument)
         prev_pos = pos;
         
         // 속도 PI 제어
+        omega_ref = pstFOCManager->fTargetVelocity;
         float err_w = omega_ref - omega_meas;
         int_w += err_w * Ts;
         int_w = MINMAX(int_w, -W_INT_MAX, W_INT_MAX); // 적분 anti-windup
@@ -279,9 +287,11 @@ void EngFOC_Task_SpeedControl(void *argument)
         // 토크 명령을 i_q 참조값으로 (전류 한계 고려하여 클램핑)
         float iq_max = 10.0f;  // 최대 허용 q축 전류 [A]
         torque_cmd = MINMAX(torque_cmd, -iq_max, iq_max);
+        pstFOCManager->fTargetTorque = torque_cmd;
 
         //i_q_ref = torque_cmd;
         pstFOCManager->fRefIq = torque_cmd;
+        pstFOCManager->fRefId = 0.0f;
         // (i_d_ref는 여전히 0으로 유지)
 
    		// Temporary Test
@@ -327,13 +337,14 @@ void EngFOC_Task_PositionControl(void *argument)
         float omega_cmd = Kp_pos * err_pos + Ki_pos * int_pos;
         
         // 속도 명령 포화 (예: 최대 속도 제한)
-        float max_speed = 100.0f; // [rad/s] 
+        //float max_speed = 100.0f; // [rad/s] 
+        float max_speed = 10.0f; // [rad/s] 
         omega_cmd = MINMAX(omega_cmd, -max_speed, max_speed);
         
         // 상위 속도 참조 갱신
         // (속도 제어 태스크의 omega_ref에 반영하거나 전역 변수로 공유)
         //omega_ref = omega_cmd;
-        pstFOCManager->fRefOmega = omega_cmd;
+        pstFOCManager->fTargetVelocity = omega_cmd;
 
  		// Position sending...
 		TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
@@ -461,8 +472,44 @@ void EngFOC_Task_DebugLog(void *argument)
     {
         if((debug_cnt % 10) == 0) // 1000msec
         {
-            DBG_SWO(ENG_DBG_STRING"(CurrentControl) t=%0.3fusec, ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
-                pstFOCManager->fTaskTimeMeasure, pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
+            uint32_t cr1  = TIM1->CR1;
+            uint32_t smcr = TIM1->SMCR;
+            uint32_t ccer = TIM1->CCER;
+            uint32_t bdtr = TIM1->BDTR;
+
+            DBG_SWO(ENG_DBG_STRING"[TIM1 RAW] CR1=0x%08lX SMCR=0x%08lX CCER=0x%08lX BDTR=0x%08lX | PSC=%lu ARR=%lu RCR=%lu SR=0x%08lX",
+                ENG_TICK, "TIM1", (unsigned long)cr1, (unsigned long)smcr, (unsigned long)ccer, (unsigned long)bdtr,
+                (unsigned long)TIM1->PSC, (unsigned long)TIM1->ARR, (unsigned long)TIM1->RCR, (unsigned long)TIM1->SR);
+
+            DBG_SWO(ENG_DBG_STRING"[TIM1 CR1] CEN=%lu UDIS=%lu URS=%lu OPM=%lu DIR=%lu CMS=%lu ARPE=%lu CKD=%lu",
+                ENG_TICK, "TIM1", (cr1 & TIM_CR1_CEN), (cr1 & TIM_CR1_UDIS), (cr1 & TIM_CR1_URS), (cr1 & TIM_CR1_OPM),
+                (cr1 & TIM_CR1_DIR), (unsigned long)((cr1 & TIM_CR1_CMS) >> TIM_CR1_CMS_Pos), (cr1 & TIM_CR1_ARPE),
+                (unsigned long)((cr1 & TIM_CR1_CKD) >> TIM_CR1_CKD_Pos));
+
+            DBG_SWO(ENG_DBG_STRING"[TIM1 SMCR] SMS=%lu TS=%lu MSM=%lu ECE=%lu",
+                ENG_TICK, "TIM1", (unsigned long)((smcr & TIM_SMCR_SMS) >> TIM_SMCR_SMS_Pos), 
+                (unsigned long)((smcr & TIM_SMCR_TS)  >> TIM_SMCR_TS_Pos), (smcr & TIM_SMCR_MSM), (smcr & TIM_SMCR_ECE));
+
+            DBG_SWO(ENG_DBG_STRING"[TIM1 CCER] C1:E=%lu P=%lu NE=%lu NP=%lu | C2:E=%lu P=%lu NE=%lu NP=%lu | C3:E=%lu P=%lu NE=%lu NP=%lu | C4:E=%lu P=%lu",
+                ENG_TICK, "TIM1", (ccer & TIM_CCER_CC1E), (ccer & TIM_CCER_CC1P), (ccer & TIM_CCER_CC1NE), (ccer & TIM_CCER_CC1NP),
+                (ccer & TIM_CCER_CC2E), (ccer & TIM_CCER_CC2P), (ccer & TIM_CCER_CC2NE), (ccer & TIM_CCER_CC2NP),
+                (ccer & TIM_CCER_CC3E), (ccer & TIM_CCER_CC3P), (ccer & TIM_CCER_CC3NE), (ccer & TIM_CCER_CC3NP),
+                (ccer & TIM_CCER_CC4E), (ccer & TIM_CCER_CC4P));
+
+            DBG_SWO(ENG_DBG_STRING"[TIM1 BDTR] MOE=%lu AOE=%lu BKE=%lu BKP=%lu OSSI=%lu OSSR=%lu LOCK=%lu DTG=0x%02lX",
+                ENG_TICK, "TIM1", (bdtr & TIM_BDTR_MOE), (bdtr & TIM_BDTR_AOE), (bdtr & TIM_BDTR_BKE), (bdtr & TIM_BDTR_BKP),
+                (bdtr & TIM_BDTR_OSSI), (bdtr & TIM_BDTR_OSSR), (unsigned long)((bdtr & TIM_BDTR_LOCK) >> TIM_BDTR_LOCK_Pos),
+                (unsigned long)((bdtr & TIM_BDTR_DTG)  >> TIM_BDTR_DTG_Pos));
+                
+
+            //DBG_SWO(ENG_DBG_STRING"(CurrentControl) t=%0.3fusec, ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
+            //    pstFOCManager->fTaskTimeMeasure, pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
+            //DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", pstFOCManager->fIa, pstFOCManager->fIb, pstFOCManager->fIc);
+            //DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", pstFOCManager->fRefId, pstFOCManager->fRefIq, pstFOCManager->fOutVd , pstFOCManager->fOutVq);
+            DBG_SWO(ENG_DBG_STRING"(CurrentControl) Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", pstFOCManager->fTa, pstFOCManager->fTb, pstFOCManager->fTc);
+            DBG_SWO(ENG_DBG_STRING"(Torque) torque_ref. = %f, torque_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetTorque, pstFOCManager->fTorque);
+            DBG_SWO(ENG_DBG_STRING"(Velocity) omega_ref. = %f, omega_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetVelocity, pstFOCManager->fOmega);
+            DBG_SWO(ENG_DBG_STRING"(Position) angle_ref. = %f, angle_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetPosition, pstFOCManager->fAngle);
         }
 
         debug_cnt++;

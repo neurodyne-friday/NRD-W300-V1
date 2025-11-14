@@ -31,6 +31,9 @@
 
 
 EXTERN void EngHAL_GPIO_Config_F4xx(void);
-EXTERN void EngHAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init);
+EXTERN void EngHAL_GPIO_Init_F4xx(THalGPIOPorting* pstHalPorting);
+EXTERN void EngHAL_GPIO_On_F4xx(THalGPIOPorting* pstHalPorting);
+EXTERN void EngHAL_GPIO_Off_F4xx(THalGPIOPorting* pstHalPorting);
+EXTERN THalGPIOOnOff EngHAL_GPIO_GetState_F4xx(THalGPIOPorting* pstHalPorting);
 
 #endif //__ENGHAL_GPIO_H__
