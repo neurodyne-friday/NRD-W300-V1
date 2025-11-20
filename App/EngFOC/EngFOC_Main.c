@@ -53,9 +53,6 @@ static inline void float_to_bytes_le(float v, uint8_t out[4]) {
 
 BOOL EngFOC_Initialize(void)
 {
-	//TEngFOCManager *pstFOCManager = &s_stFOCManager;
-    //TTaskProperty* pstTaskProperty = NULL;
-	
     DBG_SWO(ENG_DBG_STRING"EngFOC_Initialize", ENG_TICK, "FOC");
 
 #ifdef USE_ENGOS_CURRENT_TASK_LOOP
@@ -65,7 +62,7 @@ BOOL EngFOC_Initialize(void)
 #endif
 
     EngOS_Task_Register(EngOS_Task_CreateProperty("SpeedControlTask", EngFOC_Task_SpeedControl, TASK_RUNTYPE_Cycle, 1));
-    EngOS_Task_Register(EngOS_Task_CreateProperty("PositionControlTask", EngFOC_Task_PositionControl, TASK_RUNTYPE_Cycle, 10));
+    //EngOS_Task_Register(EngOS_Task_CreateProperty("PositionControlTask", EngFOC_Task_PositionControl, TASK_RUNTYPE_Cycle, 10));
     EngOS_Task_Register(EngOS_Task_CreateProperty("DebugLogTask", EngFOC_Task_DebugLog, TASK_RUNTYPE_Cycle, 100));
 
     return TRUE;
@@ -119,10 +116,12 @@ void EngFOC_Task_CurrentControl(void *argument)
     float i_d, i_q;
     float err_d, err_q;
     static float int_d = 0.0f, int_q = 0.0f; // 적분 누적 (Integral term)
-    const float Kp_d = 0.1, Ki_d = 0.05;
-    const float Kp_q = 0.1, Ki_q = 0.05;
+    static float i_d_pre = 0.0f, i_q_pre = 0.0f; // 적분 누적 (Integral term)
+    const float Kp_d = 0.1, Ki_d = 0.0;//0.05;
+    const float Kp_q = 0.1, Ki_q = 0.0;//0.05;
+    //const float Kv = 320.0f;               // 320 (rpm/V), 3840rpm / 12V => 320
+    const float Kt = 0.0299f;              // 0.0299 (Nm/A), YT2804 모터 토크 상수 : 60/(2pi*Kv)
     // (필요시 크로스 보상계수: Ld, Lq, ω 등의 변수도 선언)
-    static int cur_cnt = 0; // 모니터링용
     float pos_curr = 0.0f;
 
 #ifdef USE_ENGOS_CURRENT_TASK_LOOP
@@ -159,38 +158,45 @@ void EngFOC_Task_CurrentControl(void *argument)
             pstFOCManager->fAngle += pstFOCManager->fOmega * Tc; // 기계각 갱신(Interpolation)
             pos_curr = pstFOCManager->fAngle; // SpeedControl 루틴에서 엔코더로부터 갱신된 기계각 사용
             pstFOCManager->fThetaE = pos_curr * POLE_PAIRS; // 전기각 변환
+            //pstFOCManager->fThetaE *= -1.0f;// 전기각 부호 반전 시험
             
             // Park 변환: αβ -> dq (현재 전기각 theta_e는 엔코더로부터 업데이트 된 상태)
             float cos_th = arm_cos_f32(pstFOCManager->fThetaE);
             float sin_th = arm_sin_f32(pstFOCManager->fThetaE);
             i_d =  i_alpha * cos_th + i_beta * sin_th;
             i_q = -i_alpha * sin_th + i_beta * cos_th;
-            
-            // d축 전류 제어 (PI)
-            //err_d = i_d_ref - i_d;
-            err_d = pstFOCManager->fRefId - i_d;
-            int_d += err_d;                        // 적분항 누적
-            int_d = MINMAX(int_d, -INT_MAX_D, INT_MAX_D); // Anti-windup: 적분 한계 처리
 
-            //v_d_out = Kp_d * err_d + Ki_d * int_d;
-            pstFOCManager->fOutVd = Kp_d * err_d + Ki_d * int_d;
+            pstFOCManager->fId = i_d;
+            pstFOCManager->fIq = i_q;
+            pstFOCManager->fId_diff = i_d - i_d_pre;
+            pstFOCManager->fIq_diff = i_q - i_q_pre;
+            i_d_pre = i_d;
+            i_q_pre = i_q;
+            pstFOCManager->fTorque = Kt * i_q; // 토크 계산 [Nm]
+            
+            // temp test
+            pstFOCManager->fIq_ref = 0.5f; // q축 전류 목표값 (실험용, 0.5A)
+            pstFOCManager->fId_ref = 0.0f; // d축 전류 목표값 (실험용, 0A)
+
+            // d축 전류 제어 (PI)
+            err_d = pstFOCManager->fId_ref - i_d;   //pstFOCManager->fId_ref = 0.0f 으로 설정됨
+            int_d += err_d;                         // 적분항 누적
+            int_d = MINMAX(int_d, -INT_MAX_D, INT_MAX_D); // Anti-windup: 적분 한계 처리
+            pstFOCManager->fVd_out = Kp_d * err_d + Ki_d * int_d;
             
             // q축 전류 제어 (PI)
-            //err_q = i_q_ref - i_q;
-            err_q = pstFOCManager->fRefIq - i_q;
+            err_q = pstFOCManager->fIq_ref - i_q;
             int_q += err_q;
             int_q = MINMAX(int_q, -INT_MAX_Q, INT_MAX_Q);
-
-            //v_q_out = Kp_q * err_q + Ki_q * int_q;
-            pstFOCManager->fOutVq = Kp_q * err_q + Ki_q * int_q;
+            pstFOCManager->fVq_out = Kp_q * err_q + Ki_q * int_q;
             
             // (선택) 역기전력 보상 및 decoupling 보상
             // v_d_out += -(omega_e * Lq) * i_q; 
             // v_q_out +=  (omega_e * Ld) * i_d + omega_e * lambda_m;
             
             // 역 Park 변환: dq -> αβ 전압
-            pstFOCManager->fVAlpha = pstFOCManager->fOutVd * cos_th - pstFOCManager->fOutVq * sin_th;
-            pstFOCManager->fVBeta  = pstFOCManager->fOutVd * sin_th + pstFOCManager->fOutVq * cos_th;
+            pstFOCManager->fVAlpha = pstFOCManager->fVd_out * cos_th - pstFOCManager->fVq_out * sin_th;
+            pstFOCManager->fVBeta  = pstFOCManager->fVd_out * sin_th + pstFOCManager->fVq_out * cos_th;
             
             // 공간 벡터 PWM 계산: v_alpha, v_beta -> 타이머 CCR값
             float Ta, Tb, Tc;
@@ -209,32 +215,6 @@ void EngFOC_Task_CurrentControl(void *argument)
 
             EngHAL_TICK_Stop();
             pstFOCManager->fTaskTimeMeasure = EngHAL_TICK_MeasureUS();
-            
-            if((cur_cnt % (2000 * 10)) == 0) // 20kHz => 0.05msec * (2000 * 10) => 1000ms
-            {
-                // SWO가 오버헤드 엄청 먹음... 실제 사용에서는 필히 Disable 시키고 발행
-                //DBG_SWO(ENG_DBG_STRING"(CurrentControl) ADC_A=%d, ADC_B=%d, i_a=%ld, i_b=%ld, i_c=%ld", ENG_TICK, "EngFOC", 
-                //    pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, (long)(i_a*1000), (long)(i_b*1000), (long)(i_c*1000));
-                //DBG_SWO(ENG_DBG_STRING"i_alpha=%f, i_beta=%f", ENG_TICK, "EngFOC", i_alpha, i_beta);
-                //DBG_SWO(ENG_DBG_STRING"i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", i_d, i_q, pstFOCManager->fOutVd , pstFOCManager->fOutVq);
-                //DBG_SWO(ENG_DBG_STRING"v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", i_d, i_q, pstFOCManager->fVAlpha , pstFOCManager->fVBeta);
-                //DBG_SWO(ENG_DBG_STRING"Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", Ta, Tb, Tc);
-                //DBG_SWO(ENG_DBG_STRING"err_d=%f, err_q=%f", ENG_TICK, "EngFOC", err_d, err_q);
-                
-                // Temporary Test
-                // TCAN* pstCAN = EngDrv_IF_GetCAN(CAN_NAME_MAIN);
-                // U8 pubData[8];
-                // float_to_bytes_le(i_d, &pubData[0]);
-                // float_to_bytes_le(i_q, &pubData[4]);
-                // if(EngHAL_CAN_IsTxFIFOEmpty(pstCAN->ulHalID))
-                // {
-                //     pstCAN->pfnSendData(pstCAN, pubData, 8);
-                // }
-                cur_cnt = 0; // reset
-            }
-            cur_cnt++;
-
-            // (다음 인터럽트까지 대기 상태로 대기)
         }
     }
 }
@@ -275,22 +255,23 @@ void EngFOC_Task_SpeedControl(void *argument)
         omega_meas = diff / Ts;              // [rad/s]
         pstFOCManager->fOmega = omega_meas;
         prev_pos = pos;
-        
+
+#if 0
         // 속도 PI 제어
         omega_ref = pstFOCManager->fTargetVelocity;
         float err_w = omega_ref - omega_meas;
         int_w += err_w * Ts;
         int_w = MINMAX(int_w, -W_INT_MAX, W_INT_MAX); // 적분 anti-windup
 
-        float torque_cmd = Kp_speed * err_w + Ki_speed * int_w;
+        float iq_ref = Kp_speed * err_w + Ki_speed * int_w;
         
         // 토크 명령을 i_q 참조값으로 (전류 한계 고려하여 클램핑)
-        float iq_max = 10.0f;  // 최대 허용 q축 전류 [A]
-        torque_cmd = MINMAX(torque_cmd, -iq_max, iq_max);
-        pstFOCManager->fTargetTorque = torque_cmd;
+        float iq_max = 1.0f;  // 최대 허용 q축 전류 [A], YT2804 모터 기준
+        iq_ref = MINMAX(iq_ref, -iq_max, iq_max);
+        pstFOCManager->fTargetTorque = iq_ref * 0.0299f; // 목표 토크 [Nm], Kt=0.0299 (Nm/A)
 
         //i_q_ref = torque_cmd;
-        pstFOCManager->fRefIq = torque_cmd;
+        pstFOCManager->fRefIq = iq_ref;
         pstFOCManager->fRefId = 0.0f;
         // (i_d_ref는 여전히 0으로 유지)
 
@@ -301,7 +282,7 @@ void EngFOC_Task_SpeedControl(void *argument)
 		{
 			;//pstCAN->pfnSendData(pstCAN, pubData, 8);
 		}
-        
+#endif        
         EngOS_Task_Waiting(pstTaskProperty, &lastWakeTime);
     }
 }
@@ -477,35 +458,36 @@ void EngFOC_Task_DebugLog(void *argument)
             uint32_t ccer = TIM1->CCER;
             uint32_t bdtr = TIM1->BDTR;
 
-            DBG_SWO(ENG_DBG_STRING"[TIM1 RAW] CR1=0x%08lX SMCR=0x%08lX CCER=0x%08lX BDTR=0x%08lX | PSC=%lu ARR=%lu RCR=%lu SR=0x%08lX",
-                ENG_TICK, "TIM1", (unsigned long)cr1, (unsigned long)smcr, (unsigned long)ccer, (unsigned long)bdtr,
-                (unsigned long)TIM1->PSC, (unsigned long)TIM1->ARR, (unsigned long)TIM1->RCR, (unsigned long)TIM1->SR);
+            // DBG_SWO(ENG_DBG_STRING"[TIM1 RAW] CR1=0x%08lX SMCR=0x%08lX CCER=0x%08lX BDTR=0x%08lX | PSC=%lu ARR=%lu RCR=%lu SR=0x%08lX",
+            //     ENG_TICK, "TIM1", (unsigned long)cr1, (unsigned long)smcr, (unsigned long)ccer, (unsigned long)bdtr,
+            //     (unsigned long)TIM1->PSC, (unsigned long)TIM1->ARR, (unsigned long)TIM1->RCR, (unsigned long)TIM1->SR);
 
-            DBG_SWO(ENG_DBG_STRING"[TIM1 CR1] CEN=%lu UDIS=%lu URS=%lu OPM=%lu DIR=%lu CMS=%lu ARPE=%lu CKD=%lu",
-                ENG_TICK, "TIM1", (cr1 & TIM_CR1_CEN), (cr1 & TIM_CR1_UDIS), (cr1 & TIM_CR1_URS), (cr1 & TIM_CR1_OPM),
-                (cr1 & TIM_CR1_DIR), (unsigned long)((cr1 & TIM_CR1_CMS) >> TIM_CR1_CMS_Pos), (cr1 & TIM_CR1_ARPE),
-                (unsigned long)((cr1 & TIM_CR1_CKD) >> TIM_CR1_CKD_Pos));
+            // DBG_SWO(ENG_DBG_STRING"[TIM1 CR1] CEN=%lu UDIS=%lu URS=%lu OPM=%lu DIR=%lu CMS=%lu ARPE=%lu CKD=%lu",
+            //     ENG_TICK, "TIM1", (cr1 & TIM_CR1_CEN), (cr1 & TIM_CR1_UDIS), (cr1 & TIM_CR1_URS), (cr1 & TIM_CR1_OPM),
+            //     (cr1 & TIM_CR1_DIR), (unsigned long)((cr1 & TIM_CR1_CMS) >> TIM_CR1_CMS_Pos), (cr1 & TIM_CR1_ARPE),
+            //     (unsigned long)((cr1 & TIM_CR1_CKD) >> TIM_CR1_CKD_Pos));
 
-            DBG_SWO(ENG_DBG_STRING"[TIM1 SMCR] SMS=%lu TS=%lu MSM=%lu ECE=%lu",
-                ENG_TICK, "TIM1", (unsigned long)((smcr & TIM_SMCR_SMS) >> TIM_SMCR_SMS_Pos), 
-                (unsigned long)((smcr & TIM_SMCR_TS)  >> TIM_SMCR_TS_Pos), (smcr & TIM_SMCR_MSM), (smcr & TIM_SMCR_ECE));
+            // DBG_SWO(ENG_DBG_STRING"[TIM1 SMCR] SMS=%lu TS=%lu MSM=%lu ECE=%lu",
+            //     ENG_TICK, "TIM1", (unsigned long)((smcr & TIM_SMCR_SMS) >> TIM_SMCR_SMS_Pos), 
+            //     (unsigned long)((smcr & TIM_SMCR_TS)  >> TIM_SMCR_TS_Pos), (smcr & TIM_SMCR_MSM), (smcr & TIM_SMCR_ECE));
 
-            DBG_SWO(ENG_DBG_STRING"[TIM1 CCER] C1:E=%lu P=%lu NE=%lu NP=%lu | C2:E=%lu P=%lu NE=%lu NP=%lu | C3:E=%lu P=%lu NE=%lu NP=%lu | C4:E=%lu P=%lu",
-                ENG_TICK, "TIM1", (ccer & TIM_CCER_CC1E), (ccer & TIM_CCER_CC1P), (ccer & TIM_CCER_CC1NE), (ccer & TIM_CCER_CC1NP),
-                (ccer & TIM_CCER_CC2E), (ccer & TIM_CCER_CC2P), (ccer & TIM_CCER_CC2NE), (ccer & TIM_CCER_CC2NP),
-                (ccer & TIM_CCER_CC3E), (ccer & TIM_CCER_CC3P), (ccer & TIM_CCER_CC3NE), (ccer & TIM_CCER_CC3NP),
-                (ccer & TIM_CCER_CC4E), (ccer & TIM_CCER_CC4P));
+            // DBG_SWO(ENG_DBG_STRING"[TIM1 CCER] C1:E=%lu P=%lu NE=%lu NP=%lu | C2:E=%lu P=%lu NE=%lu NP=%lu | C3:E=%lu P=%lu NE=%lu NP=%lu | C4:E=%lu P=%lu",
+            //     ENG_TICK, "TIM1", (ccer & TIM_CCER_CC1E), (ccer & TIM_CCER_CC1P), (ccer & TIM_CCER_CC1NE), (ccer & TIM_CCER_CC1NP),
+            //     (ccer & TIM_CCER_CC2E), (ccer & TIM_CCER_CC2P), (ccer & TIM_CCER_CC2NE), (ccer & TIM_CCER_CC2NP),
+            //     (ccer & TIM_CCER_CC3E), (ccer & TIM_CCER_CC3P), (ccer & TIM_CCER_CC3NE), (ccer & TIM_CCER_CC3NP),
+            //     (ccer & TIM_CCER_CC4E), (ccer & TIM_CCER_CC4P));
 
-            DBG_SWO(ENG_DBG_STRING"[TIM1 BDTR] MOE=%lu AOE=%lu BKE=%lu BKP=%lu OSSI=%lu OSSR=%lu LOCK=%lu DTG=0x%02lX",
-                ENG_TICK, "TIM1", (bdtr & TIM_BDTR_MOE), (bdtr & TIM_BDTR_AOE), (bdtr & TIM_BDTR_BKE), (bdtr & TIM_BDTR_BKP),
-                (bdtr & TIM_BDTR_OSSI), (bdtr & TIM_BDTR_OSSR), (unsigned long)((bdtr & TIM_BDTR_LOCK) >> TIM_BDTR_LOCK_Pos),
-                (unsigned long)((bdtr & TIM_BDTR_DTG)  >> TIM_BDTR_DTG_Pos));
+            // DBG_SWO(ENG_DBG_STRING"[TIM1 BDTR] MOE=%lu AOE=%lu BKE=%lu BKP=%lu OSSI=%lu OSSR=%lu LOCK=%lu DTG=0x%02lX",
+            //     ENG_TICK, "TIM1", (bdtr & TIM_BDTR_MOE), (bdtr & TIM_BDTR_AOE), (bdtr & TIM_BDTR_BKE), (bdtr & TIM_BDTR_BKP),
+            //     (bdtr & TIM_BDTR_OSSI), (bdtr & TIM_BDTR_OSSR), (unsigned long)((bdtr & TIM_BDTR_LOCK) >> TIM_BDTR_LOCK_Pos),
+            //     (unsigned long)((bdtr & TIM_BDTR_DTG)  >> TIM_BDTR_DTG_Pos));
                 
 
             //DBG_SWO(ENG_DBG_STRING"(CurrentControl) t=%0.3fusec, ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
             //    pstFOCManager->fTaskTimeMeasure, pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
             //DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", pstFOCManager->fIa, pstFOCManager->fIb, pstFOCManager->fIc);
-            //DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_d=%f, i_q=%f, v_d=%f, v_q=%f", ENG_TICK, "EngFOC", pstFOCManager->fRefId, pstFOCManager->fRefIq, pstFOCManager->fOutVd , pstFOCManager->fOutVq);
+            DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_d=%f, i_d_diff=%f, v_d=%f", ENG_TICK, "EngFOC", pstFOCManager->fId, pstFOCManager->fId_diff, pstFOCManager->fVd_out);
+            DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_q=%f, i_q_diff=%f, v_q=%f", ENG_TICK, "EngFOC", pstFOCManager->fIq, pstFOCManager->fIq_diff, pstFOCManager->fVq_out);
             DBG_SWO(ENG_DBG_STRING"(CurrentControl) Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", pstFOCManager->fTa, pstFOCManager->fTb, pstFOCManager->fTc);
             DBG_SWO(ENG_DBG_STRING"(Torque) torque_ref. = %f, torque_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetTorque, pstFOCManager->fTorque);
             DBG_SWO(ENG_DBG_STRING"(Velocity) omega_ref. = %f, omega_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetVelocity, pstFOCManager->fOmega);

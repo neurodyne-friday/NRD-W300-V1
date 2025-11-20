@@ -31,7 +31,7 @@
 #define W_INT_MAX 30
 #define POS_INT_MAX 10
 
-#define V_BUS 24.0 //24v or 48v?
+#define V_BUS 12.0 //24v or 48v?
 #define CURRENT_SCALE 0.001596;  // ADC 값 -> 전류(A) 변환 스케일, 1ADC = 0.001596A (예: 3.3V/4096/0.82*1/0.15)
 #define CURRENT_OFFSET_A 2048  // ADC 오프셋 (중간값)
 #define CURRENT_OFFSET_B 2048
@@ -48,38 +48,33 @@ typedef struct _TEngFOCManager
 	TEngState enEngState;							/**<  TBD  */
 
 	// Control targets
-	F32 fTargetPosition;	// 목표 위치 (rad)
-	F32 fTargetVelocity;	// 목표 속도 (rad/s)
-	F32 fTargetTorque;		// 목표 토크 (Nm)
+	F32 fTargetPosition;	// Target Angle (rad)
+	F32 fTargetVelocity;	// Target Angular Velocity (rad/s)
+	F32 fTargetTorque;		// Target Torque (Nm)
 
-	F32 fRefId;				// d축 전류 목표값 (보통 0)
-	F32 fRefIq;				// q축 전류 목표값 (토크 요구사항에 따라 갱신)
+	F32 fId_ref;			// d-axis current target (보통 0)
+	F32 fIq_ref;			// q-axis current target (토크 요구사항에 따라 갱신)
 
 	// Measurements
 	F32 fAngle;				// Current Mechanical Angle (rad, 엔코더로부터 계산)
 	F32 fOmega;				// Current Angular Velocity (rad/s, 엔코더로부터 계산)
 	F32 fTorque;			// Current Torque (Nm, i_q로부터 계산)
 
-//float i_d_ref = 0.0f;    // d축 전류 목표값 (보통 0)
-//float i_q_ref = 0.0f;    // q축 전류 목표값 (토크 요구사항에 따라 갱신)
-//float theta_e = 0.0f;    // 현재 전기각 (엔코더로부터 계산)
-//float v_d_out, v_q_out;  // PI 제어 출력 (d,q축 전압 명령)
-//float v_alpha, v_beta;   // 역변환 후 α, β축 전압
-//uint16_t adc_val_phaseA, adc_val_phaseB;  // ADC DMA로부터 얻은 샘플 값
-
 	F32 fThetaE;			// 현재 전기각 (엔코더로부터 계산)
-	F32 fOutVd;				// PI 제어 출력 (d축 전압 명령)
-	F32 fOutVq;				// PI 제어 출력 (q축 전압 명령)
-	F32 fVAlpha;			// 역변환 후 α축 전압
-	F32 fVBeta;				// 역변환 후 β축 전압
 	U16 uwADCPhaseA;		// ADC DMA로부터 얻은 샘플 값
 	U16 uwADCPhaseB;		// ADC DMA로부터 얻은 샘플 값
 	F32 fIa;				// 상 A 전류 (실제값, A)
 	F32 fIb;				// 상 B 전류 (실제값, A)
 	F32 fIc;				// 상 C 전류 (실제값, A)
+	F32 fId;				// d축 전류 (실제값, A)
+	F32 fIq;				// q축 전류 (실제값, A)
 	F32 fTa;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
 	F32 fTb;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
 	F32 fTc;				// PWM 타이머 CCR 값 (0.0 ~ 1.0)
+	F32 fVd_out;			// PI 제어 출력 (d축 전압 명령)
+	F32 fVq_out;			// PI 제어 출력 (q축 전압 명령)
+	F32 fVAlpha;			// 역변환 후 α축 전압
+	F32 fVBeta;				// 역변환 후 β축 전압
 
 	// Gains
 	F32 fKp_d;				// d축 비례 이득
@@ -90,11 +85,13 @@ typedef struct _TEngFOCManager
 	F32 fKp_omega;			// 속도 제어 비례 이득
 	F32 fKi_omega;			// 속도 제어 적분 이득
 
-	F32 fKp_pos;			// 위치 제어 비례 이득
-	F32 fKi_pos;			// 위치 제어 적분 이득
+	F32 fKp_angle;			// 위치 제어 비례 이득
+	F32 fKi_angle;			// 위치 제어 적분 이득
 
 	// etc
 	F32 fTaskTimeMeasure;	// 디버깅용 전류제어 루프 처리시간 측정값 (us)
+	F32 fId_diff;			// 디버깅용 d축 전류 변화량
+	F32 fIq_diff;			// 디버깅용 q축 전류 변화량
 
 } TEngFOCManager;
 

@@ -150,11 +150,13 @@ void EngHAL_Core_TICK_Init_F4xx(void)
 U32 EngHAL_Core_TICK_Start_F4xx(void)
 {
     do { __t0 = cycles(); } while (0);
+    return __t0;
 }
 
 U32 EngHAL_Core_TICK_Stop_F4xx(void)
 {
     do { __t1 = cycles(); } while (0);
+    return __t1;
 }
 
 F32 EngHAL_Core_TICK_US_F4xx(U32 cpuHz)
