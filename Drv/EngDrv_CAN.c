@@ -105,14 +105,27 @@ void EngDrv_CAN_NotifyToObservers(TCAN* pstCAN, U8* pubData, U16 uwLength)
 void EngDrv_CAN_UpdateRxBuffer(U32 ulDeviceKay)
 {
 	TCAN* pstCAN = NULL;
+	THalCANPorting* pstHalCANPorting = NULL;
+	U16 uwCopyLen = 0;
 
 	pstCAN = EngDrv_IF_GetCAN(ulDeviceKay);
-	THalCANPorting* pstHalCANPorting = EngHAL_FindHalCAN(pstCAN->ulHalID);
+	if (pstCAN == NULL)
+	{
+		return;
+	}
+
+	pstHalCANPorting = EngHAL_FindHalCAN(pstCAN->ulHalID);
 
 	if(pstCAN != NULL && pstHalCANPorting != NULL && pstCAN->pstRxBuffer != NULL)
 	{
-		pstCAN->pstRxBuffer->uwLength = pstHalCANPorting->ulDLC;
-		memcpy(pstCAN->pstRxBuffer->pubData, pstHalCANPorting->pubData, pstHalCANPorting->ulDLC);
+		uwCopyLen = (U16)pstHalCANPorting->ulDLC;
+		if (uwCopyLen > CAN_RX_MAX_SIZE)
+		{
+			uwCopyLen = CAN_RX_MAX_SIZE;
+		}
+
+		pstCAN->pstRxBuffer->uwLength = uwCopyLen;
+		memcpy(pstCAN->pstRxBuffer->pubData, pstHalCANPorting->pubData, uwCopyLen);
 	}
 }
 

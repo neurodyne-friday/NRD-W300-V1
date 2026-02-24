@@ -41,6 +41,13 @@ static inline void float_to_bytes_le(float v, uint8_t out[4]) {
     out[2] = (uint8_t)(u >> 16);
     out[3] = (uint8_t)(u >> 24);
 }
+
+static inline float wrap_pi(float x) {
+    while (x >  M_PI) x -= 2.0f*M_PI;
+    while (x < -M_PI) x += 2.0f*M_PI;
+    return x;
+}
+
 /**
 * @brief
 *
@@ -157,12 +164,12 @@ void EngFOC_Task_CurrentControl(void *argument)
             //pos_curr = pstEncoder->pfnReadAngle(pstEncoder) * (M_PI / 180.0f); // [deg] -> [rad]
             pstFOCManager->fAngle += pstFOCManager->fOmega * Tc; // 기계각 갱신(Interpolation)
             pos_curr = pstFOCManager->fAngle; // SpeedControl 루틴에서 엔코더로부터 갱신된 기계각 사용
-            pstFOCManager->fThetaE = pos_curr * POLE_PAIRS; // 전기각 변환
-            //pstFOCManager->fThetaE *= -1.0f;// 전기각 부호 반전 시험
+            pstFOCManager->fTheta_e = pos_curr * POLE_PAIRS; // 전기각 변환
+            pstFOCManager->fTheta_e = wrap_pi(pstFOCManager->fTheta_e); // -pi ~ pi 범위로 래핑
             
             // Park 변환: αβ -> dq (현재 전기각 theta_e는 엔코더로부터 업데이트 된 상태)
-            float cos_th = arm_cos_f32(pstFOCManager->fThetaE);
-            float sin_th = arm_sin_f32(pstFOCManager->fThetaE);
+            float cos_th = arm_cos_f32(pstFOCManager->fTheta_e);
+            float sin_th = arm_sin_f32(pstFOCManager->fTheta_e);
             i_d =  i_alpha * cos_th + i_beta * sin_th;
             i_q = -i_alpha * sin_th + i_beta * cos_th;
 
@@ -486,12 +493,13 @@ void EngFOC_Task_DebugLog(void *argument)
             //DBG_SWO(ENG_DBG_STRING"(CurrentControl) t=%0.3fusec, ADC_A=%d, ADC_B=%d, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", 
             //    pstFOCManager->fTaskTimeMeasure, pstFOCManager->uwADCPhaseA, pstFOCManager->uwADCPhaseB, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
             //DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_a=%f, i_b=%f, i_c=%f", ENG_TICK, "EngFOC", pstFOCManager->fIa, pstFOCManager->fIb, pstFOCManager->fIc);
-            DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_d=%f, i_d_diff=%f, v_d=%f", ENG_TICK, "EngFOC", pstFOCManager->fId, pstFOCManager->fId_diff, pstFOCManager->fVd_out);
-            DBG_SWO(ENG_DBG_STRING"(CurrentControl) i_q=%f, i_q_diff=%f, v_q=%f", ENG_TICK, "EngFOC", pstFOCManager->fIq, pstFOCManager->fIq_diff, pstFOCManager->fVq_out);
-            DBG_SWO(ENG_DBG_STRING"(CurrentControl) Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", pstFOCManager->fTa, pstFOCManager->fTb, pstFOCManager->fTc);
-            DBG_SWO(ENG_DBG_STRING"(Torque) torque_ref. = %f, torque_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetTorque, pstFOCManager->fTorque);
-            DBG_SWO(ENG_DBG_STRING"(Velocity) omega_ref. = %f, omega_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetVelocity, pstFOCManager->fOmega);
-            DBG_SWO(ENG_DBG_STRING"(Position) angle_ref. = %f, angle_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetPosition, pstFOCManager->fAngle);
+            DBG_SWO(ENG_DBG_STRING"i_d=%f, i_d_diff=%f, v_d=%f", ENG_TICK, "EngFOC", pstFOCManager->fId, pstFOCManager->fId_diff, pstFOCManager->fVd_out);
+            DBG_SWO(ENG_DBG_STRING"i_q=%f, i_q_diff=%f, v_q=%f", ENG_TICK, "EngFOC", pstFOCManager->fIq, pstFOCManager->fIq_diff, pstFOCManager->fVq_out);
+            DBG_SWO(ENG_DBG_STRING"theta=%f rad, v_alpha=%f, v_beta=%f", ENG_TICK, "EngFOC", pstFOCManager->fTheta_e, pstFOCManager->fVAlpha, pstFOCManager->fVBeta);
+            DBG_SWO(ENG_DBG_STRING"Ta=%f, Tb=%f, Tc=%f", ENG_TICK, "EngFOC", pstFOCManager->fTa, pstFOCManager->fTb, pstFOCManager->fTc);
+            DBG_SWO(ENG_DBG_STRING"(T) torque_ref. = %f, torque_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetTorque, pstFOCManager->fTorque);
+            DBG_SWO(ENG_DBG_STRING"(V) omega_ref. = %f, omega_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetVelocity, pstFOCManager->fOmega);
+            DBG_SWO(ENG_DBG_STRING"(P) angle_ref. = %f, angle_mea. = %f", ENG_TICK, "EngFOC", pstFOCManager->fTargetPosition, pstFOCManager->fAngle);
         }
 
         debug_cnt++;

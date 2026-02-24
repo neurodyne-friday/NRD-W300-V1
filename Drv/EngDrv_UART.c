@@ -1,6 +1,7 @@
 #include <string.h>
 #include "EngDrv_IF.h"
 #include "EngCM_DriverConfig.h"
+#include "EngCM_DebugConfig.h"
 #include "EngDrv_UART.h"
 
 #define __ENGDRV_UART_C__
@@ -27,5 +28,18 @@ void EngDrv_UART_Initialize(TUART *pstUART)
 
 void EngDrv_UART_SendData(TUART *pstUART, U8 pubData[])
 {
-	EngHAL_UART_Transmit(pstUART->ulHalID, pubData, strlen(pubData));
+    U32 ulLength = 0;
+
+    if ((pstUART == NULL) || (pubData == NULL))
+    {
+        return;
+    }
+
+    ulLength = strnlen((const char *)pubData, C_ENG_LOG_1LINE_BUFF_SIZE - 1U);
+    if (ulLength == 0U)
+    {
+        return;
+    }
+
+    EngHAL_UART_Transmit(pstUART->ulHalID, pubData, (U16)ulLength);
 }

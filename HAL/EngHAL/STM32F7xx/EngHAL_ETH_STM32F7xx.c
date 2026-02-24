@@ -64,9 +64,19 @@ ETH_DMADescTypeDef DMATxDscrTabSection[ETH_TX_DESC_CNT] __attribute__((section("
 
 #define SERVER_IP_ADDR  "192.168.0.50"  // 연결할 TCP 서버의 IP 주소
 #define SERVER_PORT     5005             // 서버 포트 번호
+#define ETH_RECONNECT_INTERVAL_MS  (1000U)
+#define ETH_STATUS_LOG_INTERVAL_MS (5000U)
 
 const TIPv4Addr g_stServerIP = {192,168,0,50};
 const U32 g_ulServerPort = 5005;
+static U32 g_ulEthNextReconnectTick = 0;
+static U32 g_ulEthConnectAttemptCount = 0;
+static U32 g_ulEthConnectSuccessCount = 0;
+static U32 g_ulEthConnectFailCount = 0;
+static U32 g_ulEthTxFailCount = 0;
+static U32 g_ulEthRxFailCount = 0;
+static S32 g_slEthLastError = 0;
+static U32 g_ulEthLastStatusLogTick = 0;
 //struct dhcp *gdhcp;
 //uint32_t gphy_status;
 
@@ -89,6 +99,25 @@ typedef struct _THalETHTxBuffer
 
 THalETHRxBuffer astHalETHRxBuffer[ETH_CHANNEL_COUNT];
 THalETHTxBuffer astHalETHTxBuffer[ETH_CHANNEL_COUNT];
+
+static void EngHAL_ETH_LogStatus_F7xx(void)
+{
+    U32 ulNowTick = HAL_GetTick();
+
+    if ((g_ulEthLastStatusLogTick == 0U)
+        || ((ulNowTick - g_ulEthLastStatusLogTick) >= ETH_STATUS_LOG_INTERVAL_MS))
+    {
+        g_ulEthLastStatusLogTick = ulNowTick;
+        DBG_UART(ENG_DBG_STRING"ETH status: try=%lu ok=%lu connFail=%lu txFail=%lu rxFail=%lu lastErr=%ld",
+                 ENG_TICK, "EngChip",
+                 g_ulEthConnectAttemptCount,
+                 g_ulEthConnectSuccessCount,
+                 g_ulEthConnectFailCount,
+                 g_ulEthTxFailCount,
+                 g_ulEthRxFailCount,
+                 g_slEthLastError);
+    }
+}
 
 
 BOOL EngHAL_ETH_Init_F7xx(THalETHPorting *pstHalPorting)
@@ -133,9 +162,8 @@ BOOL EngHAL_ETH_Init_F7xx(THalETHPorting *pstHalPorting)
 
 void EngHAL_ETH_Connect_Entry_F7xx(THalETHPorting *pstHalPorting)
 {
-    struct netbuf *buf;
     ip_addr_t server_ip;
-    err_t err;
+    err_t err = ERR_ARG;
 
     if(pstHalPorting == NULL)
     {
@@ -145,13 +173,21 @@ void EngHAL_ETH_Connect_Entry_F7xx(THalETHPorting *pstHalPorting)
     EngHAL_ETH_LWIP_Init_F7xx(pstHalPorting);
 
     IP4_ADDR(&server_ip, g_stServerIP.ubAddr0, g_stServerIP.ubAddr1, g_stServerIP.ubAddr2, g_stServerIP.ubAddr3);
+    g_ulEthConnectAttemptCount++;
+
+    if (conn != NULL)
+    {
+        netconn_close(conn);
+        netconn_delete(conn);
+        conn = NULL;
+    }
 
     conn = netconn_new(NETCONN_TCP);
     
     if (conn != NULL)
     {
-        uint32_t src_ip = conn->pcb.ip->local_ip.addr;
-        uint32_t dst_ip = conn->pcb.ip->remote_ip.addr;
+        uint32_t src_ip = netif_ip4_addr(&gnetif)->addr;
+        uint32_t dst_ip = ip4_addr_get_u32(ip_2_ip4(&server_ip));
         uint32_t subnet_mask = gnetif.netmask.addr;
 
         if (!netif_is_up(&gnetif)) 
@@ -164,8 +200,6 @@ void EngHAL_ETH_Connect_Entry_F7xx(THalETHPorting *pstHalPorting)
         DBG_UART(ENG_DBG_STRING"Connecting to %s:%d \n", ENG_TICK, "EngChip", ip4addr_ntoa(&server_ip), SERVER_PORT);
         err = netconn_connect(conn, &server_ip, SERVER_PORT);
 
-        dst_ip = conn->pcb.ip->remote_ip.addr;
-
         if ((src_ip & subnet_mask) != (dst_ip & subnet_mask)) 
         {
             DBG_UART(ENG_DBG_STRING"Src and dest are in different subnets", ENG_TICK, "EngChip");
@@ -177,33 +211,77 @@ void EngHAL_ETH_Connect_Entry_F7xx(THalETHPorting *pstHalPorting)
             DBG_UART(ENG_DBG_STRING"Confirmed to source and destination are in same subnets", ENG_TICK, "EngChip");
         }
 
-        DBG_UART(ENG_DBG_STRING"Local IP: %s", ENG_TICK, "EngChip", ip4addr_ntoa(&conn->pcb.ip->local_ip));
-        DBG_UART(ENG_DBG_STRING"Remote IP: %s", ENG_TICK, "EngChip", ip4addr_ntoa(&conn->pcb.ip->remote_ip));
+        DBG_UART(ENG_DBG_STRING"Local IP: %s", ENG_TICK, "EngChip", ip4addr_ntoa(netif_ip4_addr(&gnetif)));
+        DBG_UART(ENG_DBG_STRING"Remote IP: %s", ENG_TICK, "EngChip", ip4addr_ntoa(ip_2_ip4(&server_ip)));
         
         if (err == ERR_OK)
         {
             DBG_UART(ENG_DBG_STRING"Assigned IP: %s", ENG_TICK, "EngChip", ip4addr_ntoa(netif_ip4_addr(&gnetif)));
+            g_ulEthConnectSuccessCount++;
+            g_slEthLastError = ERR_OK;
+            g_ulEthNextReconnectTick = 0;
         } 
         else 
         {
             DBG_UART(ENG_DBG_STRING"Connection failed with error: %d", ENG_TICK, "EngChip", err);
+            g_ulEthConnectFailCount++;
+            g_slEthLastError = (S32)err;
+            netconn_close(conn);
+            netconn_delete(conn);
+            conn = NULL;
+            g_ulEthNextReconnectTick = HAL_GetTick() + ETH_RECONNECT_INTERVAL_MS;
         }
-        
-        netconn_close(conn);
-        netconn_delete(conn);
     } 
     else 
     {
         DBG_UART(ENG_DBG_STRING"Failed to create socket", ENG_TICK, "EngChip", err);
+        g_ulEthConnectFailCount++;
+        g_slEthLastError = (S32)ERR_MEM;
+        g_ulEthNextReconnectTick = HAL_GetTick() + ETH_RECONNECT_INTERVAL_MS;
     }
+
+    EngHAL_ETH_LogStatus_F7xx();
 }
 
 void EngHAL_ETH_Connect_Activity_F7xx(THalETHPorting *pstHalPorting)
 {
-    struct netbuf *buf;
+    struct netbuf *buf = NULL;
     err_t err;
+
+    if (pstHalPorting == NULL)
+    {
+        return;
+    }
+
+    if (conn == NULL)
+    {
+        if ((g_ulEthNextReconnectTick == 0U) || (HAL_GetTick() >= g_ulEthNextReconnectTick))
+        {
+            DBG_UART(ENG_DBG_STRING"TCP reconnect attempt", ENG_TICK, "EngChip");
+            EngHAL_ETH_Connect_Entry_F7xx(pstHalPorting);
+            g_ulEthNextReconnectTick = HAL_GetTick() + ETH_RECONNECT_INTERVAL_MS;
+        }
+
+        EngHAL_ETH_LogStatus_F7xx();
+
+        osDelay(1000);
+        return;
+    }
     
-    netconn_write(conn, ethTxData, sizeof(ethTxData), NETCONN_COPY);
+    err = netconn_write(conn, ethTxData, sizeof(ethTxData), NETCONN_COPY);
+    if (err != ERR_OK)
+    {
+        DBG_UART(ENG_DBG_STRING"Error sending data: %d", ENG_TICK, "EngChip", err);
+        g_ulEthTxFailCount++;
+        g_slEthLastError = (S32)err;
+        netconn_close(conn);
+        netconn_delete(conn);
+        conn = NULL;
+        g_ulEthNextReconnectTick = HAL_GetTick() + ETH_RECONNECT_INTERVAL_MS;
+        EngHAL_ETH_LogStatus_F7xx();
+        osDelay(1000);
+        return;
+    }
 
     err = netconn_recv(conn, &buf);
     if (err == ERR_OK)
@@ -213,26 +291,51 @@ void EngHAL_ETH_Connect_Activity_F7xx(THalETHPorting *pstHalPorting)
 
         if (netbuf_data(buf, &dataptr, &len) == ERR_OK) 
         {
-            memcpy(ethRxData, dataptr, len);
-            ethRxData[len] = '\0';
+            u16_t copyLen = len;
+            if (copyLen >= sizeof(ethRxData))
+            {
+                copyLen = (u16_t)(sizeof(ethRxData) - 1U);
+            }
+
+            memcpy(ethRxData, dataptr, copyLen);
+            ethRxData[copyLen] = '\0';
 
             //printf("Received: %s\n", ethRxData);
             DBG_UART(ENG_DBG_STRING"Received: %s", ENG_TICK, "EngChip", ethRxData);
-        }                
+        }
+
+        netbuf_delete(buf);
     } 
     else 
     {
         //printf("Error receiving data: %d\n", err);
         DBG_UART(ENG_DBG_STRING"Error receiving data: %d", ENG_TICK, "EngChip", err);
+        g_ulEthRxFailCount++;
+        g_slEthLastError = (S32)err;
+        netconn_close(conn);
+        netconn_delete(conn);
+        conn = NULL;
+        g_ulEthNextReconnectTick = HAL_GetTick() + ETH_RECONNECT_INTERVAL_MS;
     }
+
+    EngHAL_ETH_LogStatus_F7xx();
 
     osDelay(1000); 
 }
 
 void EngHAL_ETH_Connect_Exit_F7xx(THalETHPorting *pstHalPorting)
 {
-    netconn_close(conn);
-    netconn_delete(conn);
+    (void)pstHalPorting;
+
+    if (conn != NULL)
+    {
+        netconn_close(conn);
+        netconn_delete(conn);
+        conn = NULL;
+    }
+
+    g_ulEthNextReconnectTick = 0;
+    g_ulEthLastStatusLogTick = 0;
 }
 
 void EngHAL_ETH_Transmit_F7xx(THalETHPorting *pstHalPorting, U8* pubData, U16 uwLength)

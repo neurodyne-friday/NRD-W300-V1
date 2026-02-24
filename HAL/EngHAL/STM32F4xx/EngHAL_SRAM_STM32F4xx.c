@@ -91,6 +91,11 @@ void EngHAL_SRAM_Init_F4xx()
 
 BOOL EngHAL_SRAM_Save_F4xx(const void *data, uint32_t len)
 {
+    if ((data == NULL) && (len > 0U))
+    {
+        return FALSE;
+    }
+
     if (len > BKP_MAX_PAYLOAD)
     {
         return FALSE;
@@ -127,6 +132,11 @@ BOOL EngHAL_SRAM_Load_F4xx(void *out, uint32_t bufsize, uint32_t *out_len, uint3
     uint32_t n = BKP_HDR->len;
     
     if (n > bufsize)
+    {
+        return FALSE;
+    }
+
+    if ((out == NULL) && (n > 0U))
     {
         return FALSE;
     }

@@ -58,9 +58,10 @@ typedef struct _TEngFOCManager
 	// Measurements
 	F32 fAngle;				// Current Mechanical Angle (rad, 엔코더로부터 계산)
 	F32 fOmega;				// Current Angular Velocity (rad/s, 엔코더로부터 계산)
-	F32 fTorque;			// Current Torque (Nm, i_q로부터 계산)
+	F32 fTorque;			// Current Torque (Nm, i_q로부터 계산: Torque = Kt * i_q, Kt: torque constant)
 
-	F32 fThetaE;			// 현재 전기각 (엔코더로부터 계산)
+	F32 fTheta_e;			// 현재 전기각 (엔코더로부터 계산)
+	F32 fTheta_hat;			// 추정된 전기각 (예: MRAS, EKF 등으로 추정 시 사용)
 	U16 uwADCPhaseA;		// ADC DMA로부터 얻은 샘플 값
 	U16 uwADCPhaseB;		// ADC DMA로부터 얻은 샘플 값
 	F32 fIa;				// 상 A 전류 (실제값, A)

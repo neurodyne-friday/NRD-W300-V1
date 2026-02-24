@@ -48,6 +48,7 @@
 			"enghal_base_stm32f4xx.h": "c",
 			"stdio.h": "c"
 		},
-		"cmake.useCMakePresets": "always"
+		"cmake.useCMakePresets": "always",
+		"stm32-for-vscode.openOCDPath": false
 	}
 }
